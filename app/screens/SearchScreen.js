@@ -516,9 +516,9 @@ function SearchScreen(props) {
                         >
                             <ScrollView decelerationRate="fast">
                                 {genres.map((genre, index) => (
-                                    <>
+                                    <View key={index}>
                                         <TouchableOpacity
-                                            key={index}
+                                            
                                             style={styles.genreBtn}
                                             onPress={() => {
                                                 setGenre(genre);
@@ -536,7 +536,7 @@ function SearchScreen(props) {
                                                     : styles.separator
                                             }
                                         />
-                                    </>
+                                    </View>
                                 ))}
                             </ScrollView>
                         </View>

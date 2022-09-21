@@ -11,8 +11,8 @@ const validationSchema = Yup.object().shape({
     password: Yup.string()
         .required()
         .matches(
-            /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
-            'Must contain 8 characters, 1 uppercase, 1 number and 1 special character'
+            /^.*(?=.{8,})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
+            'Must contain 8 characters, 1 uppercase, and 1 number'
         )
         .label('Password'),
 });
@@ -40,7 +40,6 @@ const handleSubmit = async (values, history) => {
             if (response.status !== 200) {
                 alert(body);
             } else {
-                props.navigation.navigate('Password Reset');
                 history.push('/home');
             }
         })

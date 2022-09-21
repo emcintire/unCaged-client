@@ -8,13 +8,18 @@ import {
     Dimensions,
     AsyncStorage,
     Text,
+    Pressable,
+    Switch,
 } from 'react-native';
+import _ from 'underscore';
 import { changeResolution } from '../config/helperFunctions';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import MovieModal from '../components/MovieModal';
 import Loading from '../components/Loading';
+import Separator from '../components/Separator';
 
 const fetchUserData = async (setToken) => {
     AsyncStorage.getItem('token')
@@ -44,7 +49,7 @@ const fetchUserData = async (setToken) => {
         });
 };
 
-const getRandomMovie = async (setMovie, setLoading) => {
+const getRandomMovie = async (setMovie, setLoading, selected, token, mandy) => {
     setLoading(true);
 
     let response = await fetch(
@@ -59,28 +64,56 @@ const getRandomMovie = async (setMovie, setLoading) => {
     );
 
     const body = await response.json();
-    const randInt = Math.floor(Math.random() * 106);
-    let movie = body[randInt];
+    if (response.status !== 200) return alert(body);
+    
+    let movies = body;
+    let randInt = Math.floor(Math.random() * movies.length);
 
-    movie = changeResolution('', movie);
-
-    if (response.status !== 200) {
-        alert(body);
-    } else {
+    if (mandy) {
+        let movie = movies.find((m) => m.title === 'Mandy');
+        movie = changeResolution('', movie);
+    
         setMovie(movie);
         setLoading(false);
+        return;
     }
+
+    if (selected) {
+        response = await fetch(
+            'https://uncaged-server.herokuapp.com/api/users/unseen',
+            {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token,
+                },
+            }
+        );
+        movies = await response.json();
+        if (response.status !== 200) return alert(movies);
+        randInt = Math.floor(Math.random() * movies.length);
+    }
+
+    let movie = movies[randInt];
+    movie = changeResolution('', movie);;
+
+    setMovie(movie);
+    setLoading(false);
 };
 
 function RandomMovieScreen(props) {
     const [loading, setLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
+    const [filtersModalVisible, setFiltersModalVisible] = useState(false);
+    const [selected, setSelected] = useState(false);
+    const [mandy, setMandy] = useState(false);
     const [token, setToken] = useState('');
     const [movie, setMovie] = useState([]);
 
     useEffect(() => {
         fetchUserData(setToken);
-        getRandomMovie(setMovie, setLoading);
+        getRandomMovie(setMovie, setLoading, selected, token, mandy);
     }, []);
 
     if (!loading) {
@@ -101,6 +134,46 @@ function RandomMovieScreen(props) {
                         token={token}
                     />
                 </Modal>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={filtersModalVisible}
+                    onRequestClose={() => {
+                        setFiltersModalVisible(!filtersModalVisible);
+                    }}
+                >
+                    <View style={styles.filtersModalContainer}>
+                        <Pressable
+                            style={styles.transparentBg}
+                            onPress={() =>
+                                setFiltersModalVisible(!filtersModalVisible)
+                            }
+                        />
+                        <View style={styles.filtersModal}>
+                            <View style={{width: '75%'}}>
+                                <Text style={styles.label}>Only unseen</Text>
+                            </View>
+                            <View style={{width: '25%'}}>
+                                <Switch
+                                    onValueChange={setSelected}
+                                    value={selected}
+                                    trackColor={{ true: colors.orange }}
+                                />
+                            </View>
+                            <Separator modal />
+                            <View style={{width: '75%'}}>
+                                <Text style={styles.label}>Only masterpieces</Text>
+                            </View>
+                            <View style={{width: '25%'}}>
+                                <Switch
+                                    onValueChange={setMandy}
+                                    value={mandy}
+                                    trackColor={{ true: colors.orange }}
+                                />
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
 
                 <View style={styles.movieContainer}>
                     <TouchableOpacity
@@ -118,13 +191,23 @@ function RandomMovieScreen(props) {
                 <View>
                     <TouchableOpacity
                         style={styles.refreshBtn}
-                        onPress={() => getRandomMovie(setMovie, setLoading)}
+                        onPress={() => getRandomMovie(setMovie, setLoading, selected, token, mandy)}
                     >
                         <View style={styles.inner}>
                             <Text style={styles.text}>CAGE ME</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
+                <TouchableOpacity
+                    style={styles.filtersBtn}
+                    onPress={() => setFiltersModalVisible(!filtersModalVisible)}
+                >
+                    <MaterialCommunityIcons
+                        name="tune"
+                        color="grey"
+                        size={35}
+                    />
+                </TouchableOpacity>
             </Screen>
         );
     } else return <Loading />;
@@ -185,6 +268,38 @@ const styles = StyleSheet.create({
         fontFamily: 'Montserrat-Black',
         color: 'white',
     },
+    filtersModalContainer: {
+        height: '100%',
+    },
+    transparentBg: {
+        height: '75%',
+        backgroundColor: '#0000007b',
+    },
+    filtersModal: {
+        borderTopLeftRadius: 50,
+        borderTopRightRadius: 50,
+        borderColor: colors.orange,
+        borderWidth: 4,
+        borderBottomWidth: 0,
+        backgroundColor: colors.white,
+        height: '25%',
+        padding: 20,
+        paddingTop: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    filtersBtn: {
+        position: 'absolute',
+        right: 40,
+        bottom: 55,
+    },
+    label: {
+        color: 'black',
+        fontSize: 18,
+        fontFamily: 'Montserrat-Bold'
+    }
 });
 
 export default RandomMovieScreen;

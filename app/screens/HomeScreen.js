@@ -7,6 +7,7 @@ import {
     Modal,
     TouchableOpacity,
     AsyncStorage,
+    TextInput,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import colors from '../config/colors';
@@ -15,8 +16,9 @@ import { changeResolution } from '../config/helperFunctions';
 import Screen from '../components/Screen';
 import MovieModal from '../components/MovieModal';
 import Loading from '../components/Loading';
+import AppButton from '../components/AppButton';
 
-const fetchData = async (setMovies, setLoading, setToken, setQuoteObj) => {
+const fetchData = async (setMovies, setLoading, setToken, setQuoteObj, setIsAdmin) => {
     AsyncStorage.getItem('token')
         .then(async (token) => {
             let response = await fetch(
@@ -46,6 +48,7 @@ const fetchData = async (setMovies, setLoading, setToken, setQuoteObj) => {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
+                        'x-auth-token': token
                     },
                 }
             );
@@ -55,7 +58,28 @@ const fetchData = async (setMovies, setLoading, setToken, setQuoteObj) => {
             if (response.status !== 200) {
                 alert(body);
             } else {
-                setQuoteObj(body);
+                const quote = body[0] || body;
+                setQuoteObj(quote);
+            }
+
+            response = await fetch(
+                'https://uncaged-server.herokuapp.com/api/users',
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token,
+                    },
+                }
+            );
+
+            body = await response.json();
+
+            if (response.status !== 200) {
+                alert(body);
+            } else {
+                setIsAdmin(body.isAdmin);
                 setLoading(false);
             }
         })
@@ -63,6 +87,31 @@ const fetchData = async (setMovies, setLoading, setToken, setQuoteObj) => {
             console.log(err);
         });
 };
+
+const submitQuote = async (token, newQuote, newSubQuote, setQuoteObj) => {
+    const response = await fetch(
+        'https://uncaged-server.herokuapp.com/api/movies/quote',
+        {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'x-auth-token': token
+            },
+            body: JSON.stringify({
+                quote: newQuote.trim(),
+                subquote: newSubQuote.trim(),
+            }),
+        }
+    );
+    const body = await response.text();
+
+    if (response.status !== 200) {
+        alert(body);
+    } else {
+        setQuoteObj(JSON.parse(body));
+    }
+}
 
 const genres = [
     'Popular',
@@ -88,9 +137,12 @@ function HomeScreen(props) {
     const [modalVisible, setModalVisible] = useState(false);
     const [token, setToken] = useState('');
     const [quoteObj, setQuoteObj] = useState({});
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [newQuote, setNewQuote] = useState('');
+    const [newSubQuote, setNewSubQuote] = useState('');
 
     useEffect(() => {
-        fetchData(setMovies, setLoading, setToken, setQuoteObj);
+        fetchData(setMovies, setLoading, setToken, setQuoteObj, setIsAdmin);
     }, []);
 
     if (!loading) {
@@ -115,6 +167,27 @@ function HomeScreen(props) {
                     showsVerticalScrollIndicator={false}
                     decelerationRate="fast"
                 >
+                    {isAdmin && (
+                        <View>
+                            <TextInput
+                                style={styles.quoteInput}
+                                placeholder="Enter title"
+                                placeholderTextColor={colors.medium}
+                                onChangeText={(text) => setNewQuote(text)}
+                            />
+                            <TextInput
+                                style={styles.quoteInput}
+                                placeholder="Enter title"
+                                placeholderTextColor={colors.medium}
+                                onChangeText={(text) => setNewSubQuote(text)}
+                            />
+                            <AppButton
+                                onPress={() => submitQuote(token, newQuote, newSubQuote, setQuoteObj)}
+                                style={styles.quoteSubmit}
+                                title="Submit"
+                            />
+                        </View>
+                    )}
                     <Text style={styles.quote}>{quoteObj.quote}</Text>
                     <Text style={styles.subquote}>{quoteObj.subquote}</Text>
                     <Text style={styles.subsubquote}>Verse of the Day</Text>
@@ -242,6 +315,20 @@ const styles = StyleSheet.create({
         color: colors.white,
         alignSelf: 'flex-start',
     },
+    quoteInput: {
+        width: '90%',
+        borderRadius: 25,
+        fontSize: 18,
+        backgroundColor: colors.black,
+        color: colors.white,
+        alignSelf: 'center',
+        padding: 10,
+        margin: 10
+    },
+    quoteSubmit: {
+        width: '50%',
+        alignSelf: 'center',
+    }
 });
 
 export default HomeScreen;

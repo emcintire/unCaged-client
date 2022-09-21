@@ -30,8 +30,8 @@ const handleSubmit = async (values, props) => {
     if (response.status !== 200) {
         alert(body);
     } else {
-        props.navigation.navigate('Email Code');
         await AsyncStorage.setItem('token', body);
+        props.navigation.navigate('Email Code');
     }
 };
 

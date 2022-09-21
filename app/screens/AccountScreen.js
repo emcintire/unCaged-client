@@ -119,7 +119,7 @@ function AccountScreen(props) {
                             image={{ uri: user.img }}
                         />
                     </View>
-                    <Separator />
+                    <Separator modal={false} />
 
                     <View>
                         <ListItem

@@ -3,7 +3,7 @@
         "name": "unCaged",
         "slug": "unCaged",
         "icon": "./app/assets/imgs/appleIcon.png",
-        "version": "4.3.0",
+        "version": "8.0.0",
         "orientation": "portrait",
         "packagerOpts": {
             "config": "metro.config.js",
@@ -31,7 +31,7 @@
         },
         "android": {
             "package": "uncaged.app",
-            "versionCode": 5
+            "versionCode": 8
         },
         "web": {
             "favicon": "./app/assets/imgs/icon.png"

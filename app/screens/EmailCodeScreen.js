@@ -45,6 +45,7 @@ function EmailCodeScreen(props) {
     return (
         <Screen style={styles.container}>
             <Text style={styles.tagline}>Check Email</Text>
+            <Text style={styles.subTitle}>(Check spam folder)</Text>
             <View style={styles.formContainer}>
                 <AppForm
                     initialValues={{ code: '' }}
@@ -85,7 +86,13 @@ const styles = StyleSheet.create({
         fontFamily: 'Montserrat-ExtraBold',
         fontSize: 30,
         marginTop: 10,
-        color: 'white',
+        color: colors.white,
+        alignSelf: 'center',
+    },
+    subTitle: {
+        fontFamily: 'Montserrat-Medium',
+        fontSize: 12,
+        color: colors.light,
         alignSelf: 'center',
     },
 });
