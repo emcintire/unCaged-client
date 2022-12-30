@@ -13,4 +13,5 @@ export default {
     light: '#f8f4f4',
     dark: '#252224',
     danger: '#ff5252',
+    green: '#4BB543'
 };

@@ -1,10 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Text, AsyncStorage } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../components/forms';
 import colors from '../config/colors';
+import { showErrorToast } from '../config/helperFunctions';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label('Email'),
@@ -28,7 +30,7 @@ const handleSubmit = async (values, props) => {
     const body = await response.text();
 
     if (response.status !== 200) {
-        alert(body);
+        showErrorToast(body);
     } else {
         await AsyncStorage.setItem('token', body);
         props.navigation.navigate('Email Code');

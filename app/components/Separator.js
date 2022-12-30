@@ -3,21 +3,21 @@ import { StyleSheet, View } from 'react-native';
 import colors from '../config/colors';
 
 function Separator(props) {
-    return <View style={props.modal ? styles.modalSeparator : styles.separator} />;
+  return <View style={props.modal ? styles.modalSeparator : styles.separator} />;
 }
 const styles = StyleSheet.create({
-    separator: {
-        width: '100%',
-        height: 1,
-        backgroundColor: colors.bg,
-    },
-    modalSeparator: {
-        width: '100%',
-        height: 1,
-        backgroundColor: '#d8d8d8',
-        marginTop: 15,
-        marginBottom: 15,
-    },
+  separator: {
+    width: '100%',
+    height: 1,
+    backgroundColor: colors.bg,
+  },
+  modalSeparator: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#d8d8d8',
+    marginTop: 15,
+    marginBottom: 15,
+  },
 });
 
 export default Separator;

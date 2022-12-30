@@ -5,153 +5,170 @@ import colors from '../config/colors';
 import AppButton from './AppButton.js';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { EventRegister } from 'react-native-event-listeners';
+import Icon from './Icon.js';
+import { showErrorToast } from '../config/helperFunctions.js';
 
 function PicturePicker({ modalVisible, setModalVisible, user, token }) {
-    const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(0);
 
-    const imgs = [
-        'https://i.imgur.com/9NYgErPm.png',
-        'https://i.imgur.com/Upkz8OFm.png',
-        'https://i.imgur.com/29gBEEPm.png',
-        'https://i.imgur.com/iigQEaqm.png',
-        'https://i.imgur.com/J2pJMGlm.png',
-        'https://i.imgur.com/EpKnEsOm.png',
-    ];
+  const imgs = [
+    'https://i.imgur.com/9NYgErPm.png',
+    'https://i.imgur.com/Upkz8OFm.png',
+    'https://i.imgur.com/29gBEEPm.png',
+    'https://i.imgur.com/iigQEaqm.png',
+    'https://i.imgur.com/J2pJMGlm.png',
+    'https://i.imgur.com/EpKnEsOm.png',
+  ];
 
-    const getPicture = () => {
-        imgs.forEach((link, index) => {
-            if (link === user.img) {
-                setSelected(index);
-            }
-        });
-    };
+  const getPicture = () => {
+    imgs.forEach((link, index) => {
+      if (link === user.img) {
+        setSelected(index);
+      }
+    });
+  };
 
-    useEffect(() => {
-        getPicture();
-    }, []);
+  useEffect(() => {
+    getPicture();
+  }, []);
 
-    const handleSubmit = async () => {
-        let response = await fetch(
-            'https://uncaged-server.herokuapp.com/api/users/',
-            {
-                method: 'PUT',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token,
-                },
-                body: JSON.stringify({
-                    img: imgs[selected],
-                }),
-            }
-        );
-
-        const body = await response.text();
-
-        if (response.status !== 200) {
-            alert(body);
-        } else {
-            getPicture();
-            setModalVisible(false);
-            EventRegister.emit('refreshPic');
-        }
-    };
-
-    return (
-        <Screen style={styles.screen}>
-            <View style={styles.container}>
-                <View style={styles.imagesContainer}>
-                    {imgs.map((image, index) => (
-                        <View style={styles.imgContainer} key={index}>
-                            <View
-                                style={
-                                    selected === index
-                                        ? styles.selected
-                                        : styles.notSelected
-                                }
-                            >
-                                <MaterialCommunityIcons
-                                    name="check"
-                                    size={40}
-                                    color="white"
-                                />
-                            </View>
-
-                            <TouchableOpacity
-                                style={styles.imgBtn}
-                                onPress={() => setSelected(index)}
-                            >
-                                <Image
-                                    source={{
-                                        uri: image,
-                                    }}
-                                    style={styles.img}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    ))}
-                </View>
-                <AppButton
-                    title="Save"
-                    onPress={() => handleSubmit()}
-                    style={{ width: '50%', alignSelf: 'center' }}
-                />
-            </View>
-        </Screen>
+  const handleSubmit = async () => {
+    let response = await fetch(
+      'https://uncaged-server.herokuapp.com/api/users/',
+      {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'x-auth-token': token,
+        },
+        body: JSON.stringify({
+          img: imgs[selected],
+        }),
+      }
     );
+
+    const body = await response.text();
+
+    if (response.status !== 200) {
+      showErrorToast(body);
+    } else {
+      getPicture();
+      setModalVisible(false);
+      EventRegister.emit('refreshPic');
+    }
+  };
+
+  return (
+    <Screen style={styles.screen}>
+      <View style={styles.container}>
+        <View style={styles.closeButton}>
+          <TouchableOpacity onPress={() => setModalVisible(false)}>
+            <Icon
+              name="close"
+              size={30}
+              backgroundColor={colors.black}
+              iconColor={colors.red}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.imagesContainer}>
+          {imgs.map((image, index) => (
+            <View style={styles.imgContainer} key={index}>
+              <View
+                style={
+                  selected === index
+                    ? styles.selected
+                    : styles.notSelected
+                }
+              >
+                <MaterialCommunityIcons
+                  name="check"
+                  size={40}
+                  color="white"
+                />
+              </View>
+
+              <TouchableOpacity
+                style={styles.imgBtn}
+                onPress={() => setSelected(index)}
+              >
+                <Image
+                  source={{
+                    uri: image,
+                  }}
+                  style={styles.img}
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+        <AppButton
+          title="Save"
+          onPress={() => handleSubmit()}
+          style={{ width: '50%', alignSelf: 'center' }}
+        />
+      </View>
+    </Screen>
+  );
 }
 
 const styles = StyleSheet.create({
-    screen: {
-        backgroundColor: '#00000080',
-        height: '100%',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    container: {
-        backgroundColor: colors.bg,
-        width: '90%',
-        padding: 15,
-        borderColor: colors.orange,
-        borderWidth: 1,
-        borderRadius: 10,
-    },
-    imagesContainer: {
-        width: '100%',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        marginBottom: 5,
-    },
-    imgContainer: {
-        width: '50%',
-        alignItems: 'center',
-    },
-    selected: {
-        backgroundColor: '#00000080',
-        height: 120,
-        width: 120,
-        zIndex: 1,
-        borderRadius: 60,
-        position: 'absolute',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bottom: 10,
-    },
-    notSelected: {
-        display: 'none',
-    },
-    imgBtn: {
-        width: 120,
-        height: 120,
-        marginVertical: 10,
-    },
-    img: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 60,
-    },
+  screen: {
+    backgroundColor: '#00000080',
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    backgroundColor: colors.bg,
+    width: '90%',
+    padding: 15,
+    borderColor: colors.orange,
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  imagesContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginBottom: 5,
+  },
+  imgContainer: {
+    width: '50%',
+    alignItems: 'center',
+  },
+  selected: {
+    backgroundColor: '#00000080',
+    height: 120,
+    width: 120,
+    zIndex: 1,
+    borderRadius: 60,
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    bottom: 10,
+  },
+  notSelected: {
+    display: 'none',
+  },
+  imgBtn: {
+    width: 120,
+    height: 120,
+    marginVertical: 10,
+  },
+  img: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 60,
+  },
 });
 
 export default PicturePicker;
