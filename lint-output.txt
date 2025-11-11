@@ -1,0 +1,452 @@
+
+> lint
+> oxlint
+
+
+  x eslint(no-unused-vars): Identifier 'Text' is imported but never used.
+   ,-[app/stacks/HomeStack.tsx:2:41]
+ 1 | import React, { useEffect, useState } from 'react';
+ 2 | import { TouchableOpacity, View, Image, Text, StyleSheet } from 'react-native';
+   :                                         ^^|^
+   :                                           `-- 'Text' is imported here
+ 3 | import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+   `----
+  help: Consider removing this import.
+
+  x eslint(no-unused-vars): Variable 'styles' is declared but never used. Unused variables should start with a '_'.
+    ,-[app/stacks/HomeStack.tsx:33:7]
+ 32 | 
+ 33 | const styles = StyleSheet.create({
+    :       ^^^|^^
+    :          `-- 'styles' is declared here
+ 34 |   resetText: {
+    `----
+  help: Consider removing this declaration.
+
+  x eslint(no-unused-vars): Parameter 'props' is declared but never used. Unused parameters should start with a '_'.
+    ,-[app/stacks/HomeStack.tsx:65:35]
+ 64 | 
+ 65 | export default function HomeStack(props: any) {
+    :                                   ^^|^^
+    :                                     `-- 'props' is declared here
+ 66 |   const [user, setUser] = useState({});
+    `----
+  help: Consider removing this parameter.
+
+  x eslint(no-unused-vars): Parameter 'props' is declared but never used. Unused parameters should start with a '_'.
+    ,-[app/stacks/HomeStack.tsx:96:28]
+ 95 |             options={{
+ 96 |               headerLeft: (props) => <SmallLogo width={100} height={20} />,
+    :                            ^^|^^
+    :                              `-- 'props' is declared here
+ 97 |               headerRight: () => (
+    `----
+  help: Consider removing this parameter.
+
+  x eslint(no-unused-vars): Parameter 'props' is declared but never used. Unused parameters should start with a '_'.
+     ,-[app/stacks/HomeStack.tsx:145:28]
+ 144 |             options={{
+ 145 |               headerLeft: (props) => <SmallLogo width={100} height={20} />,
+     :                            ^^|^^
+     :                              `-- 'props' is declared here
+ 146 |               headerRight: () => (
+     `----
+  help: Consider removing this parameter.
+
+  x eslint(no-unused-vars): Parameter 'props' is declared but never used. Unused parameters should start with a '_'.
+     ,-[app/stacks/HomeStack.tsx:194:28]
+ 193 |             options={{
+ 194 |               headerLeft: (props) => <SmallLogo width={100} height={20} />,
+     :                            ^^|^^
+     :                              `-- 'props' is declared here
+ 195 |               headerRight: () => (
+     `----
+  help: Consider removing this parameter.
+
+  x eslint(no-unused-vars): Parameter 'props' is declared but never used. Unused parameters should start with a '_'.
+     ,-[app/stacks/HomeStack.tsx:243:28]
+ 242 |             options={{
+ 243 |               headerLeft: (props) => <SmallLogo width={100} height={20} />,
+     :                            ^^|^^
+     :                              `-- 'props' is declared here
+ 244 |               headerRight: () => (
+     `----
+  help: Consider removing this parameter.
+
+  x eslint(no-unused-vars): Parameter 'props' is declared but never used. Unused parameters should start with a '_'.
+     ,-[app/stacks/HomeStack.tsx:292:28]
+ 291 |             options={{
+ 292 |               headerLeft: (props) => <SmallLogo width={100} height={20} />,
+     :                            ^^|^^
+     :                              `-- 'props' is declared here
+ 293 |               headerRight: () => (
+     `----
+  help: Consider removing this parameter.
+
+  ! eslint(max-lines): File has too many lines (547).
+     ,-[app/stacks/HomeStack.tsx:547:2]
+ 546 |   );
+ 547 | }
+     :  ^
+     `----
+  help: Maximum allowed is 500.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+    ,-[app/stacks/HomeStack.tsx:65:42]
+ 64 | 
+ 65 | export default function HomeStack(props: any) {
+    :                                          ^^^
+ 66 |   const [user, setUser] = useState({});
+    `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+    ,-[app/stacks/HomeStack.tsx:80:35]
+ 79 | 
+ 80 |   function HomeStackScreen(props: any) {
+    :                                   ^^^
+ 81 |     return (
+    `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+     ,-[app/stacks/HomeStack.tsx:130:40]
+ 129 | 
+ 130 |   function WatchlistStackScreen(props: any) {
+     :                                        ^^^
+ 131 |     return (
+     `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+     ,-[app/stacks/HomeStack.tsx:179:37]
+ 178 | 
+ 179 |   function SearchStackScreen(props: any) {
+     :                                     ^^^
+ 180 |     return (
+     `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+     ,-[app/stacks/HomeStack.tsx:228:42]
+ 227 | 
+ 228 |   function RandonMovieStackScreen(props: any) {
+     :                                          ^^^
+ 229 |     return (
+     `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+     ,-[app/stacks/HomeStack.tsx:277:38]
+ 276 | 
+ 277 |   function AccountStackScreen(props: any) {
+     :                                      ^^^
+ 278 |     return (
+     `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  x typescript-eslint(array-type): Array type using 'number[]' is forbidden. Use 'Array<number>' instead.
+   ,-[app/types/User.ts:4:14]
+ 3 |   email: string;
+ 4 |   favorites: number[];
+   :              ^^^^^^^^
+ 5 |   id: string;
+   `----
+  help: Replace `number[]` with `Array<number>`.
+
+  x typescript-eslint(array-type): Array type using 'UserRating[]' is forbidden. Use 'Array<UserRating>' instead.
+    ,-[app/types/User.ts:9:12]
+  8 |   name: string;
+  9 |   ratings: UserRating[];
+    :            ^^^^^^^^^^^^
+ 10 |   seen: number[];
+    `----
+  help: Replace `UserRating[]` with `Array<UserRating>`.
+
+  x typescript-eslint(array-type): Array type using 'number[]' is forbidden. Use 'Array<number>' instead.
+    ,-[app/types/User.ts:10:9]
+  9 |   ratings: UserRating[];
+ 10 |   seen: number[];
+    :         ^^^^^^^^
+ 11 |   updatedAt?: string;
+    `----
+  help: Replace `number[]` with `Array<number>`.
+
+  x typescript-eslint(array-type): Array type using 'number[]' is forbidden. Use 'Array<number>' instead.
+    ,-[app/types/User.ts:12:14]
+ 11 |   updatedAt?: string;
+ 12 |   watchlist: number[];
+    :              ^^^^^^^^
+ 13 | };
+    `----
+  help: Replace `number[]` with `Array<number>`.
+
+  x eslint(eqeqeq): Expected === and instead saw ==
+    ,-[app/screens/WatchlistScreen.tsx:86:22]
+ 85 |       {!isAdmin && <AdBanner />}
+ 86 |       {movies.length == 0 ? (
+    :                      ^^
+ 87 |         <Screen style={styles.noMoviesContainer}>
+    `----
+  help: Prefer === operator
+
+  ! eslint(max-lines): File has too many lines (638).
+     ,-[app/components/MovieModal.tsx:638:2]
+ 637 |   );
+ 638 | }
+     :  ^
+     `----
+  help: Maximum allowed is 500.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+     ,-[app/components/MovieModal.tsx:448:25]
+ 447 |       width: '100%',
+ 448 |       height: 'auto' as any,
+     :                         ^^^
+ 449 |       left: 0,
+     `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+     ,-[app/components/MovieModal.tsx:455:25]
+ 454 |       width: '100%',
+ 455 |       height: 'auto' as any,
+     :                         ^^^
+ 456 |       left: 0,
+     `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  x eslint(eqeqeq): Expected === and instead saw ==
+    ,-[app/screens/RatingsScreen.tsx:75:34]
+ 74 |   return (
+ 75 |     <Screen style={movies.length == 0 ? styles.noMoviesContainer : styles.container}>
+    :                                  ^^
+ 76 |       {!isAdmin && <AdBanner />}
+    `----
+  help: Prefer === operator
+
+  x eslint(eqeqeq): Expected === and instead saw ==
+    ,-[app/screens/RatingsScreen.tsx:77:22]
+ 76 |       {!isAdmin && <AdBanner />}
+ 77 |       {movies.length == 0 ? (
+    :                      ^^
+ 78 |         <Text style={styles.text}>You will see your rated movies here</Text>
+    `----
+  help: Prefer === operator
+
+  x typescript-eslint(array-type): Array type using 'string[]' is forbidden. Use 'Array<string>' instead.
+    ,-[app/config/helperFunctions.ts:36:22]
+ 35 | 
+ 36 | export const genres: string[] = [
+    :                      ^^^^^^^^
+ 37 |   'Select',
+    `----
+  help: Replace `string[]` with `Array<string>`.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+    ,-[app/components/Icon.tsx:37:45]
+ 36 |     >
+ 37 |       <MaterialCommunityIcons name={name as any} color={iconColor} size={size * 0.5} />
+    :                                             ^^^
+ 38 |     </View>
+    `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  ! eslint(no-unused-vars): Parameter 'history' is declared but never used. Unused parameters should start with a '_'.
+    ,-[app/screens/AccountScreen.js:40:30]
+ 39 | 
+ 40 | const deleteAccount = async (history) => {
+    :                              ^^^|^^^
+    :                                 `-- 'history' is declared here
+ 41 |   Alert.alert('Are you sure?', 'Daddy would not be pleased', [
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Parameter 'history' is declared but never used. Unused parameters should start with a '_'.
+    ,-[app/screens/AccountScreen.js:83:23]
+ 82 | 
+ 83 | const handleLogOut = (history) => {
+    :                       ^^^|^^^
+    :                          `-- 'history' is declared here
+ 84 |   Alert.alert('Are you sure you want to log out?', '', [
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Variable 'navigate' is declared but never used. Unused variables should start with a '_'.
+     ,-[app/screens/AccountScreen.js:108:9]
+ 107 | 
+ 108 |   const navigate = useNavigate();
+     :         ^^^^|^^^
+     :             `-- 'navigate' is declared here
+ 109 | 
+     `----
+  help: Consider removing this declaration.
+
+  x eslint(no-unused-vars): Identifier 'AppFormField' is imported but never used.
+   ,-[app/screens/PasswordResetScreen.tsx:7:19]
+ 6 | import Screen from '../components/Screen';
+ 7 | import { AppForm, AppFormField, SubmitButton } from '../components/forms';
+   :                   ^^^^^^|^^^^^
+   :                         `-- 'AppFormField' is imported here
+ 8 | import colors from '../config/colors';
+   `----
+  help: Consider removing this import.
+
+  x typescript-eslint(no-explicit-any): Unexpected any. Specify a different type.
+    ,-[app/screens/PasswordResetScreen.tsx:26:72]
+ 25 | 
+ 26 | const handleSubmit = async (values: PasswordResetFormValues, navigate: any) => {
+    :                                                                        ^^^
+ 27 |   try {
+    `----
+  help: Use `unknown` instead, this will force you to explicitly, and safely, assert the type is correct.
+
+  x eslint(no-unused-vars): Variable 'styles' is declared but never used. Unused variables should start with a '_'.
+    ,-[app/screens/PrivacyPolicy.tsx:73:7]
+ 72 | 
+ 73 | const styles = StyleSheet.create({
+    :       ^^^|^^
+    :          `-- 'styles' is declared here
+ 74 |   container: {
+    `----
+  help: Consider removing this declaration.
+
+  x eslint(eqeqeq): Expected === and instead saw ==
+    ,-[app/screens/FavoritesScreen.tsx:81:22]
+ 80 |       )}
+ 81 |       {movies.length == 0 ? (
+    :                      ^^
+ 82 |         <Screen style={styles.noMoviesContainer}>
+    `----
+  help: Prefer === operator
+
+  x typescript-eslint(array-type): Array type using 'string[]' is forbidden. Use 'Array<string>' instead.
+    ,-[app/types/movie.ts:9:11]
+  8 |   director: string;
+  9 |   genres: string[];
+    :           ^^^^^^^^
+ 10 |   img: string;
+    `----
+  help: Replace `string[]` with `Array<string>`.
+
+  ! eslint(max-lines): File has too many lines (503).
+     ,-[app/screens/SearchScreen.tsx:503:29]
+ 502 | 
+ 503 | export default SearchScreen;
+     :                             ^
+     `----
+  help: Maximum allowed is 500.
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+    ,-[app/screens/SearchScreen.tsx:80:7]
+ 79 |     case 'rating':
+ 80 |       ratingUp ? (direction = 1) : (direction = -1);
+    :       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 81 |       category = 'avgRating';
+    `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+    ,-[app/screens/SearchScreen.tsx:84:7]
+ 83 |     case 'year':
+ 84 |       yearUp ? (direction = 1) : (direction = -1);
+    :       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 85 |       category = 'date';
+    `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+    ,-[app/screens/SearchScreen.tsx:88:7]
+ 87 |     case 'az':
+ 88 |       abc ? (direction = 1) : (direction = -1);
+    :       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 89 |       category = 'title';
+    `----
+  help: Consider using this expression or removing it
+
+  x eslint-plugin-unicorn(switch-case-braces): Missing braces in case clause.
+    ,-[app/screens/SearchScreen.tsx:79:5]
+ 78 |   switch (selected) {
+ 79 |     case 'rating':
+    :     ^^^^^^^^^^^^^^
+ 80 |       ratingUp ? (direction = 1) : (direction = -1);
+    `----
+  help: Add Braces for case clause.
+
+  x eslint-plugin-unicorn(switch-case-braces): Missing braces in case clause.
+    ,-[app/screens/SearchScreen.tsx:83:5]
+ 82 |       break;
+ 83 |     case 'year':
+    :     ^^^^^^^^^^^^
+ 84 |       yearUp ? (direction = 1) : (direction = -1);
+    `----
+  help: Add Braces for case clause.
+
+  x eslint-plugin-unicorn(switch-case-braces): Missing braces in case clause.
+    ,-[app/screens/SearchScreen.tsx:87:5]
+ 86 |       break;
+ 87 |     case 'az':
+    :     ^^^^^^^^^^
+ 88 |       abc ? (direction = 1) : (direction = -1);
+    `----
+  help: Add Braces for case clause.
+
+  x eslint-plugin-unicorn(switch-case-braces): Missing braces in case clause.
+    ,-[app/screens/SearchScreen.tsx:91:5]
+ 90 |       break;
+ 91 |     case 'za':
+    :     ^^^^^^^^^^
+ 92 |       direction = -1;
+    `----
+  help: Add Braces for case clause.
+
+  x eslint(no-unused-vars): Parameter 'history' is declared but never used. Unused parameters should start with a '_'.
+    ,-[app/screens/AccountScreen.tsx:39:30]
+ 38 | 
+ 39 | const deleteAccount = async (history) => {
+    :                              ^^^|^^^
+    :                                 `-- 'history' is declared here
+ 40 |   Alert.alert('Are you sure?', 'Daddy would not be pleased', [
+    `----
+  help: Consider removing this parameter.
+
+  x eslint(no-unused-vars): Parameter 'history' is declared but never used. Unused parameters should start with a '_'.
+    ,-[app/screens/AccountScreen.tsx:76:23]
+ 75 | 
+ 76 | const handleLogOut = (history) => {
+    :                       ^^^|^^^
+    :                          `-- 'history' is declared here
+ 77 |   Alert.alert('Are you sure you want to log out?', '', [
+    `----
+  help: Consider removing this parameter.
+
+  x eslint(no-unused-vars): Variable 'navigate' is declared but never used. Unused variables should start with a '_'.
+     ,-[app/screens/AccountScreen.tsx:101:9]
+ 100 | 
+ 101 |   const navigate = useNavigate();
+     :         ^^^^|^^^
+     :             `-- 'navigate' is declared here
+ 102 | 
+     `----
+  help: Consider removing this declaration.
+
+  x eslint(eqeqeq): Expected === and instead saw ==
+    ,-[app/screens/SeenScreen.tsx:50:23]
+ 49 |   if (!loading) {
+ 50 |     if (movies.length == 0)
+    :                       ^^
+ 51 |       return (
+    `----
+  help: Prefer === operator
+
+  x eslint(eqeqeq): Expected === and instead saw ==
+    ,-[app/screens/SeenScreen.tsx:81:32]
+ 80 |               <Text style={styles.subHeader}>
+ 81 |                 {movies.length == 1 ? 'cinematic masterpiece' : 'cinematic masterpieces'}
+    :                                ^^
+ 82 |               </Text>
+    `----
+  help: Prefer === operator
+
+Found 9 warnings and 39 errors.
+Finished in 9ms on 53 files using 28 threads.
