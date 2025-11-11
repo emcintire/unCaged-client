@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Yup from 'yup';
-import { useHistory } from 'react-router-native';
+import { useNavigate } from 'react-router-native';
 
 import Screen from '../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../components/forms';
@@ -20,7 +20,7 @@ const validationSchema = Yup.object().shape({
     .label('Password'),
 });
 
-const handleSubmit = async (values, history) => {
+const handleSubmit = async (values, navigate) => {
   AsyncStorage.getItem('token')
     .then(async (token) => {
       let response = await fetch(
@@ -43,7 +43,7 @@ const handleSubmit = async (values, history) => {
       if (response.status !== 200) {
         showErrorToast(body);
       } else {
-        history.push('/home');
+        navigate('/home');
       }
     })
     .catch((err) => {
@@ -52,7 +52,7 @@ const handleSubmit = async (values, history) => {
 };
 
 function PasswordResetScreen(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <Screen style={styles.container}>
@@ -60,7 +60,7 @@ function PasswordResetScreen(props) {
       <View style={styles.formContainer}>
         <AppForm
           initialValues={{ password: '' }}
-          onSubmit={(values) => handleSubmit(values, history)}
+          onSubmit={(values) => handleSubmit(values, navigate)}
           validationSchema={validationSchema}
           style={styles.formContainer}
         >

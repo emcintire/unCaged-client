@@ -5,6 +5,9 @@
     "icon": "./app/assets/imgs/appleIcon.png",
     "version": "9.0.0",
     "orientation": "portrait",
+    "scheme": "uncaged",
+    "platforms": ["ios", "android", "web"],
+    "jsEngine": "hermes",
     "packagerOpts": {
       "config": "metro.config.js",
       "sourceExts": [
@@ -21,8 +24,12 @@
         "svg"
       ]
     },
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "enabled": false
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -35,12 +42,19 @@
     "android": {
       "package": "uncaged.app",
       "versionCode": 9,
+      "adaptiveIcon": {
+        "foregroundImage": "./app/assets/imgs/appleIcon.png",
+        "backgroundColor": "#000000"
+      },
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-7328192473595101~8779422463"
       }
     },
     "web": {
       "favicon": "./app/assets/imgs/icon.png"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

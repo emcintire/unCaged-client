@@ -4,7 +4,6 @@ import {
   View,
   ScrollView,
   Alert,
-  Text,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,7 +13,7 @@ import Separator from '../components/Separator';
 import colors from '../config/colors';
 import Icon from '../components/Icon';
 import Loading from '../components/Loading';
-import { useHistory } from 'react-router-native';
+import { useNavigate } from 'react-router-native';
 import { showErrorToast, showSuccessToast } from '../config/helperFunctions';
 
 const fetchData = async (setUser, setLoading) => {
@@ -77,7 +76,7 @@ const deleteAccount = async (history) => {
               AsyncStorage.removeItem('token')
                 .then(() => {
                   showSuccessToast('Account deleted :(');
-                  history.push('/');
+                  navigate('/');
                 })
                 .catch((err) => {
                   console.log(err);
@@ -103,7 +102,7 @@ const handleLogOut = (history) => {
       onPress: async () => {
         AsyncStorage.removeItem('token')
           .then(() => {
-            history.push('/');
+            navigate('/');
           })
           .catch((err) => {
             console.log(err);
@@ -117,7 +116,7 @@ function AccountScreen(props) {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData(setUser, setLoading);

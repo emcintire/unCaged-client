@@ -9,17 +9,17 @@ import AppButton from '../components/AppButton';
 import colors from '../config/colors';
 import Logo from '../assets/imgs/logo.svg';
 import Screen from '../components/Screen';
-import { useHistory } from 'react-router-native';
+import { useNavigate } from 'react-router-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function WelcomeScreen(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     AsyncStorage.getItem('token')
       .then((token) => {
         if (token !== null) {
-          history.push('/home');
+          navigate('/home');
         }
       })
       .catch((err) => {

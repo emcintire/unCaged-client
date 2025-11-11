@@ -16,7 +16,7 @@ import { changeResolution, genres, showErrorToast } from '../config/helperFuncti
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-import { AdMobBanner } from 'expo-ads-admob';
+import AdBanner from '../components/AdBanner';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
@@ -137,11 +137,7 @@ class RandomMovieScreen extends Component {
       <Screen style={styles.container}>
         {!isAdmin && (
           <View style={styles.adContainer}>
-            <AdMobBanner
-              bannerSize="fullBanner"
-              adUnitID={Platform.OS === 'android' ? 'ca-app-pub-7328192473595101/9638781360' : 'ca-app-pub-7328192473595101/8365475568'}
-              servePersonalizedAds={false}
-            />
+            <AdBanner />
           </View>
         )}
         <Modal

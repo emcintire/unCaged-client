@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { NativeRouter, Route } from 'react-router-native';
+import { NativeRouter, Route, Routes } from 'react-router-native';
 import * as Font from "expo-font";
+import * as SplashScreen from 'expo-splash-screen';
 import WelcomeStack from './app/stacks/WelcomeStack';
 import HomeStack from './app/stacks/HomeStack';
-import AppLoading from 'expo-app-loading';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 import colors from './app/config/colors';
 import Icon from './app/components/Icon';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 const loadFonts = async () => {
   await Font.loadAsync({
@@ -56,14 +60,42 @@ const toastConfig = {
 export default function App(props) {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  if (!isLoaded) { return <AppLoading startAsync={loadFonts} onFinish={() => setIsLoaded(true)} onError={() => {}} />}
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await loadFonts();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsLoaded(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (isLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [isLoaded]);
+
+  if (!isLoaded) {
+    return null;
+  }
 
   return (
-    <NativeRouter>
-      <Route exact path="/" component={WelcomeStack} />
-      <Route path="/home" component={HomeStack} />
-      <Toast config={toastConfig} />
-    </NativeRouter>
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <GestureHandlerRootView>
+        <NativeRouter>
+          <Routes>
+            <Route path="/" element={<WelcomeStack />} />
+            <Route path="/home" element={<HomeStack />} />
+          </Routes>
+          <Toast config={toastConfig} />
+        </NativeRouter>
+      </GestureHandlerRootView>
+    </View>
   );
 }
 

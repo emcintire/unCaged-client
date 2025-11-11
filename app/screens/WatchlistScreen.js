@@ -15,7 +15,7 @@ import Screen from '../components/Screen';
 import colors from '../config/colors';
 import MovieModal from '../components/MovieModal';
 import Loading from '../components/Loading';
-import { AdMobBanner } from 'expo-ads-admob';
+import AdBanner from '../components/AdBanner';
 
 const getUser = async (token, setIsAdmin) => {
   const response = await fetch(
@@ -89,11 +89,7 @@ function WatchlistScreen(props) {
     <>
       {!isAdmin && (
         <View style={styles.adContainerTop}>
-          <AdMobBanner
-            bannerSize="fullBanner"
-            adUnitID={Platform.OS === 'android' ? 'ca-app-pub-7328192473595101/7052393899' : 'ca-app-pub-7328192473595101/3270767849'}
-            servePersonalizedAds={false}
-          />
+          <AdBanner />
         </View>
       )}
       {movies.length == 0 ? (

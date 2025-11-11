@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { AdMobBanner } from 'expo-ads-admob';
+import AdBanner from './AdBanner';
 
 import Icon from './Icon';
 import colors from '../config/colors';
@@ -499,11 +499,7 @@ function MovieModal({
     <View style={styles.background}>
       {!isAdmin && (
         <View style={styles.adContainerTop}>
-          <AdMobBanner
-            bannerSize="fullBanner"
-            adUnitID={Platform.OS === 'android' ? 'ca-app-pub-7328192473595101/1834847969' : 'ca-app-pub-7328192473595101/9294617699'}
-            servePersonalizedAds={false}
-          />
+          <AdBanner />
         </View>
       )}
       <ScrollView
@@ -748,11 +744,7 @@ function MovieModal({
       </ScrollView>
       {!isAdmin && (
         <View style={styles.adContainerBottom}>
-          <AdMobBanner
-            bannerSize="fullBanner"
-            adUnitID={Platform.OS === 'android' ? 'ca-app-pub-7328192473595101/3696408752' : 'ca-app-pub-7328192473595101/9864892515'}
-            servePersonalizedAds={false}
-          />
+          <AdBanner />
         </View>
       )}
     </View>

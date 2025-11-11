@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
-import { useHistory } from 'react-router-native';
+import { useNavigate } from 'react-router-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '../components/Screen';
@@ -16,7 +16,7 @@ const validationSchema = Yup.object().shape({
 });
 
 function LoginScreen(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSubmit = async (values) => {
     let response = await fetch(
@@ -40,7 +40,7 @@ function LoginScreen(props) {
       showErrorToast(body);
     } else {
       await AsyncStorage.setItem('token', body);
-      history.push('/home');
+      navigate('/home');
     }
   };
 

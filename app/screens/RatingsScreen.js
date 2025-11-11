@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AdMobBanner } from 'expo-ads-admob';
+import AdBanner from '../components/AdBanner';
 
 import { changeResolution, showErrorToast } from '../config/helperFunctions';
 import Screen from '../components/Screen';
@@ -89,11 +89,7 @@ function RatingsScreen(props) {
     <>
       {!isAdmin && (
         <View style={styles.adContainerTop}>
-          <AdMobBanner
-            bannerSize="fullBanner"
-            adUnitID={Platform.OS === 'android' ? 'ca-app-pub-7328192473595101/1638740525' : 'ca-app-pub-7328192473595101/7783091443'}
-            servePersonalizedAds={false}
-          />
+          <AdBanner />
         </View>
       )}
       {movies.length == 0 ? (
