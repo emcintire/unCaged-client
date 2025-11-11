@@ -1,151 +1,18 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { find, includes } from 'lodash';
 import Icon from '../Icon';
 import colors from '../../config/colors';
-import { Movie, SetState, User } from '../../types';
-import { showErrorToast } from '../../config/helperFunctions';
-import { useEffect, useState } from 'react';
+import { Movie, User } from '../../types';
 import MovieRating from './MovieRating';
-import { find, includes } from 'lodash';
-
-const addToSeen = async (id: string, token: string, setSeen: SetState<boolean>): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/seen', {
-    method: 'PUT',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-    body: JSON.stringify({ id }),
-  });
-
-  const body = await response.text();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    setSeen(true);
-  }
-};
-
-const addToFavorites = async (
-  id: string,
-  token: string,
-  setFavorite: SetState<boolean>
-): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/favorites', {
-    method: 'PUT',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-    body: JSON.stringify({ id }),
-  });
-
-  const body = await response.text();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    setFavorite(true);
-  }
-};
-
-const addToWatchlist = async (
-  id: string,
-  token: string,
-  setWatchlist: SetState<boolean>
-): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/watchlist', {
-    method: 'PUT',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-    body: JSON.stringify({ id }),
-  });
-
-  const body = await response.text();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    setWatchlist(true);
-  }
-};
-
-const removeFromSeen = async (
-  id: string,
-  token: string,
-  setSeen: SetState<boolean>
-): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/seen', {
-    method: 'DELETE',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-    body: JSON.stringify({ id }),
-  });
-
-  const body = await response.text();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    setSeen(false);
-  }
-};
-
-const removeFromFavorites = async (
-  id: string,
-  token: string,
-  setFavorites: SetState<boolean>
-): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/favorites', {
-    method: 'DELETE',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-    body: JSON.stringify({ id }),
-  });
-
-  const body = await response.text();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    setFavorites(false);
-  }
-};
-
-const removeFromWatchlist = async (
-  id: string,
-  token: string,
-  setWatchlist: SetState<boolean>
-): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/watchlist', {
-    method: 'DELETE',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-    body: JSON.stringify({ id }),
-  });
-
-  const body = await response.text();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    setWatchlist(false);
-  }
-};
+import {
+  useAddToSeen,
+  useRemoveFromSeen,
+  useAddToFavorites,
+  useRemoveFromFavorites,
+  useAddToWatchlist,
+  useRemoveFromWatchlist,
+} from '../../api';
 
 type Props = {
   movie: Movie;
@@ -166,12 +33,56 @@ export default function MovieActions({
   const [rating, setRating] = useState(0);
   const [showStars, setShowStars] = useState(false);
 
+  // TanStack Query mutations
+  const addToSeenMutation = useAddToSeen();
+  const removeFromSeenMutation = useRemoveFromSeen();
+  const addToFavoritesMutation = useAddToFavorites();
+  const removeFromFavoritesMutation = useRemoveFromFavorites();
+  const addToWatchlistMutation = useAddToWatchlist();
+  const removeFromWatchlistMutation = useRemoveFromWatchlist();
+
   useEffect(() => {
     setFavorite(includes(user.favorites, movie._id));
     setSeen(includes(user.seen, movie._id));
     setWatchlist(includes(user.watchlist, movie._id));
     setRating(find(user.ratings, ['movieId', movie._id])?.rating || 0);
-  }, []);
+  }, [user, movie._id]);
+
+  const handleSeenToggle = () => {
+    if (seen) {
+      removeFromSeenMutation.mutate(movie._id, {
+        onSuccess: () => setSeen(false),
+      });
+    } else {
+      addToSeenMutation.mutate(movie._id, {
+        onSuccess: () => setSeen(true),
+      });
+    }
+  };
+
+  const handleFavoriteToggle = () => {
+    if (favorite) {
+      removeFromFavoritesMutation.mutate(movie._id, {
+        onSuccess: () => setFavorite(false),
+      });
+    } else {
+      addToFavoritesMutation.mutate(movie._id, {
+        onSuccess: () => setFavorite(true),
+      });
+    }
+  };
+
+  const handleWatchlistToggle = () => {
+    if (watchlist) {
+      removeFromWatchlistMutation.mutate(movie._id, {
+        onSuccess: () => setWatchlist(false),
+      });
+    } else {
+      addToWatchlistMutation.mutate(movie._id, {
+        onSuccess: () => setWatchlist(true),
+      });
+    }
+  };
 
   const styles = StyleSheet.create({
     seenLabel: {
@@ -208,11 +119,7 @@ export default function MovieActions({
     <>
       <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
         <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity
-            onPress={() => seen
-              ? removeFromSeen(movie._id, token, setSeen)
-              : addToSeen(movie._id, token, setSeen)}
-          >
+          <TouchableOpacity onPress={handleSeenToggle}>
             <Icon
               name="eye"
               size={60}
@@ -234,11 +141,7 @@ export default function MovieActions({
           <Text style={styles.rateLabel}>Rate</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity
-            onPress={() => favorite
-              ? removeFromFavorites(movie._id, token, setFavorite)
-              : addToFavorites(movie._id, token, setFavorite)}
-          >
+          <TouchableOpacity onPress={handleFavoriteToggle}>
             <Icon
               name="heart"
               size={60}
@@ -249,11 +152,7 @@ export default function MovieActions({
           <Text style={styles.favLabel}>Favorite</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity
-            onPress={() => watchlist
-              ? removeFromWatchlist(movie._id, token, setWatchlist)
-              : addToWatchlist(movie._id, token, setWatchlist)}
-          >
+          <TouchableOpacity onPress={handleWatchlistToggle}>
             <Icon
               name="bookmark"
               size={60}
@@ -272,5 +171,5 @@ export default function MovieActions({
         onUpdateMovieRating={onUpdateMovieRating}
       />
     </>
-  )
+  );
 }

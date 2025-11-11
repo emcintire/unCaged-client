@@ -5,42 +5,17 @@ import {
   MaterialCommunityIcons, type MaterialCommunityIcons as MaterialCommunityIconsType,
 } from '@expo/vector-icons';
 import { EventRegister } from 'react-native-event-listeners';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { map } from 'lodash';
 import colors from '../../config/colors';
-import { showErrorToast } from '../../config/helperFunctions';
 import type { User } from '../../types';
+import { useCurrentUser } from '../../api';
 import HomeStackScreen from './HomeStackScreen';
 import WatchlistStackScreen from './WatchlistStackScreen';
 import SearchStackScreen from './SearchStackScreen';
 import RandomMovieStackScreen from './RandomMovieStackScreen';
 import AccountStackScreen from './AccountStackScreen';
-import { map } from 'lodash';
 
 const Tab = createMaterialBottomTabNavigator();
-
-const fetchData = async (setUser: React.Dispatch<React.SetStateAction<User | null>>) => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/users/', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'x-auth-token': token || '',
-      },
-    });
-
-    const body = await response.json();
-
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
-      setUser(body);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
 
 const screens: Array<{
   name: string;
@@ -71,20 +46,20 @@ const screens: Array<{
 ];
 
 export default function HomeStack() {
-  const [user, setUser] = useState<User | null>(null);
+  const { data: user, refetch } = useCurrentUser();
   const userImage = user?.img || '';
 
   useEffect(() => {
-    fetchData(setUser);
-
-    EventRegister.addEventListener('refreshPic', () => {
-      fetchData(setUser);
+    const listener = EventRegister.addEventListener('refreshPic', () => {
+      refetch();
     });
 
     return () => {
-      EventRegister.removeAllListeners();
+      if (typeof listener === 'string') {
+        EventRegister.removeEventListener(listener);
+      }
     };
-  }, []);
+  }, [refetch]);
 
   return (
     <NavigationContainer>
@@ -110,8 +85,8 @@ export default function HomeStack() {
               <screen.component
                 navigation={props.navigation}
                 userImage={userImage}
-                fetchData={fetchData}
-                setUser={setUser}
+                fetchData={refetch}
+                setUser={() => {}} // Deprecated: now handled by React Query
               />
             )}
           </Tab.Screen>

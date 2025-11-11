@@ -1,11 +1,11 @@
 import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Screen from '../components/Screen';
 import colors from '../config/colors';
-import { showErrorToast } from '../config/helperFunctions';
+import { showErrorToast, showSuccessToast } from '../config/helperFunctions';
 import { AppForm, AppFormField, PasswordInput, SubmitButton } from '../components/forms';
+import { useLogin } from '../api';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
@@ -19,28 +19,21 @@ type LoginFormValues = {
 
 export default function LoginScreen() {
   const navigate = useNavigate();
+  const loginMutation = useLogin();
 
   const handleSubmit = async (values: LoginFormValues): Promise<void> => {
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/users/login', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+    loginMutation.mutate({
+      email: values.email.toLowerCase(),
+      password: values.password,
+    }, {
+      onSuccess: () => {
+        showSuccessToast('Login successful!');
+        navigate('/home');
       },
-      body: JSON.stringify({
-        email: values.email.toLowerCase(),
-        password: values.password,
-      }),
+      onError: (error) => {
+        showErrorToast(error instanceof Error ? error.message : 'Login failed');
+      },
     });
-
-    const body = await response.text();
-
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
-      await AsyncStorage.setItem('token', body);
-      navigate('/home');
-    }
   };
 
   return (

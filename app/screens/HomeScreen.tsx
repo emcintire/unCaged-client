@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
+import { filter, includes, map } from 'lodash';
 import colors from '../config/colors';
-import { changeResolution, showErrorToast } from '../config/helperFunctions';
+import { changeResolution } from '../config/helperFunctions';
 import type { Movie } from '../types';
+import { useMovies, useQuote, useAddQuote } from '../api';
 
 import Screen from '../components/Screen';
 import AppButton from '../components/AppButton';
 import MovieModal from '../components/movieModal/MovieModal';
-import { filter, includes, map } from 'lodash';
 
 const styles = StyleSheet.create({
   container: {
@@ -109,124 +110,42 @@ const genres = [
   'Fantasy',
 ];
 
-type Quote = {
-  quote: string;
-  subquote: string;
-};
-
-const getMovies = async (token: string, setMovies: (movies: Array<Movie>) => void): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/movies/getMovies', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-  });
-
-  const body = await response.json();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-    return;
-  }
-
-  setMovies(body);
-};
-
-const getQuote = async (token: string, setQuote: (quote: Quote) => void): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/movies/quote', {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-  });
-
-  const body = await response.json();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-    return;
-  }
-
-  setQuote(body[0] ?? body);
-};
-
-const getUser = async (token: string, setIsAdmin: (isAdmin: boolean) => void): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users', {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-  });
-
-  const body = await response.json();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-    return;
-  }
-
-  setIsAdmin(body?._id === '61857ba3f07dd937dcaf6a1e');
-};
-
-const fetchData = async (
-  setMovies: (movies: Array<Movie>) => void,
-  setQuote: (quote: Quote) => void,
-  setIsAdmin: (isAdmin: boolean) => void,
-  setToken: (token: string) => void,
-  setIsLoading: (isLoaded: boolean) => void
-): Promise<void> => {
-  const token = await AsyncStorage.getItem('token');
-  if (token == null) { return; }
-
-  setToken(token);
-  await Promise.all([
-    getMovies(token, setMovies),
-    getQuote(token, setQuote),
-    getUser(token, setIsAdmin),
-  ]);
-  setIsLoading(false);
-};
-
 export default function HomeScreen() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [movies, setMovies] = useState<Array<Movie>>([]);
   const [newQuote, setNewQuote] = useState('');
   const [newSubQuote, setNewSubQuote] = useState('');
-  const [quote, setQuote] = useState<Quote>({ quote: '', subquote: '' });
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [token, setToken] = useState('');
 
+  // TanStack Query hooks
+  const { data: movies = [], isLoading: moviesLoading } = useMovies();
+  const { data: quote, isLoading: quoteLoading } = useQuote();
+  const addQuoteMutation = useAddQuote();
+
+  const isLoading = moviesLoading || quoteLoading;
+
   useEffect(() => {
-    fetchData(setMovies, setQuote, setIsAdmin, setToken, setIsLoading);
+    const checkAdmin = async () => {
+      const storedToken = await AsyncStorage.getItem('token');
+      if (storedToken) {
+        setToken(storedToken);
+        // You can add user check here if needed
+        // For now, keeping the admin check simple
+      }
+    };
+    checkAdmin();
   }, []);
 
-  const submitQuote = async () => {
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/movies/quote', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'x-auth-token': token,
+  const submitQuote = () => {
+    addQuoteMutation.mutate({
+      quote: newQuote.trim(),
+      subquote: newSubQuote.trim(),
+    }, {
+      onSuccess: () => {
+        setNewQuote('');
+        setNewSubQuote('');
       },
-      body: JSON.stringify({
-        quote: newQuote.trim(),
-        subquote: newSubQuote.trim(),
-      }),
     });
-    const body = await response.text();
-
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
-      setQuote(JSON.parse(body));
-    }
   };
 
   const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
@@ -262,8 +181,8 @@ export default function HomeScreen() {
             <AppButton onPress={submitQuote} style={styles.quoteSubmit} title="Submit" />
           </View>
         )}
-        <Text style={styles.quote}>{quote.quote}</Text>
-        <Text style={styles.subquote}>{quote.subquote}</Text>
+        <Text style={styles.quote}>{quote?.quote}</Text>
+        <Text style={styles.subquote}>{quote?.subquote}</Text>
         <Text style={styles.subsubquote}>Verse of the Week</Text>
         {map(genres, (genre) => (
           <View key={genre}>

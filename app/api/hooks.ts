@@ -1,0 +1,60 @@
+// Common hooks and utilities for TanStack Query
+
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { userKeys } from './controllers/users.controller';
+import { movieKeys } from './controllers/movies.controller';
+
+/**
+ * Hook to manually refetch user data
+ * Useful after actions that should refresh user info
+ */
+export const useRefetchUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: userKeys.detail() });
+    queryClient.invalidateQueries({ queryKey: userKeys.all });
+  }, [queryClient]);
+};
+
+/**
+ * Hook to manually refetch movies
+ * Useful after adding/editing movies
+ */
+export const useRefetchMovies = () => {
+  const queryClient = useQueryClient();
+  
+  return useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: movieKeys.lists() });
+  }, [queryClient]);
+};
+
+/**
+ * Hook to clear all caches (useful on logout)
+ */
+export const useClearCache = () => {
+  const queryClient = useQueryClient();
+  
+  return useCallback(() => {
+    queryClient.clear();
+  }, [queryClient]);
+};
+
+/**
+ * Hook to prefetch data (useful for improving perceived performance)
+ */
+export const usePrefetchMovie = () => {
+  const queryClient = useQueryClient();
+  
+  return useCallback(async (movieId: string) => {
+    // Prefetch average rating when hovering over a movie
+    await queryClient.prefetchQuery({
+      queryKey: movieKeys.avgRating(movieId),
+      queryFn: async () => {
+        const { apiClient } = await import('./client');
+        return apiClient.get(`/movies/avgRating/${movieId}`);
+      },
+    });
+  }, [queryClient]);
+};

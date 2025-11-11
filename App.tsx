@@ -5,10 +5,12 @@ import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
+import { QueryClientProvider } from '@tanstack/react-query';
 import WelcomeStack from './app/stacks/WelcomeStack';
 import HomeStack from './app/stacks/Home/HomeStack';
 import colors from './app/config/colors';
 import Icon from './app/components/Icon';
+import { queryClient } from './app/api/queryClient';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -84,17 +86,19 @@ function App() {
   if (isLoading) { return null; }
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <GestureHandlerRootView>
-        <NativeRouter>
-          <Routes>
-            <Route path="/" element={<WelcomeStack />} />
-            <Route path="/home" element={<HomeStack />} />
-          </Routes>
-          <Toast config={toastConfig} />
-        </NativeRouter>
-      </GestureHandlerRootView>
-    </View>
+    <QueryClientProvider client={queryClient}>
+      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        <GestureHandlerRootView>
+          <NativeRouter>
+            <Routes>
+              <Route path="/" element={<WelcomeStack />} />
+              <Route path="/home" element={<HomeStack />} />
+            </Routes>
+            <Toast config={toastConfig} />
+          </NativeRouter>
+        </GestureHandlerRootView>
+      </View>
+    </QueryClientProvider>
   );
 }
 
