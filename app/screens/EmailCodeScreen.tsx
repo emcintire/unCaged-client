@@ -1,12 +1,12 @@
 import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigate } from 'react-router-native';
-
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Screen from '../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../components/forms';
 import colors from '../config/colors';
 import { showErrorToast } from '../config/helperFunctions';
+import type { WelcomeStackParamList } from '../types';
 
 const validationSchema = Yup.object().shape({
   code: Yup.string().required().label('Code'),
@@ -16,9 +16,9 @@ type EmailCodeFormValues = {
   code: string;
 };
 
-export default function EmailCodeScreen() {
-  const navigate = useNavigate();
-  
+export default function EmailCodeScreen({
+  navigation,
+}: NativeStackScreenProps<WelcomeStackParamList, 'EmailCode'>) {
   const handleSubmit = async (values: EmailCodeFormValues) => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -39,7 +39,7 @@ export default function EmailCodeScreen() {
       if (response.status !== 200) {
         showErrorToast(body);
       } else {
-        navigate('/passwordReset');
+        navigation.navigate('PasswordReset');
       }
     } catch (err) {
       console.log(err);

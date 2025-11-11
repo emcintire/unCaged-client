@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { TouchableOpacity, View, Image } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { map } from 'lodash';
 import colors from '../../config/colors';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
 import RandomMovieScreen from '../../screens/RandomMovieScreen';
@@ -14,6 +15,42 @@ type Props = {
   fetchData: (setUser: React.Dispatch<React.SetStateAction<User | null>>) => void;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 };
+
+const screens: Array<{
+  name: string;
+  component: ComponentType<any>;
+  options: (props: Props) => NativeStackNavigationOptions;
+}> = [
+  {
+    name: 'Random',
+    component: RandomMovieScreen,
+    options: ({ navigation, userImage, fetchData, setUser }) => ({
+      headerLeft: () => <SmallLogo width={100} height={20} />,
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            fetchData(setUser);
+            navigation.navigate('SettingsTab');
+          }}
+        >
+          <Image
+            source={{ uri: userImage }}
+            style={{
+              width: 35,
+              height: 35,
+              borderRadius: 17.5,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 20,
+      },
+    }),
+  },
+];
 
 export default function RandomMovieStackScreen({
   navigation,
@@ -32,35 +69,14 @@ export default function RandomMovieStackScreen({
           headerBackTitleVisible: false,
         }}
       >
-        <Random_Stack.Screen
-          name="Random"
-          component={RandomMovieScreen}
-          options={{
-            headerLeft: () => <SmallLogo width={100} height={20} />,
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => {
-                  fetchData(setUser);
-                  navigation.navigate('SettingsTab');
-                }}
-              >
-                <Image
-                  source={{ uri: userImage }}
-                  style={{
-                    width: 35,
-                    height: 35,
-                    borderRadius: 17.5,
-                  }}
-                />
-              </TouchableOpacity>
-            ),
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 20,
-            },
-          }}
-        />
+        {map(screens, (screen) => (
+          <Random_Stack.Screen
+            key={screen.name}
+            name={screen.name}
+            component={screen.component}
+            options={screen.options({ navigation, userImage, fetchData, setUser })}
+          />
+        ))}
       </Random_Stack.Navigator>
     </View>
   );

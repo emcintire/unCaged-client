@@ -120,6 +120,7 @@ const getMovies = async (token: string, setMovies: (movies: Array<Movie>) => voi
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      'x-auth-token': token,
     },
   });
 
@@ -181,9 +182,7 @@ const fetchData = async (
   setIsLoading: (isLoaded: boolean) => void
 ): Promise<void> => {
   const token = await AsyncStorage.getItem('token');
-  if (!token) {
-    return;
-  }
+  if (token == null) { return; }
 
   setToken(token);
   await Promise.all([

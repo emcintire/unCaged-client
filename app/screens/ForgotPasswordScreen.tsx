@@ -1,12 +1,13 @@
 import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigate } from 'react-router-native';
 
 import Screen from '../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../components/forms';
 import colors from '../config/colors';
 import { showErrorToast } from '../config/helperFunctions';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { WelcomeStackParamList } from '../types';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
@@ -18,7 +19,7 @@ type ForgotPasswordFormValues = {
 
 const handleSubmit = async (
   values: ForgotPasswordFormValues,
-  navigate: (route: string) => void
+  navigation: NativeStackScreenProps<WelcomeStackParamList, 'ForgotPassword'>['navigation']
 ) => {
   const response = await fetch('https://uncaged-server.herokuapp.com/api/users/forgotPassword', {
     method: 'POST',
@@ -37,20 +38,20 @@ const handleSubmit = async (
     showErrorToast(body);
   } else {
     await AsyncStorage.setItem('token', body);
-    navigate('/emailCode');
+    navigation.navigate('EmailCode');
   }
 };
 
-export default function ForgotPasswordScreen() {
-  const navigate = useNavigate();
-  
+export default function ForgotPasswordScreen({
+  navigation,
+}: NativeStackScreenProps<WelcomeStackParamList, 'ForgotPassword'>) {
   return (
     <Screen style={styles.container}>
       <Text style={styles.tagline}>Reset Password</Text>
       <View style={styles.formContainer}>
         <AppForm<ForgotPasswordFormValues>
           initialValues={{ email: '' }}
-          onSubmit={(values) => handleSubmit(values, navigate)}
+          onSubmit={(values) => handleSubmit(values, navigation)}
           validationSchema={validationSchema}
         >
           <AppFormField<ForgotPasswordFormValues>

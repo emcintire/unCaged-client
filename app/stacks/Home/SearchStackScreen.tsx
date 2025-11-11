@@ -1,19 +1,56 @@
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { TouchableOpacity, View, Image } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { map } from 'lodash';
 import colors from '../../config/colors';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
 import SearchScreen from '../../screens/SearchScreen';
-import type { User } from '../../types';
+import type { SetState, User } from '../../types';
 
 const Search_Stack = createNativeStackNavigator();
 
 type Props = {
   navigation: { navigate: (route: string) => void };
   userImage: string;
-  fetchData: (setUser: React.Dispatch<React.SetStateAction<User | null>>) => void;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  fetchData: (setUser: SetState<User | null>) => void;
+  setUser: SetState<User | null>;
 };
+
+const screens: Array<{
+  name: string;
+  component: ComponentType<any>;
+  options: (props: Props) => NativeStackNavigationOptions;
+}> = [
+  {
+    name: 'Search',
+    component: SearchScreen,
+    options: ({ navigation, userImage, fetchData, setUser }) => ({
+      headerLeft: () => <SmallLogo width={100} height={20} />,
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            fetchData(setUser);
+            navigation.navigate('SettingsTab');
+          }}
+        >
+          <Image
+            source={{ uri: userImage }}
+            style={{
+              width: 35,
+              height: 35,
+              borderRadius: 17.5,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 22,
+      },
+    }),
+  },
+];
 
 export default function SearchStackScreen({ navigation, userImage, fetchData, setUser }: Props) {
   return (
@@ -27,35 +64,14 @@ export default function SearchStackScreen({ navigation, userImage, fetchData, se
           headerBackTitleVisible: false,
         }}
       >
-        <Search_Stack.Screen
-          name="Search"
-          component={SearchScreen}
-          options={{
-            headerLeft: () => <SmallLogo width={100} height={20} />,
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => {
-                  fetchData(setUser);
-                  navigation.navigate('SettingsTab');
-                }}
-              >
-                <Image
-                  source={{ uri: userImage }}
-                  style={{
-                    width: 35,
-                    height: 35,
-                    borderRadius: 17.5,
-                  }}
-                />
-              </TouchableOpacity>
-            ),
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 22,
-            },
-          }}
-        />
+        {map(screens, (screen) => (
+          <Search_Stack.Screen
+            key={screen.name}
+            name={screen.name}
+            component={screen.component}
+            options={screen.options({ navigation, userImage, fetchData, setUser })}
+          />
+        ))}
       </Search_Stack.Navigator>
     </View>
   );

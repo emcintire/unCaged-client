@@ -11,7 +11,9 @@ import PicturePicker from '../components/PicturePicker';
 import { AppForm, AppFormField, SubmitButton } from '../components/forms';
 import { showErrorToast, showSuccessToast } from '../config/helperFunctions';
 import { User } from '../types';
-import { NavigateFunction, useNavigate } from 'react-router-native';
+import { NavigateFunction } from 'react-router-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { HomeStackParamList } from '../types/homeStackParamList';
 
 type FormValues = {
   name: string;
@@ -19,7 +21,7 @@ type FormValues = {
 };
 
 const handleSubmit = async (
-  navigate: NavigateFunction,
+  navigation: NativeStackScreenProps<HomeStackParamList, 'SettingsTab'>['navigation'],
   values: FormValues,
   user: User,
   token: string
@@ -45,7 +47,7 @@ const handleSubmit = async (
   if (response.status !== 200) {
     showErrorToast(body);
   } else {
-    navigate('Settings');
+    navigation.navigate('SettingsTab');
     EventRegister.emit('refreshPic');
     showSuccessToast();
   }
@@ -84,13 +86,13 @@ const getData = async (
   }
 };
 
-export default function AccountDetailsScreen() {
+export default function AccountDetailsScreen({
+  navigation,
+}: NativeStackScreenProps<HomeStackParamList, 'SettingsTab'>) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     getData(setUser, setIsLoading, setToken);
@@ -125,7 +127,7 @@ export default function AccountDetailsScreen() {
       <View style={styles.formContainer}>
         <AppForm<FormValues>
           initialValues={{ name: user!.name, email: user!.email }}
-          onSubmit={(values) => handleSubmit(navigate, values, user!, token)}
+          onSubmit={(values) => handleSubmit(navigation, values, user!, token)}
           validationSchema={validationSchema}
         >
           <AppFormField<FormValues> icon="account" name="name" textContentType="name" />

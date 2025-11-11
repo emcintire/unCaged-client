@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { TouchableOpacity, View, Image } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { map } from 'lodash';
 import colors from '../../config/colors';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
 import HomeScreen from '../../screens/HomeScreen';
@@ -15,6 +16,42 @@ type Props = {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 };
 
+const screens: Array<{
+  name: string;
+  component: ComponentType<any>;
+  options: (props: Props) => NativeStackNavigationOptions;
+}> = [
+  {
+    name: 'Home',
+    component: HomeScreen,
+    options: ({ navigation, userImage, fetchData, setUser }) => ({
+      headerLeft: () => <SmallLogo width={100} height={20} />,
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            fetchData(setUser);
+            navigation.navigate('SettingsTab');
+          }}
+        >
+          <Image
+            source={{ uri: userImage }}
+            style={{
+              width: 35,
+              height: 35,
+              borderRadius: 17.5,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 22,
+      },
+    }),
+  },
+];
+
 export default function HomeStackScreen({ navigation, userImage, fetchData, setUser }: Props) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -27,35 +64,14 @@ export default function HomeStackScreen({ navigation, userImage, fetchData, setU
           headerBackTitleVisible: false,
         }}
       >
-        <Home_Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            headerLeft: () => <SmallLogo width={100} height={20} />,
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => {
-                  fetchData(setUser);
-                  navigation.navigate('SettingsTab');
-                }}
-              >
-                <Image
-                  source={{ uri: userImage }}
-                  style={{
-                    width: 35,
-                    height: 35,
-                    borderRadius: 17.5,
-                  }}
-                />
-              </TouchableOpacity>
-            ),
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 22,
-            },
-          }}
-        />
+        {map(screens, (screen) => (
+          <Home_Stack.Screen
+            key={screen.name}
+            name={screen.name}
+            component={screen.component}
+            options={screen.options({ navigation, userImage, fetchData, setUser })}
+          />
+        ))}
       </Home_Stack.Navigator>
     </View>
   );

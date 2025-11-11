@@ -59,7 +59,7 @@ const toastConfig = {
 };
 
 function App() {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function prepare() {
@@ -68,7 +68,7 @@ function App() {
       } catch (e) {
         console.warn(e);
       } finally {
-        setIsLoaded(true);
+        setIsLoading(false);
       }
     }
 
@@ -76,14 +76,12 @@ function App() {
   }, []);
 
   const onLayoutRootView = useCallback(async () => {
-    if (isLoaded) {
+    if (!isLoading) {
       await SplashScreen.hideAsync();
     }
-  }, [isLoaded]);
+  }, [isLoading]);
 
-  if (!isLoaded) {
-    return null;
-  }
+  if (isLoading) { return null; }
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>

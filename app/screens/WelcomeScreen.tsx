@@ -7,9 +7,9 @@ import AppButton from '../components/AppButton';
 import colors from '../config/colors';
 import Logo from '../assets/imgs/logo.svg';
 import Screen from '../components/Screen';
-import type { RootStackParamList } from '../types';
+import type { WelcomeStackParamList } from '../types';
 
-export default function WelcomeScreen({ navigation }: NativeStackScreenProps<RootStackParamList, 'Welcome'>) {
+export default function WelcomeScreen({ navigation }: NativeStackScreenProps<WelcomeStackParamList, 'Welcome'>) {
   const navigate = useNavigate();
 
   useEffect(() => {

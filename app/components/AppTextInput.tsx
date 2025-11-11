@@ -1,7 +1,8 @@
 import { View, TextInput, StyleSheet } from 'react-native';
 import type { TextInputProps, DimensionValue } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
+import {
+  MaterialCommunityIcons, type MaterialCommunityIcons as MaterialCommunityIconsType,
+} from '@expo/vector-icons';
 import defaultStyles from '../config/styles';
 
 type Props = TextInputProps & {

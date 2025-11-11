@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { TouchableOpacity, View, Image } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { map } from 'lodash';
 import colors from '../../config/colors';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
 import AccountScreen from '../../screens/AccountScreen';
@@ -12,8 +13,9 @@ import AboutScreen from '../../screens/AboutScreen';
 import RatingsScreen from '../../screens/RatingsScreen';
 import PrivacyPolicyScreen from '../../screens/PrivacyPolicy';
 import type { User } from '../../types';
+import { SettingsTabParamList } from '../../types/homeStackParamList';
 
-const Settings_Stack = createNativeStackNavigator();
+const Settings_Stack = createNativeStackNavigator<SettingsTabParamList>();
 
 type Props = {
   navigation: { navigate: (route: string) => void };
@@ -21,6 +23,159 @@ type Props = {
   fetchData: (setUser: React.Dispatch<React.SetStateAction<User | null>>) => void;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 };
+
+const screens: Array<{
+  name: keyof SettingsTabParamList;
+  component: ComponentType<any>;
+  options: (props: Props) => NativeStackNavigationOptions;
+}> = [
+  {
+    name: 'Settings',
+    component: AccountScreen,
+    options: ({ navigation, userImage, fetchData, setUser }) => ({
+      headerLeft: () => <SmallLogo width={100} height={20} />,
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            fetchData(setUser);
+            navigation.navigate('SettingsTab');
+          }}
+        >
+          <Image
+            source={{ uri: userImage }}
+            style={{
+              width: 35,
+              height: 35,
+              borderRadius: 17.5,
+            }}
+          />
+        </TouchableOpacity>
+      ),
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 20,
+      },
+    }),
+  },
+  {
+    name: 'My Account',
+    component: AccountDetailsScreen,
+    options: () => ({
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 20,
+      },
+    }),
+  },
+  {
+    name: 'Favorites',
+    component: FavoritesScreen,
+    options: ({ userImage }) => ({
+      headerRight: () => (
+        <Image
+          source={{ uri: userImage }}
+          style={{
+            width: 35,
+            height: 35,
+            borderRadius: 17.5,
+          }}
+        />
+      ),
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 20,
+      },
+    }),
+  },
+  {
+    name: 'Seen',
+    component: SeenScreen,
+    options: ({ userImage }) => ({
+      headerRight: () => (
+        <Image
+          source={{ uri: userImage }}
+          style={{
+            width: 35,
+            height: 35,
+            borderRadius: 17.5,
+          }}
+        />
+      ),
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 20,
+      },
+    }),
+  },
+  {
+    name: 'Ratings',
+    component: RatingsScreen,
+    options: ({ userImage }) => ({
+      headerRight: () => (
+        <Image
+          source={{ uri: userImage }}
+          style={{
+            width: 35,
+            height: 35,
+            borderRadius: 17.5,
+          }}
+        />
+      ),
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 20,
+      },
+    }),
+  },
+  {
+    name: 'Security',
+    component: SecurityScreen,
+    options: ({ userImage }) => ({
+      headerRight: () => (
+        <Image
+          source={{ uri: userImage }}
+          style={{
+            width: 35,
+            height: 35,
+            borderRadius: 17.5,
+          }}
+        />
+      ),
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 20,
+      },
+    }),
+  },
+  {
+    name: 'About',
+    component: AboutScreen,
+    options: () => ({
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 20,
+      },
+    }),
+  },
+  {
+    name: 'Privacy Policy',
+    component: PrivacyPolicyScreen,
+    options: () => ({
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 20,
+      },
+    }),
+  },
+];
 
 export default function AccountStackScreen({ navigation, userImage, fetchData, setUser }: Props) {
   return (
@@ -34,152 +189,14 @@ export default function AccountStackScreen({ navigation, userImage, fetchData, s
           headerBackTitleVisible: false,
         }}
       >
-        <Settings_Stack.Screen
-          name="Settings"
-          component={AccountScreen}
-          options={{
-            headerLeft: () => <SmallLogo width={100} height={20} />,
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => {
-                  fetchData(setUser);
-                  navigation.navigate('SettingsTab');
-                }}
-              >
-                <Image
-                  source={{ uri: userImage }}
-                  style={{
-                    width: 35,
-                    height: 35,
-                    borderRadius: 17.5,
-                  }}
-                />
-              </TouchableOpacity>
-            ),
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 20,
-            },
-          }}
-        />
-        <Settings_Stack.Screen
-          name="My Account"
-          component={AccountDetailsScreen}
-          options={{
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 20,
-            },
-          }}
-        />
-        <Settings_Stack.Screen
-          name="Favorites"
-          component={FavoritesScreen}
-          options={{
-            headerRight: () => (
-              <Image
-                source={{ uri: userImage }}
-                style={{
-                  width: 35,
-                  height: 35,
-                  borderRadius: 17.5,
-                }}
-              />
-            ),
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 20,
-            },
-          }}
-        />
-        <Settings_Stack.Screen
-          name="Seen"
-          component={SeenScreen}
-          options={{
-            headerRight: () => (
-              <Image
-                source={{ uri: userImage }}
-                style={{
-                  width: 35,
-                  height: 35,
-                  borderRadius: 17.5,
-                }}
-              />
-            ),
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 20,
-            },
-          }}
-        />
-        <Settings_Stack.Screen
-          name="Ratings"
-          component={RatingsScreen}
-          options={{
-            headerRight: () => (
-              <Image
-                source={{ uri: userImage }}
-                style={{
-                  width: 35,
-                  height: 35,
-                  borderRadius: 17.5,
-                }}
-              />
-            ),
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 20,
-            },
-          }}
-        />
-        <Settings_Stack.Screen
-          name="Security"
-          component={SecurityScreen}
-          options={{
-            headerRight: () => (
-              <Image
-                source={{ uri: userImage }}
-                style={{
-                  width: 35,
-                  height: 35,
-                  borderRadius: 17.5,
-                }}
-              />
-            ),
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 20,
-            },
-          }}
-        />
-        <Settings_Stack.Screen
-          name="About"
-          component={AboutScreen}
-          options={{
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 20,
-            },
-          }}
-        />
-        <Settings_Stack.Screen
-          name="Privacy Policy"
-          component={PrivacyPolicyScreen}
-          options={{
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 20,
-            },
-          }}
-        />
+        {map(screens, (screen) => (
+          <Settings_Stack.Screen
+            key={screen.name}
+            name={screen.name}
+            component={screen.component}
+            options={screen.options({ navigation, userImage, fetchData, setUser })}
+          />
+        ))}
       </Settings_Stack.Navigator>
     </View>
   );

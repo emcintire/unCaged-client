@@ -10,8 +10,9 @@ import colors from '../config/colors';
 import Icon from '../components/Icon';
 import { NavigateFunction, useNavigate } from 'react-router-native';
 import { showErrorToast, showSuccessToast } from '../config/helperFunctions';
-import { SetState, User } from '../types';
+import { HomeStackParamList, SetState, SettingsTabParamList, User } from '../types';
 import { map } from 'lodash';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 const fetchData = async (setUser: SetState<User | null>, setLoading: SetState<boolean>) => {
   try {
@@ -93,25 +94,25 @@ const handleLogOut = (navigate: NavigateFunction) => {
 
 const accountItems: Array<{
   children?: ReactNode;
-  title: string;
+  title: keyof SettingsTabParamList;
   iconName: keyof typeof MaterialCommunityIconsType.glyphMap;
   iconColor: string;
 }> = [
   {
     children: <Separator />,
-    title: 'My Seen',
+    title: 'Seen',
     iconName: 'eye',
     iconColor: colors.orange,
   },
   {
     children: <Separator />,
-    title: 'My Favorites',
+    title: 'Favorites',
     iconName: 'heart',
     iconColor: colors.orange,
   },
   {
     children: <View style={{ height: 20, backgroundColor: colors.bg }} />,
-    title: 'My Ratings',
+    title: 'Ratings',
     iconName: 'star',
     iconColor: colors.orange,
   },
@@ -134,7 +135,9 @@ const accountItems: Array<{
   },
 ];
 
-export default function AccountScreen() {
+export default function AccountScreen({
+  navigation,
+}: NativeStackScreenProps<SettingsTabParamList, 'My Account'>) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -149,7 +152,7 @@ export default function AccountScreen() {
       <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
         <View style={styles.container}>
           <ListItem
-            onPress={() => navigate('My Account')}
+            onPress={() => navigation.navigate('My Account')}
             title={user!.name}
             subTitle={user!.email}
             image={{ uri: user!.img }}
@@ -160,9 +163,11 @@ export default function AccountScreen() {
           {map(accountItems, (item) => (
             <>
               <ListItem
-                onPress={() => navigate(item.title)}
+                onPress={() => navigation.navigate(item.title)}
                 title={item.title}
-                IconComponent={<Icon name={item.iconName} iconColor={item.iconColor} backgroundColor={colors.bg} />}
+                IconComponent={(
+                  <Icon name={item.iconName} iconColor={item.iconColor} backgroundColor={colors.bg} />
+                )}
               />
               {item.children}
             </>

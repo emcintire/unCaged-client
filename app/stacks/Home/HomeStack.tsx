@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { ComponentType, useEffect, useState } from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import {
+  MaterialCommunityIcons, type MaterialCommunityIcons as MaterialCommunityIconsType,
+} from '@expo/vector-icons';
 import { EventRegister } from 'react-native-event-listeners';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from '../../config/colors';
@@ -12,6 +14,7 @@ import WatchlistStackScreen from './WatchlistStackScreen';
 import SearchStackScreen from './SearchStackScreen';
 import RandomMovieStackScreen from './RandomMovieStackScreen';
 import AccountStackScreen from './AccountStackScreen';
+import { map } from 'lodash';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -39,6 +42,34 @@ const fetchData = async (setUser: React.Dispatch<React.SetStateAction<User | nul
   }
 };
 
+const screens: Array<{
+  name: string;
+  component: ComponentType<any>;
+  icon: keyof typeof MaterialCommunityIconsType.glyphMap;
+}> = [
+  {
+    name: 'HomeTab',
+    component: HomeStackScreen,
+    icon: 'home',
+  }, {
+    name: 'WatchlistTab',
+    component: WatchlistStackScreen,
+    icon: 'bookmark',
+  }, {
+    name: 'SearchTab',
+    component: SearchStackScreen,
+    icon: 'magnify',
+  }, {
+    name: 'RandomTab',
+    component: RandomMovieStackScreen,
+    icon: 'dice-3',
+  }, {
+    name: 'SettingsTab',
+    component: AccountStackScreen,
+    icon: 'cog',
+  },
+];
+
 export default function HomeStack() {
   const [user, setUser] = useState<User | null>(null);
   const userImage = user?.img || '';
@@ -65,91 +96,26 @@ export default function HomeStack() {
         shifting={true}
         labeled={false}
       >
-        <Tab.Screen
-          name="HomeTab"
-          options={{
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="home" color={color} size={28} />
-            ),
-          }}
-        >
-          {(props) => (
-            <HomeStackScreen
-              navigation={props.navigation}
-              userImage={userImage}
-              fetchData={fetchData}
-              setUser={setUser}
-            />
-          )}
-        </Tab.Screen>
-        <Tab.Screen
-          name="WatchlistTab"
-          options={{
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="bookmark" color={color} size={28} />
-            ),
-          }}
-        >
-          {(props) => (
-            <WatchlistStackScreen
-              navigation={props.navigation}
-              userImage={userImage}
-              fetchData={fetchData}
-              setUser={setUser}
-            />
-          )}
-        </Tab.Screen>
-        <Tab.Screen
-          name="SearchTab"
-          options={{
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="magnify" color={color} size={28} />
-            ),
-          }}
-        >
-          {(props) => (
-            <SearchStackScreen
-              navigation={props.navigation}
-              userImage={userImage}
-              fetchData={fetchData}
-              setUser={setUser}
-            />
-          )}
-        </Tab.Screen>
-        <Tab.Screen
-          name="RandomTab"
-          options={{
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="dice-3" color={color} size={28} />
-            ),
-          }}
-        >
-          {(props) => (
-            <RandomMovieStackScreen
-              navigation={props.navigation}
-              userImage={userImage}
-              fetchData={fetchData}
-              setUser={setUser}
-            />
-          )}
-        </Tab.Screen>
-        <Tab.Screen
-          name="SettingsTab"
-          options={{
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="cog" color={color} size={28} />
-            ),
-          }}
-        >
-          {(props) => (
-            <AccountStackScreen
-              navigation={props.navigation}
-              userImage={userImage}
-              fetchData={fetchData}
-              setUser={setUser}
-            />
-          )}
-        </Tab.Screen>
+        {map(screens, (screen) => (
+          <Tab.Screen
+            key={screen.name}
+            name={screen.name}
+            options={{
+              tabBarIcon: ({ color }) => (
+                <MaterialCommunityIcons name={screen.icon} color={color} size={28} />
+              ),
+            }}
+          >
+            {(props) => (
+              <screen.component
+                navigation={props.navigation}
+                userImage={userImage}
+                fetchData={fetchData}
+                setUser={setUser}
+              />
+            )}
+          </Tab.Screen>
+        ))}
       </Tab.Navigator>
     </NavigationContainer>
   );
