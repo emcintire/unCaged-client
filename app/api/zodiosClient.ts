@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { userApi } from './controllers/users.controller';
 import { movieApi } from './controllers/movies.controller';
-import { showErrorToast } from '../config/helperFunctions';
 
 const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl;
 
@@ -25,7 +24,6 @@ baseClient.axios.interceptors.request.use(async (config) => {
 baseClient.axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    showErrorToast(error.message);
     return Promise.reject(error);
   }
 );

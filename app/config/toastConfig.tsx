@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   notificationText: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Montserrat-Medium',
     color: colors.bg,
     paddingLeft: 10,

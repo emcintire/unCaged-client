@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-native';
 
 import Screen from '../../components/Screen';
 import { AppForm, SubmitButton } from '../../components/forms';
-import colors from '../../config/colors';
 import PasswordInput from '../../components/forms/PasswordInput';
 import { showErrorToast } from '../../config/helperFunctions';
 import { useChangePassword } from '../../api/controllers/users.controller';
@@ -29,9 +28,7 @@ export default function PasswordResetScreen() {
 
   const handleSubmit = async (values: PasswordResetFormValues) => {
     try {
-      await changePasswordMutation.mutateAsync({
-        password: values.password,
-      });
+      await changePasswordMutation.mutateAsync({ password: values.password });
       navigate('/home');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to reset password';
@@ -59,9 +56,6 @@ export default function PasswordResetScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 15,
-    backgroundColor: colors.bg,
-    height: '100%',
-    width: '100%',
     alignItems: 'center',
   },
   submitButton: {

@@ -14,6 +14,8 @@ export default function ErrorMessage({ error, visible }: Props) {
 
 const styles = StyleSheet.create({
   error: {
+    fontSize: 14,
+    paddingLeft: 10,
     color: '#ff4949',
   },
 });

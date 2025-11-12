@@ -58,7 +58,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <Screen>
+    <Screen style={styles.container}>
       <View style={styles.formContainer}>
         <AppForm<RegisterFormValues>
           initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
@@ -95,6 +95,9 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 15,
+  },
   scrollContainer: {
     height: '100%',
     width: '100%',

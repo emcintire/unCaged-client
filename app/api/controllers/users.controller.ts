@@ -97,7 +97,7 @@ export const userApi = makeApi([
     response: TokenResponseSchema,
   }, {
     method: 'post',
-    path: '/forgotPassword',
+    path: '/forgotpassword',
     alias: 'forgotPassword',
     parameters: [
       {
@@ -306,7 +306,11 @@ export const useRegister = () => {
 
 export const useForgotPassword = () => {
   return useMutation({
-    mutationFn: (data: { email: string }) => zodiosClient.forgotPassword(data),
+    mutationFn: async (data: { email: string }) => {
+      const test = await zodiosClient.forgotPassword(data);
+      console.log('Forgot password response:', test);
+      return test;
+    },
     onSuccess: async (token: string) => {
       await AsyncStorage.setItem('token', token);
     },

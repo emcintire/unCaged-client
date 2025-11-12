@@ -24,13 +24,10 @@ export default function EmailCodeScreen() {
 
   const handleSubmit = async (values: EmailCodeFormValues) => {
     try {
-      await checkCodeMutation.mutateAsync({
-        code: values.code,
-      });
+      await checkCodeMutation.mutateAsync({ code: values.code });
       navigate('Password Reset');
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Invalid code';
-      showErrorToast(message);
+    } catch {
+      showErrorToast('Invalid code');
     }
   };
 
@@ -61,7 +58,6 @@ export default function EmailCodeScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 15,
-    alignItems: 'center',
   },
   submitButton: {
     marginTop: 30,

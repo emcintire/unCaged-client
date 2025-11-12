@@ -4,8 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useForgotPassword } from '../../api/controllers/users.controller';
-import colors from '../../config/colors';
-import { showErrorToast } from '../../config/helperFunctions';
+import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
 import type { WelcomeStackParamList } from '../../types';
 import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
 import Screen from '../../components/Screen';
@@ -25,13 +24,14 @@ export default function ForgotPasswordScreen() {
 
   const handleSubmit = async (values: ForgotPasswordFormValues) => {
     try {
-      await forgotPasswordMutation.mutateAsync({
-        email: trim(toLower(values.email)),
-      });
-      navigate('Email Code');
+      const email = toLower(trim(values.email));
+      await forgotPasswordMutation.mutateAsync({ email });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to send reset email';
       showErrorToast(message);
+    } finally {
+      showSuccessToast('If you have an account, a reset code has been sent to your email.');
+      navigate('Email Code');
     }
   };
 
@@ -62,11 +62,6 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 15,
-    paddingTop: 0,
-    backgroundColor: colors.bg,
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
   },
   submitButton: { marginTop: 30 },
   formContainer: { width: '100%', top: 15 },
