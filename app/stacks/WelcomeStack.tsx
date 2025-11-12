@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import React, { type ComponentType } from 'react';
 import { View } from 'react-native';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -13,12 +13,13 @@ import colors from '../config/colors';
 import SmallLogo from '../assets/imgs/small_logo.svg';
 import type { WelcomeStackParamList } from '../types/welcomeStackParamList';
 import { map } from 'lodash';
+import { screenOptions } from './Home/screenOptions';
 
 const Welcome_Stack = createNativeStackNavigator<WelcomeStackParamList>();
 
-const screens: Array<{
+const screens: ReadonlyArray<{
   name: keyof WelcomeStackParamList;
-  component: ComponentType<any>;
+  component: ComponentType<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   icon: keyof typeof MaterialCommunityIconsType.glyphMap;
   titleWidth?: number;
 }> = [
@@ -58,13 +59,7 @@ export default function WelcomeStack() {
   return (
     <NavigationContainer>
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <Welcome_Stack.Navigator
-          screenOptions={{
-            headerStyle: { backgroundColor: colors.black },
-            headerTintColor: '#fff',
-            headerBackTitleVisible: false,
-          }}
-        >
+        <Welcome_Stack.Navigator screenOptions={screenOptions}>
           {map(screens, (screen) => (
             <Welcome_Stack.Screen
               key={screen.name}

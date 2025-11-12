@@ -1,35 +1,33 @@
 import React, { ComponentType } from 'react';
-import { TouchableOpacity, View, Image } from 'react-native';
-import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { TouchableOpacity, Image } from 'react-native';
+import { createNativeStackNavigator, NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { map } from 'lodash';
-import colors from '../../config/colors';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
 import HomeScreen from '../../screens/HomeScreen';
-import type { User } from '../../types';
+import { useCurrentUser } from '../../api/controllers/users.controller';
+import type { HomeStackParamList } from '../../types';
+import { screenOptions } from './screenOptions';
 
-const Home_Stack = createNativeStackNavigator();
+const HomeStackNavigator = createNativeStackNavigator();
 
 type Props = {
-  navigation: { navigate: (route: string) => void };
-  userImage: string;
-  fetchData: (setUser: React.Dispatch<React.SetStateAction<User | null>>) => void;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  navigation: NativeStackScreenProps<HomeStackParamList, 'HomeTab'>['navigation'];
 };
 
 const screens: Array<{
   name: string;
-  component: ComponentType<any>;
-  options: (props: Props) => NativeStackNavigationOptions;
+  component: ComponentType<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  options: (props: Props & { userImage: string; refetch: () => void }) => NativeStackNavigationOptions;
 }> = [
   {
     name: 'Home',
     component: HomeScreen,
-    options: ({ navigation, userImage, fetchData, setUser }) => ({
-      headerLeft: () => <SmallLogo width={100} height={20} />,
+    options: ({ navigation, userImage, refetch }) => ({
+      headerLeft: () => <SmallLogo width={80} height={20} />,
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            fetchData(setUser);
+            refetch();
             navigation.navigate('SettingsTab');
           }}
         >
@@ -52,27 +50,20 @@ const screens: Array<{
   },
 ];
 
-export default function HomeStackScreen({ navigation, userImage, fetchData, setUser }: Props) {
+export default function HomeStackScreen({ navigation }: Props) {
+  const { data: user, refetch } = useCurrentUser();
+  const userImage = user?.img || '';
+
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <Home_Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: colors.black,
-          },
-          headerTintColor: '#fff',
-          headerBackTitleVisible: false,
-        }}
-      >
-        {map(screens, (screen) => (
-          <Home_Stack.Screen
-            key={screen.name}
-            name={screen.name}
-            component={screen.component}
-            options={screen.options({ navigation, userImage, fetchData, setUser })}
-          />
-        ))}
-      </Home_Stack.Navigator>
-    </View>
+    <HomeStackNavigator.Navigator screenOptions={screenOptions}>
+      {map(screens, (screen) => (
+        <HomeStackNavigator.Screen
+          key={screen.name}
+          name={screen.name}
+          component={screen.component}
+          options={screen.options({ navigation, userImage, refetch })}
+        />
+      ))}
+    </HomeStackNavigator.Navigator>
   );
 }

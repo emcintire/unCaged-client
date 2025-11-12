@@ -1,77 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Text, Modal, TouchableOpacity } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { map } from 'lodash';
 
-import { changeResolution, showErrorToast } from '../config/helperFunctions';
+import { changeResolution } from '../config/helperFunctions';
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import MovieModal from '../components/movieModal/MovieModal';
-import Loading from '../components/Loading';
+import { Movie } from '../types';
+import { useSeen } from '../api/controllers/users.controller';
 
-const fetchData = async (setMovies, setLoading, setToken) => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/users/seen', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'x-auth-token': token || '',
-      },
-    });
+export default function SeenScreen() {
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  
+  const { data: movies = [], isLoading } = useSeen();
 
-    const body = await response.json();
+  const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
 
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
-      setMovies(body);
-      setLoading(false);
-      setToken(token);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-function SeenScreen() {
-  const [loading, setLoading] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [token, setToken] = useState('');
-  const [movies, setMovies] = useState([]);
-  const [selectedMovie, setSelectedMovie] = useState({});
-
-  useEffect(() => {
-    fetchData(setMovies, setLoading, setToken);
-  }, []);
-
-  if (!loading) {
-    if (movies.length === 0)
-      return (
-        <Screen style={styles.noMoviesContainer}>
-          <Text style={styles.text}>What are you doing here... go watch a Nicolas Cage movie</Text>
-        </Screen>
-      );
-    else
-      return (
-        <Screen style={styles.container}>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(!modalVisible);
-            }}
-          >
-            <MovieModal
-              movie={selectedMovie}
-              setModalVisible={setModalVisible}
-              modalVisible={modalVisible}
-              token={token}
-            />
-          </Modal>
+  return (
+    <Screen isLoading={isLoading} style={movies.length === 0 ? styles.noMoviesContainer : styles.container}>
+      {movies.length === 0 ? (
+        <Text style={styles.text}>What are you doing here... go watch a Nicolas Cage movie</Text>
+      ) : (
+        <>
+          <MovieModal
+            isOpen={selectedMovie !== null}
+            movie={selectedMovie!}
+            onClose={() => setSelectedMovie(null)}
+          />
           <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
             <View>
               <Text style={styles.header}>
@@ -83,28 +39,22 @@ function SeenScreen() {
               </Text>
             </View>
             <View style={styles.scrollContainer}>
-              {map(movies, (movie, index) => {
-                movie = changeResolution('l', movie);
-                return (
-                  <View style={styles.movieContainer} key={index + 6969}>
-                    <TouchableOpacity
-                      style={styles.button}
-                      key={index}
-                      onPress={() => {
-                        setSelectedMovie(movie);
-                        setModalVisible(true);
-                      }}
-                    >
-                      <Image key={movie.id} source={{ uri: movie.img }} style={styles.image} />
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
+              {map(movies, (movie) => (
+                <View style={styles.movieContainer} key={movie._id}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => setSelectedMovie(movie)}
+                  >
+                    <Image source={{ uri: getMovieWithChangedResolution(movie).img }} style={styles.image} />
+                  </TouchableOpacity>
+                </View>
+              ))}
             </View>
           </ScrollView>
-        </Screen>
-      );
-  } else return <Loading />;
+        </>
+      )}
+    </Screen>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -182,5 +132,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-export default SeenScreen;

@@ -1,39 +1,27 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useEffect, useState } from 'react';
-import { find, includes } from 'lodash';
+import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { find, includes, map } from 'lodash';
+import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
+import type { Movie } from '../../types';
 import Icon from '../Icon';
 import colors from '../../config/colors';
-import { Movie, User } from '../../types';
 import MovieRating from './MovieRating';
 import {
-  useAddToSeen,
-  useRemoveFromSeen,
-  useAddToFavorites,
-  useRemoveFromFavorites,
-  useAddToWatchlist,
-  useRemoveFromWatchlist,
+  useAddToSeen, useRemoveFromSeen, useAddToFavorites, useRemoveFromFavorites, useAddToWatchlist,
+  useRemoveFromWatchlist, useCurrentUser,
 } from '../../api';
 
 type Props = {
   movie: Movie;
-  onUpdateMovieRating: (id: string) => void;
-  token: string;
-  user: User;
 };
 
-export default function MovieActions({
-  movie,
-  onUpdateMovieRating,
-  token,
-  user,
-}: Props) {
+export default function MovieActions({ movie }: Props) {
   const [favorite, setFavorite] = useState(false);
   const [seen, setSeen] = useState(false);
   const [watchlist, setWatchlist] = useState(false);
   const [rating, setRating] = useState(0);
   const [showStars, setShowStars] = useState(false);
 
-  // TanStack Query mutations
   const addToSeenMutation = useAddToSeen();
   const removeFromSeenMutation = useRemoveFromSeen();
   const addToFavoritesMutation = useAddToFavorites();
@@ -41,12 +29,15 @@ export default function MovieActions({
   const addToWatchlistMutation = useAddToWatchlist();
   const removeFromWatchlistMutation = useRemoveFromWatchlist();
 
+  const { data: user } = useCurrentUser();
+
   useEffect(() => {
+    if (!user) { return; }
     setFavorite(includes(user.favorites, movie._id));
     setSeen(includes(user.seen, movie._id));
     setWatchlist(includes(user.watchlist, movie._id));
     setRating(find(user.ratings, ['movieId', movie._id])?.rating || 0);
-  }, [user, movie._id]);
+  }, [user, movie]);
 
   const handleSeenToggle = () => {
     if (seen) {
@@ -85,91 +76,74 @@ export default function MovieActions({
   };
 
   const styles = StyleSheet.create({
-    seenLabel: {
+    seenLabel: { color: seen ? colors.orange : colors.medium },
+    rateLabel: { color: rating > 0 ? colors.orange : colors.medium },
+    favLabel: { color: favorite ? colors.orange : colors.medium },
+    watchLabel: { color: watchlist ? colors.orange : colors.medium },
+    shared: {
       position: 'absolute',
       top: 45,
-      color: seen ? colors.orange : colors.medium,
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 9,
-    },
-    rateLabel: {
-      position: 'absolute',
-      top: 45,
-      color: rating > 0 ? colors.orange : colors.medium,
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 9,
-    },
-    favLabel: {
-      position: 'absolute',
-      top: 45,
-      color: favorite ? colors.orange : colors.medium,
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 9,
-    },
-    watchLabel: {
-      position: 'absolute',
-      top: 45,
-      color: watchlist ? colors.orange : colors.medium,
       fontFamily: 'Montserrat-Medium',
       fontSize: 9,
     },
   });
 
+  const actions: Array<{
+    active: boolean;
+    icon: keyof typeof MaterialCommunityIconsType.glyphMap;
+    label: string;
+    onPress: () => void;
+    style: StyleProp<TextStyle>,
+  }> = useMemo(() => [{
+    active: seen,
+    icon: 'eye',
+    label: 'Seen',
+    onPress: handleSeenToggle,
+    style: styles.seenLabel,
+  }, {
+    active: rating > 0,
+    icon: 'star',
+    label: 'Rate',
+    onPress: () => setShowStars(!showStars),
+    style: styles.rateLabel,
+  }, {
+    active: favorite,
+    icon: 'heart',
+    label: 'Favorite',
+    onPress: handleFavoriteToggle,
+    style: styles.favLabel,
+  }, {
+    active: watchlist,
+    icon: 'bookmark',
+    label: 'Watchlist',
+    onPress: handleWatchlistToggle,
+    style: styles.watchLabel,
+  }], [favorite, rating, seen, showStars, watchlist]);
+
   return (
     <>
       <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-        <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity onPress={handleSeenToggle}>
-            <Icon
-              name="eye"
-              size={60}
-              backgroundColor={colors.bg}
-              iconColor={seen ? colors.orange : colors.medium}
-            />
-          </TouchableOpacity>
-          <Text style={styles.seenLabel}>Seen</Text>
-        </View>
-        <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => setShowStars(!showStars)}>
-            <Icon
-              name="star"
-              size={60}
-              backgroundColor={colors.bg}
-              iconColor={rating > 0 ? colors.orange : colors.medium}
-            />
-          </TouchableOpacity>
-          <Text style={styles.rateLabel}>Rate</Text>
-        </View>
-        <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity onPress={handleFavoriteToggle}>
-            <Icon
-              name="heart"
-              size={60}
-              backgroundColor={colors.bg}
-              iconColor={favorite ? colors.orange : colors.medium}
-            />
-          </TouchableOpacity>
-          <Text style={styles.favLabel}>Favorite</Text>
-        </View>
-        <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity onPress={handleWatchlistToggle}>
-            <Icon
-              name="bookmark"
-              size={60}
-              backgroundColor={colors.bg}
-              iconColor={watchlist ? colors.orange : colors.medium}
-            />
-          </TouchableOpacity>
-          <Text style={styles.watchLabel}>Watchlist</Text>
-        </View>
+        {map(actions, (action) => (
+          <View key={action.label} style={{ alignItems: 'center' }}>
+            <TouchableOpacity onPress={action.onPress}>
+              <Icon
+                name={action.icon}
+                size={60}
+                backgroundColor={colors.bg}
+                iconColor={action.active ? colors.orange : colors.medium}
+              />
+            </TouchableOpacity>
+            <Text style={[styles.shared, action.style]}>{action.label}</Text>
+          </View>
+        ))}
       </View>
-      <MovieRating
-        rating={rating}
-        setRating={setRating}
-        token={token}
-        movie={movie}
-        onUpdateMovieRating={onUpdateMovieRating}
-      />
+      {showStars && (
+        <MovieRating
+          rating={rating}
+          setRating={setRating}
+          movie={movie}
+        />
+      )}
     </>
   );
 }

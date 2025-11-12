@@ -1,13 +1,13 @@
 import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../components/forms';
 import colors from '../config/colors';
 import PasswordInput from '../components/forms/PasswordInput';
 import { showErrorToast } from '../config/helperFunctions';
+import { useRegister } from '../api/controllers/users.controller';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required().label('Name'),
@@ -37,6 +37,7 @@ type RegisterFormValues = {
 
 export default function RegisterScreen() {
   const navigate = useNavigate();
+  const registerMutation = useRegister();
 
   const handleSubmit = async (values: RegisterFormValues) => {
     if (values.password !== values.confirmPassword) {
@@ -44,26 +45,16 @@ export default function RegisterScreen() {
       return;
     }
 
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/users/', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      await registerMutation.mutateAsync({
         name: values.name,
         email: values.email.toLowerCase(),
         password: values.password,
-      }),
-    });
-
-    const body = await response.text();
-
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
-      await AsyncStorage.setItem('token', body);
+      });
       navigate('/home');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Registration failed';
+      showErrorToast(message);
     }
   };
 

@@ -7,8 +7,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ErrorMessage } from '.';
 import defaultStyles from '../../config/styles';
 
-type Props<T> = {
-  name: keyof T & string;
+type Props<Values> = {
+  name: keyof Values & string;
   placeholder?: string;
   value?: string;
   onChangeText?: (text: string) => void;
@@ -16,8 +16,8 @@ type Props<T> = {
   style?: StyleProp<ViewStyle>;
 };
 
-export default function PasswordInput<T extends FormikValues>({ name, ...otherProps }: Props<T>) {
-  const { setFieldTouched, handleChange, errors, touched } = useFormikContext<T>();
+export default function PasswordInput<Values extends FormikValues>({ name, ...otherProps }: Props<Values>) {
+  const { setFieldTouched, handleChange, errors, touched } = useFormikContext<Values>();
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -53,11 +53,12 @@ export default function PasswordInput<T extends FormikValues>({ name, ...otherPr
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     backgroundColor: defaultStyles.colors.light,
     borderRadius: 25,
     flexDirection: 'row',
-    padding: 15,
     marginVertical: 10,
+    padding: 15,
   },
   icon: {
     marginRight: 10,

@@ -1,35 +1,33 @@
 import React, { ComponentType } from 'react';
-import { TouchableOpacity, View, Image } from 'react-native';
-import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { TouchableOpacity, Image } from 'react-native';
+import { createNativeStackNavigator, NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { map } from 'lodash';
-import colors from '../../config/colors';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
 import RandomMovieScreen from '../../screens/RandomMovieScreen';
-import type { User } from '../../types';
+import { useCurrentUser } from '../../api/controllers/users.controller';
+import type { HomeStackParamList } from '../../types';
+import { screenOptions } from './screenOptions';
 
-const Random_Stack = createNativeStackNavigator();
+const RandomStackNavigator = createNativeStackNavigator();
 
 type Props = {
-  navigation: { navigate: (route: string) => void };
-  userImage: string;
-  fetchData: (setUser: React.Dispatch<React.SetStateAction<User | null>>) => void;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  navigation: NativeStackScreenProps<HomeStackParamList, 'RandomTab'>['navigation'];
 };
 
 const screens: Array<{
   name: string;
-  component: ComponentType<any>;
-  options: (props: Props) => NativeStackNavigationOptions;
+  component: ComponentType<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  options: (props: Props & { userImage: string; refetch: () => void }) => NativeStackNavigationOptions;
 }> = [
   {
     name: 'Random',
     component: RandomMovieScreen,
-    options: ({ navigation, userImage, fetchData, setUser }) => ({
-      headerLeft: () => <SmallLogo width={100} height={20} />,
+    options: ({ navigation, userImage, refetch }) => ({
+      headerLeft: () => <SmallLogo width={80} height={20} />,
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            fetchData(setUser);
+            refetch();
             navigation.navigate('SettingsTab');
           }}
         >
@@ -52,32 +50,20 @@ const screens: Array<{
   },
 ];
 
-export default function RandomMovieStackScreen({
-  navigation,
-  userImage,
-  fetchData,
-  setUser,
-}: Props) {
+export default function RandomMovieStackScreen({ navigation }: Props) {
+  const { data: user, refetch } = useCurrentUser();
+  const userImage = user?.img || '';
+
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <Random_Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: colors.black,
-          },
-          headerTintColor: '#fff',
-          headerBackTitleVisible: false,
-        }}
-      >
-        {map(screens, (screen) => (
-          <Random_Stack.Screen
-            key={screen.name}
-            name={screen.name}
-            component={screen.component}
-            options={screen.options({ navigation, userImage, fetchData, setUser })}
-          />
-        ))}
-      </Random_Stack.Navigator>
-    </View>
+    <RandomStackNavigator.Navigator screenOptions={screenOptions}>
+      {map(screens, (screen) => (
+        <RandomStackNavigator.Screen
+          key={screen.name}
+          name={screen.name}
+          component={screen.component}
+          options={screen.options({ navigation, userImage, refetch })}
+        />
+      ))}
+    </RandomStackNavigator.Navigator>
   );
 }

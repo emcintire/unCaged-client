@@ -1,77 +1,24 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { map } from 'lodash';
 
-import { changeResolution, showErrorToast } from '../config/helperFunctions';
+import { changeResolution } from '../config/helperFunctions';
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import MovieModal from '../components/movieModal/MovieModal';
 import AdBanner from '../components/AdBanner';
 import { Movie } from '../types';
-
-const getUser = async (token: string, setIsAdmin: Dispatch<SetStateAction<boolean>>) => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/', {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-  });
-
-  const body = await response.json();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    setIsAdmin(body.isAdmin);
-  }
-};
-
-const getMovies = async (token: string, setMovies: Dispatch<SetStateAction<Array<Movie>>>) => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/watchlist', {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-  });
-
-  const body = await response.json();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    setMovies(body);
-  }
-};
-
-const fetchData = async (
-  setMovies: Dispatch<SetStateAction<Array<Movie>>>,
-  setIsLoading: Dispatch<SetStateAction<boolean>>,
-  setToken: Dispatch<SetStateAction<string>>,
-  setIsAdmin: Dispatch<SetStateAction<boolean>>
-) => {
-  const token = await AsyncStorage.getItem('token');
-  if (token == null) { return; }
-  await Promise.all([getUser(token, setIsAdmin), getMovies(token, setMovies)]);
-  setToken(token);
-  setIsLoading(false);
-};
+import { useCurrentUser, useWatchlist } from '../api/controllers/users.controller';
 
 export default function WatchlistScreen() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [movies, setMovies] = useState<Array<Movie>>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [token, setToken] = useState('');
-
-  useEffect(() => {
-    fetchData(setMovies, setIsLoading, setToken, setIsAdmin);
-  }, []);
+  
+  const { data: user, isLoading: isUserLoading } = useCurrentUser();
+  const { data: movies = [], isLoading: isMoviesLoading } = useWatchlist();
+  
+  const isLoading = isUserLoading || isMoviesLoading;
+  const isAdmin = user?.isAdmin ?? false;
 
   return (
     <Screen isLoading={isLoading} style={movies.length === 0 ? styles.noMoviesContainer : styles.container}>
@@ -84,7 +31,6 @@ export default function WatchlistScreen() {
             isOpen={selectedMovie != null}
             movie={selectedMovie!}
             onClose={() => setSelectedMovie(null)}
-            token={token}
           />
           <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
             <View style={styles.scrollContainer}>

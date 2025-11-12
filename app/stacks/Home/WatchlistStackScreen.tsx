@@ -1,35 +1,33 @@
 import React, { ComponentType } from 'react';
-import { TouchableOpacity, View, Image } from 'react-native';
-import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { TouchableOpacity, Image } from 'react-native';
+import { createNativeStackNavigator, NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { map } from 'lodash';
-import colors from '../../config/colors';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
 import WatchlistScreen from '../../screens/WatchlistScreen';
-import type { User } from '../../types';
+import { WatchlistTabParamList, type HomeStackParamList } from '../../types';
+import { useCurrentUser } from '../../api/controllers/users.controller';
+import { screenOptions } from './screenOptions';
 
-const Watchlist_Stack = createNativeStackNavigator();
+const WatchlistStackNavigator = createNativeStackNavigator<WatchlistTabParamList>();
 
 type Props = {
-  navigation: { navigate: (route: string) => void };
-  userImage: string;
-  fetchData: (setUser: React.Dispatch<React.SetStateAction<User | null>>) => void;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  navigation: NativeStackScreenProps<HomeStackParamList, 'WatchlistTab'>['navigation'];
 };
 
 const screens: Array<{
-  name: string;
-  component: ComponentType<any>;
-  options: (props: Props) => NativeStackNavigationOptions;
+  name: keyof WatchlistTabParamList;
+  component: ComponentType<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  options: (props: Props & { userImage: string; refetch: () => void }) => NativeStackNavigationOptions;
 }> = [
   {
     name: 'Watchlist',
     component: WatchlistScreen,
-    options: ({ navigation, userImage, fetchData, setUser }) => ({
-      headerLeft: () => <SmallLogo width={100} height={20} />,
+    options: ({ navigation, userImage, refetch }) => ({
+      headerLeft: () => <SmallLogo width={80} height={20} />,
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            fetchData(setUser);
+            refetch();
             navigation.navigate('SettingsTab');
           }}
         >
@@ -52,32 +50,20 @@ const screens: Array<{
   },
 ];
 
-export default function WatchlistStackScreen({
-  navigation,
-  userImage,
-  fetchData,
-  setUser,
-}: Props) {
+export default function WatchlistStackScreen({ navigation }: Props) {
+  const { data: user, refetch } = useCurrentUser();
+  const userImage = user?.img || '';
+
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <Watchlist_Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: colors.black,
-          },
-          headerTintColor: '#fff',
-          headerBackTitleVisible: false,
-        }}
-      >
-        {map(screens, (screen) => (
-          <Watchlist_Stack.Screen
-            key={screen.name}
-            name={screen.name}
-            component={screen.component}
-            options={screen.options({ navigation, userImage, fetchData, setUser })}
-          />
-        ))}
-      </Watchlist_Stack.Navigator>
-    </View>
+    <WatchlistStackNavigator.Navigator screenOptions={screenOptions}>
+      {map(screens, (screen) => (
+        <WatchlistStackNavigator.Screen
+          key={screen.name}
+          name={screen.name}
+          component={screen.component}
+          options={screen.options({ navigation, userImage, refetch })}
+        />
+      ))}
+    </WatchlistStackNavigator.Navigator>
   );
 }

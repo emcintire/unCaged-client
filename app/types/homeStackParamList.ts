@@ -6,7 +6,6 @@ export type HomeStackParamList = {
   SettingsTab: undefined;
 };
 
-// Individual stack param lists for each tab
 export type HomeTabParamList = {
   Home: undefined;
 };

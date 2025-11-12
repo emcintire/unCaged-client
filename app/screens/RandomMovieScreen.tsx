@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Image, Modal, TouchableOpacity, Dimensions, Text } from 'react-native';
 import { filter } from 'lodash';
-import { changeResolution, showErrorToast } from '../config/helperFunctions';
+import { changeResolution } from '../config/helperFunctions';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Movie } from '../types';
 
 import Screen from '../components/Screen';
@@ -11,95 +10,67 @@ import colors from '../config/colors';
 import AdBanner from '../components/AdBanner';
 import MovieModal from '../components/movieModal/MovieModal';
 import RandomMovieFilters from '../components/RandomMovieFilters';
-
-const fetchUserData = async (
-  setToken: (token: string) => void,
-  setIsAdmin: (isAdmin: boolean) => void,
-  getRandomMovie: () => Promise<void>
-): Promise<void> => {
-  const token = await AsyncStorage.getItem('token');
-  if (token == null) { return; }
-
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users', {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-  });
-
-  const body = await response.json();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-    return;
-  }
-
-  setToken(token);
-  setIsAdmin(body.isAdmin);
-  await getRandomMovie();
-};
+import { useUser } from '../api/controllers/users.controller';
+import { useMovies } from '../api/controllers/movies.controller';
 
 export default function RandomMovieScreen() {
   const [filtersModalVisible, setFiltersModalVisible] = useState(false);
   const [genreFilter, setGenreFilter] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [mandyFilter, setMandyFilter] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [movie, setMovie] = useState<Movie | null>(null);
-  const [token, setToken] = useState('');
   const [watchlistFilter, setWatchlistFilter] = useState(false);
   const [unseenFilter, setUnseenFilter] = useState(false);
+  
+  const { data: user, isLoading: isUserLoading } = useUser();
+  const { data: allMovies = [], isLoading: isMoviesLoading } = useMovies();
+  const isAdmin = user?.isAdmin ?? false;
+  const isLoading = isUserLoading || isMoviesLoading;
 
   const getRandomMovie = useCallback(async () => {
-    setIsLoading(true);
-
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/users/filteredMovies', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'x-auth-token': token,
-      },
-      body: JSON.stringify({
-        unseen: unseenFilter,
-        mandy: mandyFilter,
-        watchlist: watchlistFilter,
-        genre: genreFilter,
-      }),
-    });
-
-    const movies = await response.json() as Array<Movie> | string;
-    if (response.status !== 200) {
-      showErrorToast(movies as string);
-      setIsLoading(false);
-      return;
+    if (!allMovies.length) return;
+    
+    // Build filters
+    let filtered = [...allMovies];
+    
+    if (genreFilter) {
+      filtered = filtered.filter(m => m.genres.includes(genreFilter));
+    }
+    
+    if (mandyFilter) {
+      filtered = filtered.filter(m => m.title.toLowerCase().includes('mandy'));
+    }
+    
+    if (unseenFilter && user) {
+      filtered = filtered.filter(m => !user.seen.includes(m._id));
+    }
+    
+    if (watchlistFilter && user) {
+      filtered = filtered.filter(m => user.watchlist.includes(m._id));
     }
 
-    if (movies.length === 0) {
+    if (filtered.length === 0) {
       setMovie(null);
-      setIsLoading(false);
       return;
     }
 
     // Don't show same movie twice in a row
-    const availableMovies = movies.length > 1 && !mandyFilter && movie
-      ? filter(movies as Array<Movie>, (m) => m._id !== movie._id)
-      : movies as Array<Movie>;
+    const availableMovies = filtered.length > 1 && !mandyFilter && movie
+      ? filter(filtered, (m) => m._id !== movie._id)
+      : filtered;
 
     const randInt = Math.floor(Math.random() * availableMovies.length);
     const selectedMovie = availableMovies[randInt];
     const resolvedMovie = changeResolution('', selectedMovie!);
 
     setMovie(resolvedMovie);
-    setIsLoading(false);
-  }, [genreFilter, mandyFilter, token, unseenFilter, watchlistFilter, movie]);
+  }, [genreFilter, mandyFilter, unseenFilter, watchlistFilter, movie, allMovies, user]);
 
   useEffect(() => {
-    fetchUserData(setToken, setIsAdmin, getRandomMovie);
-  }, []);
+    if (!isLoading && allMovies.length > 0) {
+      getRandomMovie();
+    }
+  }, [isLoading, allMovies.length]);
 
   return (
     <Screen isLoading={isLoading} style={styles.container}>
@@ -112,7 +83,6 @@ export default function RandomMovieScreen() {
         movie={movie!}
         onClose={() => setModalVisible(false)}
         isOpen={modalVisible}
-        token={token}
       />
       <Modal
         animationType="slide"

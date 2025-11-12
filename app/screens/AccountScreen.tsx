@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { Fragment, ReactNode } from 'react';
 import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
@@ -10,34 +10,11 @@ import colors from '../config/colors';
 import Icon from '../components/Icon';
 import { NavigateFunction, useNavigate } from 'react-router-native';
 import { showErrorToast, showSuccessToast } from '../config/helperFunctions';
-import { HomeStackParamList, SetState, SettingsTabParamList, User } from '../types';
+import { SettingsTabParamList } from '../types';
 import { map } from 'lodash';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-
-const fetchData = async (setUser: SetState<User | null>, setLoading: SetState<boolean>) => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/users/', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'x-auth-token': token || '',
-      },
-    });
-
-    const body = await response.json();
-
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
-      setUser(body);
-      setLoading(false);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
+import { useCurrentUser } from '../api/controllers/users.controller';
+import { apiClient } from '../api/client';
 
 const deleteAccount = async (navigate: NavigateFunction) => {
   Alert.alert('Are you sure?', 'Daddy would not be pleased', [
@@ -49,27 +26,13 @@ const deleteAccount = async (navigate: NavigateFunction) => {
       text: 'Ok',
       onPress: async () => {
         try {
-          const token = await AsyncStorage.getItem('token');
-          const response = await fetch('https://uncaged-server.herokuapp.com/api/users/', {
-            method: 'DELETE',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              'x-auth-token': token || '',
-            },
-          });
-
-          const body = await response.text();
-
-          if (response.status !== 200) {
-            showErrorToast(body);
-          } else {
-            await AsyncStorage.removeItem('token');
-            showSuccessToast('Account deleted :(');
-            navigate('/');
-          }
-        } catch (err) {
-          console.log(err);
+          await apiClient.delete('/users/', {});
+          await AsyncStorage.removeItem('token');
+          showSuccessToast('Account deleted :(');
+          navigate('/');
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : 'Failed to delete account';
+          showErrorToast(message);
         }
       },
     },
@@ -138,14 +101,9 @@ const accountItems: Array<{
 export default function AccountScreen({
   navigation,
 }: NativeStackScreenProps<SettingsTabParamList, 'My Account'>) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: user, isLoading: loading } = useCurrentUser();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchData(setUser, setLoading);
-  }, []);
 
   return (
     <Screen isLoading={loading} style={styles.screen}>
@@ -161,7 +119,7 @@ export default function AccountScreen({
         <Separator modal={false} />
         <View>
           {map(accountItems, (item) => (
-            <>
+            <Fragment key={item.title}>
               <ListItem
                 onPress={() => navigation.navigate(item.title)}
                 title={item.title}
@@ -170,7 +128,7 @@ export default function AccountScreen({
                 )}
               />
               {item.children}
-            </>
+            </Fragment>
           ))}
         </View>
         <View style={{ height: 20, backgroundColor: colors.bg }} />

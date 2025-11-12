@@ -1,17 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   StyleSheet, View, Image, Text, TouchableOpacity, TextInput, ScrollView, Platform,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { filter, includes, map } from 'lodash';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import MovieModal from '../components/movieModal/MovieModal';
 import Loading from '../components/Loading';
-import { changeResolution, showErrorToast } from '../config/helperFunctions';
-import { Movie, SetState } from '../types';
+import { changeResolution } from '../config/helperFunctions';
+import { Movie } from '../types';
+import { useMovies } from '../api/controllers/movies.controller';
 
 const genres = [
   'Genre',
@@ -31,125 +31,87 @@ const genres = [
   'War',
 ];
 
-const fetchData = async (
-  setMovies: SetState<Array<Movie>>,
-  setToken: SetState<string>,
-  setLoading: SetState<boolean>,
-) => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    if (token == null) { return; }
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/movies/getMovies', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        category: 'title',
-        direction: 1,
-      }),
-    });
-
-    const body = await response.json();
-
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
-      setMovies(body);
-      setToken(token);
-      setLoading(false);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-const handleInputChange = async (
-  title: string,
-  selected: string,
-  ratingUp: boolean,
-  yearUp: boolean,
-  abc: boolean,
-  setMovies: SetState<Array<Movie>>,
-  setTitle: SetState<string>
-) => {
-  setTitle(title);
-  await handleSubmit(title, selected, ratingUp, yearUp, abc, setMovies);
-};
-
-const handleSubmit = async (
-  title: string,
-  selected: string,
-  ratingUp: boolean,
-  yearUp: boolean,
-  abc: boolean,
-  setMovies: SetState<Array<Movie>>
-) => {
-  let direction = 1;
-  let category = 'avgRating';
-
-  switch (selected) {
-    case 'rating': {
-      direction = ratingUp ? 1 : -1;
-      category = 'avgRating';
-      break;
-    }
-    case 'year': {
-      direction = yearUp ? 1 : -1;
-      category = 'date';
-      break;
-    }
-    case 'az': {
-      direction = abc ? 1 : -1;
-      category = 'title';
-      break;
-    }
-    case 'za': {
-      direction = -1;
-      category = 'title';
-      break;
-    }
-  }
-
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/movies/findByTitle', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      category,
-      direction,
-      title,
-    }),
-  });
-  const body = await response.json();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    setMovies(body);
-  }
-};
-
 export default function SearchScreen() {
-  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [ratingUp, setRatingUp] = useState(false);
   const [yearUp, setYearUp] = useState(false);
   const [abc, setAbc] = useState(true);
-  const [movies, setMovies] = useState<Array<Movie>>([]);
-  const [token, setToken] = useState('');
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [title, setTitle] = useState('');
   const [selected, setSelected] = useState('az');
   const [genre, setGenre] = useState('Genre');
   const [genresVisible, setGenresVisible] = useState(false);
-
+  
+  const { data: allMovies = [], isLoading: loading } = useMovies();
+  const [movies, setMovies] = useState<Array<Movie>>([]);
+  
   useEffect(() => {
-    fetchData(setMovies, setToken, setLoading);
-  }, []);
+    // Initialize movies with all movies sorted by title
+    if (allMovies.length > 0) {
+      const sorted = [...allMovies].sort((a, b) => a.title.localeCompare(b.title));
+      setMovies(sorted);
+    }
+  }, [allMovies]);
+
+  const handleInputChange = (text: string) => {
+    setTitle(text);
+    handleFilter(text, selected, ratingUp, yearUp, abc, genre);
+  };
+
+  const handleFilter = (
+    searchTitle: string,
+    sortSelected: string,
+    isRatingUp: boolean,
+    isYearUp: boolean,
+    isAbc: boolean,
+    selectedGenre: string
+  ) => {
+    let filtered = [...allMovies];
+    
+    // Filter by title
+    if (searchTitle) {
+      filtered = filtered.filter(movie => 
+        movie.title.toLowerCase().includes(searchTitle.toLowerCase())
+      );
+    }
+    
+    // Filter by genre
+    if (selectedGenre && selectedGenre !== 'Genre') {
+      filtered = filtered.filter(movie => 
+        movie.genres.some((g: string) => g.toLowerCase() === selectedGenre.toLowerCase())
+      );
+    }
+    
+    // Sort
+    switch (sortSelected) {
+      case 'rating': {
+        filtered.sort((a, b) => {
+          const ratingA = a.avgRating || 0;
+          const ratingB = b.avgRating || 0;
+          return isRatingUp ? ratingA - ratingB : ratingB - ratingA;
+        });
+        break;
+      }
+      case 'year': {
+        filtered.sort((a, b) => {
+          const yearA = new Date(a.date).getFullYear();
+          const yearB = new Date(b.date).getFullYear();
+          return isYearUp ? yearA - yearB : yearB - yearA;
+        });
+        break;
+      }
+      case 'az': {
+        filtered.sort((a, b) => {
+          return isAbc 
+            ? a.title.localeCompare(b.title)
+            : b.title.localeCompare(a.title);
+        });
+        break;
+      }
+    }
+    
+    setMovies(filtered);
+  };
 
   const styles = StyleSheet.create({
     container: {
@@ -336,17 +298,13 @@ export default function SearchScreen() {
         isOpen={selectedMovie !== null}
         movie={selectedMovie!}
         onClose={() => setSelectedMovie(null)}
-        token={token}
       />
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.text}
           placeholder="Enter title"
           placeholderTextColor={colors.medium}
-          onChangeText={(text) =>
-            handleInputChange(text, selected, ratingUp, yearUp, abc, setMovies, setTitle)
-          }
-          onSubmitEditing={() => handleSubmit(title, selected, ratingUp, yearUp, abc, setMovies)}
+          onChangeText={handleInputChange}
         />
         <TouchableOpacity style={{ width: 50 }} onPress={() => setOpen(!open)}>
           <MaterialCommunityIcons
@@ -362,13 +320,10 @@ export default function SearchScreen() {
           <View style={styles.sortContainer}>
             <TouchableOpacity
               onPress={() => {
-                if (selected === 'rating') {
-                  handleSubmit(title, 'rating', !ratingUp, yearUp, abc, setMovies);
-                  setRatingUp(!ratingUp);
-                } else {
-                  handleSubmit(title, 'rating', ratingUp, yearUp, abc, setMovies);
-                }
+                const newRatingUp = selected === 'rating' ? !ratingUp : ratingUp;
+                setRatingUp(newRatingUp);
                 setSelected('rating');
+                handleFilter(title, 'rating', newRatingUp, yearUp, abc, genre);
               }}
               style={styles.ratingBtn}
             >
@@ -381,13 +336,10 @@ export default function SearchScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                if (selected === 'year') {
-                  handleSubmit(title, 'year', ratingUp, !yearUp, abc, setMovies);
-                  setYearUp(!yearUp);
-                } else {
-                  handleSubmit(title, 'year', ratingUp, yearUp, abc, setMovies);
-                }
+                const newYearUp = selected === 'year' ? !yearUp : yearUp;
+                setYearUp(newYearUp);
                 setSelected('year');
+                handleFilter(title, 'year', ratingUp, newYearUp, abc, genre);
               }}
               style={styles.yearBtn}
             >
@@ -400,13 +352,10 @@ export default function SearchScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                if (selected === 'az') {
-                  handleSubmit(title, 'az', ratingUp, yearUp, !abc, setMovies);
-                  setAbc(!abc);
-                } else {
-                  handleSubmit(title, 'az', ratingUp, yearUp, abc, setMovies);
-                }
+                const newAbc = selected === 'az' ? !abc : abc;
+                setAbc(newAbc);
                 setSelected('az');
+                handleFilter(title, 'az', ratingUp, yearUp, newAbc, genre);
               }}
               style={styles.azBtn}
             >
@@ -428,16 +377,17 @@ export default function SearchScreen() {
               style={Platform.OS === 'ios' ? styles.scrollContainer : styles.androidScrollContainer}
             >
               <ScrollView decelerationRate="fast">
-                {map(genres, (genre, index) => (
+                {map(genres, (genreItem, index) => (
                   <View key={index}>
                     <TouchableOpacity
                       style={styles.genreBtn}
                       onPress={() => {
-                        setGenre(genre);
+                        setGenre(genreItem);
                         setGenresVisible(false);
+                        handleFilter(title, selected, ratingUp, yearUp, abc, genreItem);
                       }}
                     >
-                      <Text style={styles.genreLabel}>{genre}</Text>
+                      <Text style={styles.genreLabel}>{genreItem}</Text>
                     </TouchableOpacity>
                     <View style={genre === 'Fantasy' ? {} : styles.separator} />
                   </View>

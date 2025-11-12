@@ -1,4 +1,4 @@
-import React, { ComponentType, useEffect, useState } from 'react';
+import { ComponentType, useEffect } from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {
@@ -7,47 +7,45 @@ import {
 import { EventRegister } from 'react-native-event-listeners';
 import { map } from 'lodash';
 import colors from '../../config/colors';
-import type { User } from '../../types';
 import { useCurrentUser } from '../../api';
 import HomeStackScreen from './HomeStackScreen';
 import WatchlistStackScreen from './WatchlistStackScreen';
 import SearchStackScreen from './SearchStackScreen';
 import RandomMovieStackScreen from './RandomMovieStackScreen';
-import AccountStackScreen from './AccountStackScreen';
+import SettingsStackScreen from './SettingsStackScreen';
 
-const Tab = createMaterialBottomTabNavigator();
+const Home_Stack = createMaterialBottomTabNavigator();
 
 const screens: Array<{
   name: string;
-  component: ComponentType<any>;
+  Component: ComponentType<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   icon: keyof typeof MaterialCommunityIconsType.glyphMap;
 }> = [
   {
     name: 'HomeTab',
-    component: HomeStackScreen,
+    Component: HomeStackScreen,
     icon: 'home',
   }, {
     name: 'WatchlistTab',
-    component: WatchlistStackScreen,
+    Component: WatchlistStackScreen,
     icon: 'bookmark',
   }, {
     name: 'SearchTab',
-    component: SearchStackScreen,
+    Component: SearchStackScreen,
     icon: 'magnify',
   }, {
     name: 'RandomTab',
-    component: RandomMovieStackScreen,
+    Component: RandomMovieStackScreen,
     icon: 'dice-3',
   }, {
     name: 'SettingsTab',
-    component: AccountStackScreen,
+    Component: SettingsStackScreen,
     icon: 'cog',
   },
 ];
 
 export default function HomeStack() {
-  const { data: user, refetch } = useCurrentUser();
-  const userImage = user?.img || '';
+  const { refetch } = useCurrentUser();
 
   useEffect(() => {
     const listener = EventRegister.addEventListener('refreshPic', () => {
@@ -63,35 +61,26 @@ export default function HomeStack() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator
+      <Home_Stack.Navigator
         activeColor={colors.orange}
         inactiveColor={colors.medium}
-        barStyle={{ backgroundColor: colors.black, height: 60 }}
+        barStyle={{ backgroundColor: colors.black, height: 60, elevation: 0 }}
         initialRouteName="HomeTab"
-        shifting={true}
+        shifting={false}
         labeled={false}
       >
         {map(screens, (screen) => (
-          <Tab.Screen
+          <Home_Stack.Screen
             key={screen.name}
             name={screen.name}
             options={{
-              tabBarIcon: ({ color }) => (
-                <MaterialCommunityIcons name={screen.icon} color={color} size={28} />
-              ),
+              tabBarIcon: ({ color }) => <MaterialCommunityIcons style={{ backgroundColor: 'transparent' }} name={screen.icon} color={color} size={28} />,
             }}
           >
-            {(props) => (
-              <screen.component
-                navigation={props.navigation}
-                userImage={userImage}
-                fetchData={refetch}
-                setUser={() => {}} // Deprecated: now handled by React Query
-              />
-            )}
-          </Tab.Screen>
+            {(props) => <screen.Component navigation={props.navigation} />}
+          </Home_Stack.Screen>
         ))}
-      </Tab.Navigator>
+      </Home_Stack.Navigator>
     </NavigationContainer>
   );
 }

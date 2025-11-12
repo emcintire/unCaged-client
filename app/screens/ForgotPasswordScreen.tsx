@@ -1,6 +1,5 @@
 import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../components/forms';
@@ -8,6 +7,7 @@ import colors from '../config/colors';
 import { showErrorToast } from '../config/helperFunctions';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { WelcomeStackParamList } from '../types';
+import { useForgotPassword } from '../api/controllers/users.controller';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
@@ -17,41 +17,29 @@ type ForgotPasswordFormValues = {
   email: string;
 };
 
-const handleSubmit = async (
-  values: ForgotPasswordFormValues,
-  navigation: NativeStackScreenProps<WelcomeStackParamList, 'ForgotPassword'>['navigation']
-) => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/forgotPassword', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      email: values.email.toLowerCase(),
-    }),
-  });
-
-  const body = await response.text();
-
-  if (response.status !== 200) {
-    showErrorToast(body);
-  } else {
-    await AsyncStorage.setItem('token', body);
-    navigation.navigate('EmailCode');
-  }
-};
-
 export default function ForgotPasswordScreen({
   navigation,
 }: NativeStackScreenProps<WelcomeStackParamList, 'ForgotPassword'>) {
+  const forgotPasswordMutation = useForgotPassword();
+
+  const handleSubmit = async (values: ForgotPasswordFormValues) => {
+    try {
+      await forgotPasswordMutation.mutateAsync({
+        email: values.email.toLowerCase(),
+      });
+      navigation.navigate('EmailCode');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to send reset email';
+      showErrorToast(message);
+    }
+  };
   return (
     <Screen style={styles.container}>
       <Text style={styles.tagline}>Reset Password</Text>
       <View style={styles.formContainer}>
         <AppForm<ForgotPasswordFormValues>
           initialValues={{ email: '' }}
-          onSubmit={(values) => handleSubmit(values, navigation)}
+          onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
           <AppFormField<ForgotPasswordFormValues>

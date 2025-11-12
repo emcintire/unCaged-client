@@ -16,7 +16,7 @@ export default function WelcomeScreen({ navigation }: NativeStackScreenProps<Wel
     const checkToken = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        if (token !== null) {
+        if (token != null) {
           navigate('/home');
         }
       } catch (err) {

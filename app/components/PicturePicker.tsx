@@ -9,16 +9,17 @@ import AppButton from './AppButton';
 import Icon from './Icon';
 import { showErrorToast } from '../config/helperFunctions';
 import type { User } from '../types';
+import { useUpdateUserImage } from '../api/controllers/users.controller';
 
 type Props = {
   modalVisible: boolean;
   setModalVisible: (visible: boolean) => void;
   user: User;
-  token: string;
 };
 
-export default function PicturePicker({ modalVisible, setModalVisible, user, token }: Props) {
+export default function PicturePicker({ modalVisible, setModalVisible, user }: Props) {
   const [selected, setSelected] = useState(0);
+  const updateUserImageMutation = useUpdateUserImage();
 
   const imgs = [
     'https://i.imgur.com/9NYgErPm.png',
@@ -39,29 +40,22 @@ export default function PicturePicker({ modalVisible, setModalVisible, user, tok
 
   useEffect(() => {
     getPicture();
-  }, []);
+  }, [user.img]);
 
   const handleSubmit = async () => {
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/users/', {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'x-auth-token': token,
-      },
-      body: JSON.stringify({
-        img: imgs[selected],
-      }),
-    });
-
-    const body = await response.text();
-
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
+    const selectedImg = imgs[selected];
+    if (!selectedImg) return;
+    
+    try {
+      await updateUserImageMutation.mutateAsync({
+        img: selectedImg,
+      });
       getPicture();
       setModalVisible(false);
       EventRegister.emit('refreshPic');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to update picture';
+      showErrorToast(message);
     }
   };
 

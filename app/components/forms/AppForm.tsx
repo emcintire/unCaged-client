@@ -3,21 +3,21 @@ import type { FormikValues, FormikHelpers } from 'formik';
 import type { ReactNode } from 'react';
 import type { AnySchema } from 'yup';
 
-type Props<T extends FormikValues> = {
-  initialValues: T;
-  onSubmit: (values: T, formikHelpers: FormikHelpers<T>) => void;
+type Props<Values extends FormikValues> = {
+  initialValues: Values;
+  onSubmit: (values: Values, formikHelpers: FormikHelpers<Values>) => void;
   validationSchema?: AnySchema;
   children: ReactNode;
 };
 
-export default function AppForm<T extends FormikValues>({
+export default function AppForm<Values extends FormikValues>({
   initialValues,
   onSubmit,
   validationSchema,
   children,
-}: Props<T>) {
+}: Props<Values>) {
   return (
-    <Formik<T>
+    <Formik<Values>
       initialValues={initialValues}
       onSubmit={onSubmit}
       validationSchema={validationSchema}

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../client';
-import type { User } from '../../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { apiClient } from '../client';
+import type { User, Movie } from '../../types';
 
 // ============================================
 // Types
@@ -34,6 +34,12 @@ export type UpdateUserImageData = {
   img: string;
 };
 
+export type UpdateUserData = {
+  name?: string;
+  email?: string;
+  img?: string;
+};
+
 // ============================================
 // Query Keys
 // ============================================
@@ -55,10 +61,10 @@ const userApi = {
   // GET requests
   getCurrentUser: () => apiClient.get<User>('/users/'),
   getUser: () => apiClient.get<User>('/users'),
-  getWatchlist: () => apiClient.get<any>('/users/watchlist'),
-  getFavorites: () => apiClient.get<any>('/users/favorites'),
-  getSeen: () => apiClient.get<any>('/users/seen'),
-  getRatings: () => apiClient.get<any>('/users/rate'),
+  getWatchlist: () => apiClient.get<Array<Movie>>('/users/watchlist'),
+  getFavorites: () => apiClient.get<Array<Movie>>('/users/favorites'),
+  getSeen: () => apiClient.get<Array<Movie>>('/users/seen'),
+  getRatings: () => apiClient.get<Array<Movie>>('/users/rate'),
 
   // POST requests
   login: (credentials: LoginCredentials) => 
@@ -73,6 +79,8 @@ const userApi = {
   // PUT requests
   changePassword: (data: ChangePasswordData) => 
     apiClient.put<string>('/users/changePassword', data),
+  updateUser: (data: UpdateUserData) =>
+    apiClient.put<User>('/users/', data),
   updateUserImage: (data: UpdateUserImageData) => 
     apiClient.put<User>('/users/', data),
   addToWatchlist: (id: string) => 
@@ -177,6 +185,18 @@ export const useCheckCode = () => {
 export const useChangePassword = () => {
   return useMutation({
     mutationFn: userApi.changePassword,
+  });
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: userApi.updateUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.detail() });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+    },
   });
 };
 

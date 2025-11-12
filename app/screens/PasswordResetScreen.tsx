@@ -1,5 +1,4 @@
 import { StyleSheet, View, Text } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-native';
 
@@ -8,6 +7,7 @@ import { AppForm, SubmitButton } from '../components/forms';
 import colors from '../config/colors';
 import PasswordInput from '../components/forms/PasswordInput';
 import { showErrorToast } from '../config/helperFunctions';
+import { useChangePassword } from '../api/controllers/users.controller';
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -23,35 +23,21 @@ type PasswordResetFormValues = {
   password: string;
 };
 
-const handleSubmit = async (values: PasswordResetFormValues, navigate: (path: string) => void) => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    const response = await fetch('https://uncaged-server.herokuapp.com/api/users/changePassword', {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'x-auth-token': token || '',
-      },
-      body: JSON.stringify({
-        password: values.password,
-      }),
-    });
-
-    const body = await response.text();
-
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
-      navigate('/home');
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 export default function PasswordResetScreen() {
   const navigate = useNavigate();
+  const changePasswordMutation = useChangePassword();
+
+  const handleSubmit = async (values: PasswordResetFormValues) => {
+    try {
+      await changePasswordMutation.mutateAsync({
+        password: values.password,
+      });
+      navigate('/home');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to reset password';
+      showErrorToast(message);
+    }
+  };
 
   return (
     <Screen style={styles.container}>
@@ -59,7 +45,7 @@ export default function PasswordResetScreen() {
       <View style={styles.formContainer}>
         <AppForm<PasswordResetFormValues>
           initialValues={{ password: '' }}
-          onSubmit={(values) => handleSubmit(values, navigate)}
+          onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
           <PasswordInput<PasswordResetFormValues> name="password" placeholder="Password" />

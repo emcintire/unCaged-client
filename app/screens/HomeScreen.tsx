@@ -1,12 +1,11 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity, TextInput } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
 import { filter, includes, map } from 'lodash';
 import colors from '../config/colors';
 import { changeResolution } from '../config/helperFunctions';
 import type { Movie } from '../types';
-import { useMovies, useQuote, useAddQuote } from '../api';
+import { useMovies, useQuote, useAddQuote, useUser } from '../api';
 
 import Screen from '../components/Screen';
 import AppButton from '../components/AppButton';
@@ -111,30 +110,16 @@ const genres = [
 ];
 
 export default function HomeScreen() {
-  const [isAdmin, setIsAdmin] = useState(false);
   const [newQuote, setNewQuote] = useState('');
   const [newSubQuote, setNewSubQuote] = useState('');
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [token, setToken] = useState('');
 
-  // TanStack Query hooks
+  const { data: user } = useUser();
   const { data: movies = [], isLoading: moviesLoading } = useMovies();
   const { data: quote, isLoading: quoteLoading } = useQuote();
   const addQuoteMutation = useAddQuote();
 
   const isLoading = moviesLoading || quoteLoading;
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const storedToken = await AsyncStorage.getItem('token');
-      if (storedToken) {
-        setToken(storedToken);
-        // You can add user check here if needed
-        // For now, keeping the admin check simple
-      }
-    };
-    checkAdmin();
-  }, []);
 
   const submitQuote = () => {
     addQuoteMutation.mutate({
@@ -161,10 +146,9 @@ export default function HomeScreen() {
         isOpen={selectedMovie != null}
         movie={selectedMovie!}
         onClose={() => setSelectedMovie(null)}
-        token={token}
       />
       <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
-        {isAdmin && (
+        {user?.isAdmin && (
           <View>
             <TextInput
               style={styles.quoteInput}

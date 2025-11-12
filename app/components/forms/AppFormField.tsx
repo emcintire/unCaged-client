@@ -4,14 +4,14 @@ import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo
 import AppTextInput from '../AppTextInput';
 import ErrorMessage from './ErrorMessage';
 
-type Props<T> = Omit<TextInputProps, 'value' | 'onChangeText' | 'onBlur'> & {
+type Props<Values> = Omit<TextInputProps, 'value' | 'onChangeText' | 'onBlur'> & {
   icon?: keyof typeof MaterialCommunityIconsType.glyphMap;
-  name: keyof T & string;
+  name: keyof Values & string;
   width?: DimensionValue;
 };
 
-export default function AppFormField<T extends FormikValues>({ name, width, ...otherProps }: Props<T>) {
-  const { setFieldTouched, handleChange, errors, touched, values } = useFormikContext<T>();
+export default function AppFormField<Values extends FormikValues>({ name, width, ...otherProps }: Props<Values>) {
+  const { setFieldTouched, handleChange, errors, touched, values } = useFormikContext<Values>();
 
   return (
     <>

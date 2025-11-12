@@ -1,12 +1,12 @@
 import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Screen from '../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../components/forms';
 import colors from '../config/colors';
 import { showErrorToast } from '../config/helperFunctions';
 import type { WelcomeStackParamList } from '../types';
+import { useCheckCode } from '../api/controllers/users.controller';
 
 const validationSchema = Yup.object().shape({
   code: Yup.string().required().label('Code'),
@@ -19,30 +19,17 @@ type EmailCodeFormValues = {
 export default function EmailCodeScreen({
   navigation,
 }: NativeStackScreenProps<WelcomeStackParamList, 'EmailCode'>) {
+  const checkCodeMutation = useCheckCode();
+
   const handleSubmit = async (values: EmailCodeFormValues) => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      const response = await fetch('https://uncaged-server.herokuapp.com/api/users/checkCode', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'x-auth-token': token || '',
-        },
-        body: JSON.stringify({
-          code: values.code,
-        }),
+      await checkCodeMutation.mutateAsync({
+        code: values.code,
       });
-
-      const body = await response.text();
-
-      if (response.status !== 200) {
-        showErrorToast(body);
-      } else {
-        navigation.navigate('PasswordReset');
-      }
-    } catch (err) {
-      console.log(err);
+      navigation.navigate('PasswordReset');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Invalid code';
+      showErrorToast(message);
     }
   };
 

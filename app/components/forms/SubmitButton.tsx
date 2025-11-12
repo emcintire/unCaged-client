@@ -10,8 +10,8 @@ type Props = {
   title: string;
 };
 
-export default function SubmitButton<T extends FormikValues>({ color = 'orange', style, title }: Props) {
-  const { handleSubmit } = useFormikContext<T>();
+export default function SubmitButton<Values extends FormikValues>({ color = 'orange', style, title }: Props) {
+  const { handleSubmit } = useFormikContext<Values>();
 
   return <AppButton title={title} onPress={handleSubmit} color={color} style={style} />;
 }

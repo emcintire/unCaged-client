@@ -1,64 +1,39 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import AdBanner from '../AdBanner';
 import Icon from '../Icon';
 import colors from '../../config/colors';
-import { changeResolution, showErrorToast } from '../../config/helperFunctions';
+import { changeResolution } from '../../config/helperFunctions';
 import Loading from '../Loading';
-import type { Movie, SetState, User } from '../../types';
+import type { Movie } from '../../types';
 import { reject } from 'lodash';
 import MovieDetails from './MovieDetails';
 import MovieActions from './MovieActions';
+import { useUser } from '../../api';
+import { useAverageRating } from '../../api/controllers/movies.controller';
 
 type Props = {
   isOpen: boolean;
   movie: Movie;
   onClose: () => void;
-  token: string;
 };
-
-const fetchData = async (
-  token: string,
-  setUser: SetState<User | null>,
-  setIsAdmin: SetState<boolean>
-): Promise<void> => {
-  const response = await fetch('https://uncaged-server.herokuapp.com/api/users/', {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'x-auth-token': token,
-    },
-  });
-
-  const body = (await response.json()) as User | string;
-  if (response.status !== 200) {
-    showErrorToast(body as string);
-    return;
-  }
-
-  const user = body as User;
-  setIsAdmin(user.isAdmin);
-  setUser(user);
-};
-
 
 export default function MovieModal({
   isOpen,
   movie: propsMovie,
   onClose,
-  token,
 }: Props) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [movieRating, setMovieRating] = useState(0);
   const [movie, setMovie] = useState<Movie>(propsMovie);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+
+  const { data: user, isLoading: isUserLoading } = useUser();
+  const { data: ratingData, isLoading: isRatingLoading } = useAverageRating(propsMovie?._id || '');
+  
+  const isLoading = isUserLoading || isRatingLoading;
+  const movieRating = ratingData ? Number(ratingData) : 0;
 
   useEffect(() => {
-    fetchData(token, setUser, setIsAdmin);
-    getMovieRating();
+    if (!isOpen) { return; }
 
     const parsedMovie = {
       ...(propsMovie.img.length === 32 ? changeResolution('h', propsMovie) : propsMovie),
@@ -66,26 +41,7 @@ export default function MovieModal({
     };
 
     setMovie(parsedMovie);
-    setIsLoading(false);
-  }, []);
-
-  const getMovieRating = useCallback(async (): Promise<void> => {
-    const response = await fetch(`https://uncaged-server.herokuapp.com/api/movies/avgRating/${propsMovie._id}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const body = await response.text();
-
-    if (response.status !== 200) {
-      showErrorToast(body);
-    } else {
-      setMovieRating(Number(body));
-    }
-  }, [propsMovie._id]);
+  }, [propsMovie, isOpen]);
 
   const styles = StyleSheet.create({
     background: {
@@ -167,6 +123,8 @@ export default function MovieModal({
     },
   });
 
+  if (!isOpen) { return null; }
+
   return (
     <Modal
       animationType="slide"
@@ -174,9 +132,9 @@ export default function MovieModal({
       visible={isOpen}
       onRequestClose={onClose}
     >
-      {(isLoading || user == null) ? <Loading /> : (
+      {(isLoading || isUserLoading) ? <Loading /> : (
         <View style={styles.background}>
-          {!isAdmin && (
+          {!user?.isAdmin && (
             <View style={styles.adContainerTop}>
               <AdBanner />
             </View>
@@ -204,15 +162,10 @@ export default function MovieModal({
                 <Text style={styles.date}>{movie.date.substring(0, 4)}</Text>
               </View>
             </View>
-            <MovieActions
-              movie={movie}
-              onUpdateMovieRating={getMovieRating}
-              token={token}
-              user={user}
-            />
+            <MovieActions movie={movie} />
             <MovieDetails movie={movie} />
           </ScrollView>
-          {!isAdmin && (
+          {!user?.isAdmin && (
             <View style={styles.adContainerBottom}>
               <AdBanner />
             </View>

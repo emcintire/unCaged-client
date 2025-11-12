@@ -33,7 +33,7 @@ export type FilteredMoviesData = {
   seen: boolean;
   rotten: boolean;
   time: number;
-  genres: string[];
+  genres: Array<string>;
   min: number;
   max: number;
 };
@@ -64,22 +64,22 @@ export const movieKeys = {
 
 const movieApi = {
   // GET requests
-  getMovies: () => apiClient.post<Movie[]>('/movies/getMovies'),
+  getMovies: () => apiClient.post<Array<Movie>>('/movies/getMovies'),
   getQuote: () => apiClient.get<Quote | Quote[]>('/movies/quote'),
-  getAverageRating: (id: string) => apiClient.get<any>(`/movies/avgRating/${id}`),
+  getAverageRating: (id: string) => apiClient.get<string>(`/movies/avgRating/${id}`),
 
   // POST requests
   addQuote: (data: AddQuoteData) => apiClient.post<Quote>('/movies/quote', data),
   getFilteredMovies: (data: FilteredMoviesData) => 
-    apiClient.post<Movie[]>('/movies/filteredMovies', data),
+    apiClient.post<Array<Movie>>('/movies/filteredMovies', data),
   searchMovies: (data: SearchMovieData) => 
-    apiClient.post<Movie[]>('/movies/findByTitle', data),
+    apiClient.post<Array<Movie>>('/movies/findByTitle', data),
   rateMovie: (data: RateMovieData) => 
     apiClient.post<string>('/users/rate', data),
 
   // PUT requests
   updateMovieRating: (data: UpdateMovieRatingData) => 
-    apiClient.put<any>('/movies/updateRating', data),
+    apiClient.put<void>('/movies/updateRating', data),
 
   // DELETE requests
   deleteRating: (data: DeleteRatingData) => 

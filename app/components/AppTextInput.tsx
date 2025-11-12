@@ -32,11 +32,12 @@ export default function AppTextInput({ icon, width = '100%', style, ...otherProp
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     backgroundColor: defaultStyles.colors.light,
     borderRadius: 25,
     flexDirection: 'row',
-    padding: 15,
     marginVertical: 10,
+    padding: 15,
   },
   icon: {
     marginRight: 10,
