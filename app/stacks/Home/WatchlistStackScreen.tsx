@@ -3,7 +3,7 @@ import { TouchableOpacity, Image } from 'react-native';
 import { createNativeStackNavigator, NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { map } from 'lodash';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
-import WatchlistScreen from '../../screens/WatchlistScreen';
+import WatchlistScreen from '../../screens/Home/WatchlistScreen';
 import { WatchlistTabParamList, type HomeStackParamList } from '../../types';
 import { useCurrentUser } from '../../api/controllers/users.controller';
 import { screenOptions } from './screenOptions';

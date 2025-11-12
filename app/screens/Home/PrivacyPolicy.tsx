@@ -1,7 +1,7 @@
 import { ScrollView } from 'react-native';
 import HTMLView from 'react-native-htmlview';
 
-import Screen from '../components/Screen';
+import Screen from '../../components/Screen';
 
 function PrivacyPolicyScreen() {
   const htmlContent = `<style>

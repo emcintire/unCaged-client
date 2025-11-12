@@ -5,13 +5,13 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { filter, includes, map } from 'lodash';
 
-import Screen from '../components/Screen';
-import colors from '../config/colors';
-import MovieModal from '../components/movieModal/MovieModal';
-import Loading from '../components/Loading';
-import { changeResolution } from '../config/helperFunctions';
-import { Movie } from '../types';
-import { useMovies } from '../api/controllers/movies.controller';
+import Screen from '../../components/Screen';
+import colors from '../../config/colors';
+import MovieModal from '../../components/movieModal/MovieModal';
+import Loading from '../../components/Loading';
+import { changeResolution } from '../../config/helperFunctions';
+import { Movie } from '../../types';
+import { useMovies } from '../../api/controllers/movies.controller';
 
 const genres = [
   'Genre',

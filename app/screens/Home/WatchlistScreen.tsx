@@ -3,13 +3,13 @@ import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { map } from 'lodash';
 
-import { changeResolution } from '../config/helperFunctions';
-import Screen from '../components/Screen';
-import colors from '../config/colors';
-import MovieModal from '../components/movieModal/MovieModal';
-import AdBanner from '../components/AdBanner';
-import { Movie } from '../types';
-import { useCurrentUser, useWatchlist } from '../api/controllers/users.controller';
+import { changeResolution } from '../../config/helperFunctions';
+import Screen from '../../components/Screen';
+import colors from '../../config/colors';
+import MovieModal from '../../components/movieModal/MovieModal';
+import AdBanner from '../../components/AdBanner';
+import { Movie } from '../../types';
+import { useCurrentUser, useWatchlist } from '../../api/controllers/users.controller';
 
 export default function WatchlistScreen() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);

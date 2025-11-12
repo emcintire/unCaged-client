@@ -1,11 +1,10 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-native';
-import Screen from '../components/Screen';
-import colors from '../config/colors';
-import { showErrorToast, showSuccessToast } from '../config/helperFunctions';
-import { AppForm, AppFormField, PasswordInput, SubmitButton } from '../components/forms';
-import { useLogin } from '../api';
+import Screen from '../../components/Screen';
+import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
+import { AppForm, AppFormField, PasswordInput, SubmitButton } from '../../components/forms';
+import { useLogin } from '../../api';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
@@ -38,7 +37,6 @@ export default function LoginScreen() {
 
   return (
     <Screen style={styles.container}>
-      <Text style={styles.tagline}>Login</Text>
       <View style={styles.formContainer}>
         <AppForm<LoginFormValues>
           initialValues={{ email: '', password: '' }}
@@ -62,10 +60,6 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
-    backgroundColor: colors.bg,
-    height: '100%',
-    width: '100%',
     alignItems: 'center',
   },
   loginButton: {
@@ -74,12 +68,5 @@ const styles = StyleSheet.create({
   formContainer: {
     width: '100%',
     top: 15,
-  },
-  tagline: {
-    fontFamily: 'Montserrat-ExtraBold',
-    fontSize: 40,
-    marginTop: 10,
-    color: 'white',
-    alignSelf: 'center',
   },
 });

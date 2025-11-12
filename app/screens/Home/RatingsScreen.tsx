@@ -2,14 +2,14 @@ import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { map } from 'lodash';
-import AdBanner from '../components/AdBanner';
+import AdBanner from '../../components/AdBanner';
 
-import { changeResolution } from '../config/helperFunctions';
-import Screen from '../components/Screen';
-import colors from '../config/colors';
-import MovieModal from '../components/movieModal/MovieModal';
-import { Movie } from '../types';
-import { useCurrentUser, useRatings } from '../api/controllers/users.controller';
+import { changeResolution } from '../../config/helperFunctions';
+import Screen from '../../components/Screen';
+import colors from '../../config/colors';
+import MovieModal from '../../components/movieModal/MovieModal';
+import { Movie } from '../../types';
+import { useCurrentUser, useRatings } from '../../api/controllers/users.controller';
 
 export default function RatingsScreen() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);

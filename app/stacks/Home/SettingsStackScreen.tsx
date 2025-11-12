@@ -3,14 +3,14 @@ import { TouchableOpacity, Image } from 'react-native';
 import { createNativeStackNavigator, NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { map } from 'lodash';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
-import AccountScreen from '../../screens/AccountScreen';
-import FavoritesScreen from '../../screens/FavoritesScreen';
-import SeenScreen from '../../screens/SeenScreen';
-import AccountDetailsScreen from '../../screens/AccountDetailsScreen';
-import SecurityScreen from '../../screens/SecurityScreen';
-import AboutScreen from '../../screens/AboutScreen';
-import RatingsScreen from '../../screens/RatingsScreen';
-import PrivacyPolicyScreen from '../../screens/PrivacyPolicy';
+import SettingsScreen from '../../screens/Home/SettingsScreen';
+import FavoritesScreen from '../../screens/Home/FavoritesScreen';
+import SeenScreen from '../../screens/Home/SeenScreen';
+import AccountDetailsScreen from '../../screens/Home/AccountDetailsScreen';
+import SecurityScreen from '../../screens/Home/SecurityScreen';
+import AboutScreen from '../../screens/Home/AboutScreen';
+import RatingsScreen from '../../screens/Home/RatingsScreen';
+import PrivacyPolicyScreen from '../../screens/Home/PrivacyPolicy';
 import { SettingsTabParamList, type HomeStackParamList } from '../../types/homeStackParamList';
 import { useCurrentUser } from '../../api/controllers/users.controller';
 import { screenOptions } from './screenOptions';
@@ -39,7 +39,7 @@ const screens: Array<{
 }> = [
   {
     name: 'Settings',
-    component: AccountScreen,
+    component: SettingsScreen,
     options: ({ navigation, userImage, refetch }) => ({
       headerLeft: () => <SmallLogo width={80} height={20} />,
       headerRight: () => (
@@ -90,6 +90,7 @@ const screens: Array<{
     options: ({ userImage }) => ({
       headerRight: () => <Image source={{ uri: userImage }} style={imgStyle} />,
       ...sharedOptions,
+      title: 'Change Password'
     }),
   },
   {

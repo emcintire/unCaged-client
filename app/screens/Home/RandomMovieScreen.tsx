@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Image, Modal, TouchableOpacity, Dimensions, Text } from 'react-native';
-import { filter } from 'lodash';
-import { changeResolution } from '../config/helperFunctions';
+import { StyleSheet, View, Image, Modal, TouchableOpacity, Text } from 'react-native';
+import { changeResolution } from '../../config/helperFunctions';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import type { Movie } from '../types';
+import type { Movie } from '../../types';
 
-import Screen from '../components/Screen';
-import colors from '../config/colors';
-import AdBanner from '../components/AdBanner';
-import MovieModal from '../components/movieModal/MovieModal';
-import RandomMovieFilters from '../components/RandomMovieFilters';
-import { useUser } from '../api/controllers/users.controller';
-import { useMovies } from '../api/controllers/movies.controller';
+import Screen from '../../components/Screen';
+import colors from '../../config/colors';
+import AdBanner from '../../components/AdBanner';
+import MovieModal from '../../components/movieModal/MovieModal';
+import RandomMovieFilters from '../../components/RandomMovieFilters';
+import { useUser } from '../../api/controllers/users.controller';
+import { useMovies } from '../../api/controllers/movies.controller';
 
 export default function RandomMovieScreen() {
   const [filtersModalVisible, setFiltersModalVisible] = useState(false);
@@ -54,16 +53,16 @@ export default function RandomMovieScreen() {
       return;
     }
 
-    // Don't show same movie twice in a row
-    const availableMovies = filtered.length > 1 && !mandyFilter && movie
-      ? filter(filtered, (m) => m._id !== movie._id)
-      : filtered;
+    let randInt = Math.floor(Math.random() * filtered.length);
+    let newMovie = filtered[randInt];
 
-    const randInt = Math.floor(Math.random() * availableMovies.length);
-    const selectedMovie = availableMovies[randInt];
-    const resolvedMovie = changeResolution('', selectedMovie!);
-
-    setMovie(resolvedMovie);
+    if (movie?._id === newMovie?._id && !mandyFilter) {
+      filtered = filtered.filter((m) => m._id !== newMovie?._id)
+      randInt = Math.floor(Math.random() * filtered.length);
+      newMovie = filtered[randInt];
+    }
+    newMovie = changeResolution('', newMovie!);
+    setMovie(newMovie);
   }, [genreFilter, mandyFilter, unseenFilter, watchlistFilter, movie, allMovies, user]);
 
   useEffect(() => {
@@ -113,41 +112,41 @@ export default function RandomMovieScreen() {
           </TouchableOpacity>
         </View>
       )}
-      <View>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.refreshBtn} onPress={getRandomMovie}>
           <View style={styles.inner}>
             <Text style={styles.text}>CAGE ME</Text>
           </View>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.filtersBtn} onPress={() => setFiltersModalVisible(true)}>
+          <MaterialCommunityIcons name="tune" color="grey" size={35} />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        style={styles.filtersBtn}
-        onPress={() => setFiltersModalVisible(true)}
-      >
-        <MaterialCommunityIcons name="tune" color="grey" size={35} />
-      </TouchableOpacity>
     </Screen>
   );
 }
 
-const screen = Dimensions.get('window').width + Dimensions.get('window').height;
-
 const styles = StyleSheet.create({
   container: {
-    fontFamily: 'Montserrat-ExtraBold',
-    backgroundColor: colors.bg,
     alignItems: 'center',
-    width: '100%',
-    height: '100%',
     justifyContent: 'space-evenly',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
   },
   movieContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+    paddingHorizontal: 20,
   },
   button: {
-    width: screen < 1100 ? 285 : 320,
-    height: screen < 1100 ? 435 : 485,
+    width: '85%',
+    maxWidth: 400,
+    aspectRatio: 2 / 3,
     shadowColor: '#00000080',
     shadowOffset: {
       width: 0,
@@ -196,8 +195,9 @@ const styles = StyleSheet.create({
   },
   filtersBtn: {
     position: 'absolute',
-    right: 40,
-    bottom: 55,
+    right: -50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   adContainer: {
     position: 'absolute',

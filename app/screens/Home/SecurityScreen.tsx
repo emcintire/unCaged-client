@@ -1,12 +1,11 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import * as Yup from 'yup';
 
-import Screen from '../components/Screen';
-import { AppForm, SubmitButton } from '../components/forms';
-import PasswordInput from '../components/forms/PasswordInput';
-import colors from '../config/colors';
-import { showErrorToast, showSuccessToast } from '../config/helperFunctions';
-import { useChangePassword } from '../api/controllers/users.controller';
+import Screen from '../../components/Screen';
+import { AppForm, SubmitButton } from '../../components/forms';
+import PasswordInput from '../../components/forms/PasswordInput';
+import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
+import { useChangePassword } from '../../api/controllers/users.controller';
 
 type SecurityFormValues = {
   currentPassword: string;
@@ -39,7 +38,6 @@ function SecurityScreen({ navigation }: { navigation: { navigate: (route: string
   };
   return (
     <Screen style={styles.container}>
-      <Text style={styles.tagline}>Change Password</Text>
       <View style={styles.formContainer}>
         <AppForm<SecurityFormValues>
           initialValues={{
@@ -70,12 +68,7 @@ function SecurityScreen({ navigation }: { navigation: { navigate: (route: string
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
-    backgroundColor: colors.bg,
-    height: '100%',
-    width: '100%',
     alignItems: 'center',
-    paddingTop: 5,
   },
   scrollContainer: {
     height: '100%',
@@ -87,13 +80,6 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 30,
-  },
-  tagline: {
-    fontFamily: 'Montserrat-ExtraBold',
-    fontSize: 25,
-    marginTop: 10,
-    color: 'white',
-    alignSelf: 'center',
   },
 });
 

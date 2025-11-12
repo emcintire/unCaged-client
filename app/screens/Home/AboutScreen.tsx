@@ -1,7 +1,7 @@
 import { StyleSheet, Text, ScrollView } from 'react-native';
 
-import Screen from '../components/Screen';
-import colors from '../config/colors';
+import Screen from '../../components/Screen';
+import colors from '../../config/colors';
 
 export default function AboutScreen() {
   return (

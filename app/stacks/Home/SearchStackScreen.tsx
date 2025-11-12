@@ -3,7 +3,7 @@ import { TouchableOpacity, Image } from 'react-native';
 import { createNativeStackNavigator, NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { map } from 'lodash';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
-import SearchScreen from '../../screens/SearchScreen';
+import SearchScreen from '../../screens/Home/SearchScreen';
 import { useCurrentUser } from '../../api/controllers/users.controller';
 import { SearchTabParamList, type HomeStackParamList } from '../../types';
 import { screenOptions } from './screenOptions';

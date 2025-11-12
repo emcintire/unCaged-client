@@ -3,11 +3,11 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigate } from 'react-router-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import AppButton from '../components/AppButton';
-import colors from '../config/colors';
-import Logo from '../assets/imgs/logo.svg';
-import Screen from '../components/Screen';
-import type { WelcomeStackParamList } from '../types';
+import AppButton from '../../components/AppButton';
+import colors from '../../config/colors';
+import Logo from '../../assets/imgs/logo.svg';
+import Screen from '../../components/Screen';
+import type { WelcomeStackParamList } from '../../types';
 
 export default function WelcomeScreen({ navigation }: NativeStackScreenProps<WelcomeStackParamList, 'Welcome'>) {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ export default function WelcomeScreen({ navigation }: NativeStackScreenProps<Wel
   }, [navigate]);
 
   return (
-    <Screen style={styles.container}>
+    <Screen>
       <View style={styles.logoContainer}>
         <Logo width={260} height={240} />
       </View>
@@ -54,15 +54,8 @@ export default function WelcomeScreen({ navigation }: NativeStackScreenProps<Wel
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.bg,
-    width: '100%',
-    height: '90%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   buttonContainer: {
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     height: '50%',
     width: '60%',

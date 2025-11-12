@@ -5,4 +5,9 @@ export const screenOptions = {
   headerTintColor: '#fff',
   headerBackTitleVisible: false,
   headerStatusBarHeight: 0,
+  headerTitleAlign: 'center' as const,
+  headerTitleStyle: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 22,
+  },
 };

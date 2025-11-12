@@ -1,13 +1,12 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-native';
 
-import Screen from '../components/Screen';
-import { AppForm, AppFormField, SubmitButton } from '../components/forms';
-import colors from '../config/colors';
-import PasswordInput from '../components/forms/PasswordInput';
-import { showErrorToast } from '../config/helperFunctions';
-import { useRegister } from '../api/controllers/users.controller';
+import Screen from '../../components/Screen';
+import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
+import PasswordInput from '../../components/forms/PasswordInput';
+import { showErrorToast } from '../../config/helperFunctions';
+import { useRegister } from '../../api/controllers/users.controller';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required().label('Name'),
@@ -59,8 +58,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <Screen style={styles.container}>
-      <Text style={styles.tagline}>Register</Text>
+    <Screen>
       <View style={styles.formContainer}>
         <AppForm<RegisterFormValues>
           initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
@@ -97,13 +95,6 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 15,
-    backgroundColor: colors.bg,
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-  },
   scrollContainer: {
     height: '100%',
     width: '100%',
@@ -114,12 +105,5 @@ const styles = StyleSheet.create({
   },
   registerButton: {
     marginTop: 30,
-  },
-  tagline: {
-    fontFamily: 'Montserrat-ExtraBold',
-    fontSize: 40,
-    marginTop: 10,
-    color: 'white',
-    alignSelf: 'center',
   },
 });

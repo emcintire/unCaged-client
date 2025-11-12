@@ -50,7 +50,6 @@ export const toastConfig = {
         name="check-bold"
         backgroundColor={colors.green}
         iconColor={colors.white}
-        style={{ paddingRight: 10 }}
         size={35}
       />
       <Text style={[styles.notificationText, { color: colors.green }]}>{text1}</Text>
@@ -62,7 +61,6 @@ export const toastConfig = {
         name="exclamation-thick"
         backgroundColor={colors.red}
         iconColor={colors.white}
-        style={{ paddingRight: 10 }}
         size={35}
       />
       <Text style={[styles.notificationText, { color: colors.red }]}>{text1}</Text>

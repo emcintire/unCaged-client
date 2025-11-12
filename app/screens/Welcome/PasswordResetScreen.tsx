@@ -2,12 +2,12 @@ import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-native';
 
-import Screen from '../components/Screen';
-import { AppForm, SubmitButton } from '../components/forms';
-import colors from '../config/colors';
-import PasswordInput from '../components/forms/PasswordInput';
-import { showErrorToast } from '../config/helperFunctions';
-import { useChangePassword } from '../api/controllers/users.controller';
+import Screen from '../../components/Screen';
+import { AppForm, SubmitButton } from '../../components/forms';
+import colors from '../../config/colors';
+import PasswordInput from '../../components/forms/PasswordInput';
+import { showErrorToast } from '../../config/helperFunctions';
+import { useChangePassword } from '../../api/controllers/users.controller';
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()

@@ -3,18 +3,18 @@ import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
 
-import Screen from '../components/Screen';
-import ListItem from '../components/ListItem';
-import Separator from '../components/Separator';
-import colors from '../config/colors';
-import Icon from '../components/Icon';
+import Screen from '../../components/Screen';
+import ListItem from '../../components/ListItem';
+import Separator from '../../components/Separator';
+import colors from '../../config/colors';
+import Icon from '../../components/Icon';
 import { NavigateFunction, useNavigate } from 'react-router-native';
-import { showErrorToast, showSuccessToast } from '../config/helperFunctions';
-import { SettingsTabParamList } from '../types';
+import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
+import { SettingsTabParamList } from '../../types';
 import { map } from 'lodash';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCurrentUser } from '../api/controllers/users.controller';
-import { apiClient } from '../api/client';
+import { useCurrentUser } from '../../api/controllers/users.controller';
+import { apiClient } from '../../api/client';
 
 const deleteAccount = async (navigate: NavigateFunction) => {
   Alert.alert('Are you sure?', 'Daddy would not be pleased', [
@@ -60,53 +60,46 @@ const accountItems: Array<{
   title: keyof SettingsTabParamList;
   iconName: keyof typeof MaterialCommunityIconsType.glyphMap;
   iconColor: string;
-}> = [
-  {
-    children: <Separator />,
-    title: 'Seen',
-    iconName: 'eye',
-    iconColor: colors.orange,
-  },
-  {
-    children: <Separator />,
-    title: 'Favorites',
-    iconName: 'heart',
-    iconColor: colors.orange,
-  },
-  {
-    children: <View style={{ height: 20, backgroundColor: colors.bg }} />,
-    title: 'Ratings',
-    iconName: 'star',
-    iconColor: colors.orange,
-  },
-  {
-    children: <Separator />,
-    title: 'Security',
-    iconName: 'lock',
-    iconColor: colors.white,
-  },
-  {
-    children: <Separator />,
-    title: 'Privacy Policy',
-    iconName: 'shield-alert',
-    iconColor: colors.white,
-  },
-  {
-    title: 'About',
-    iconName: 'help',
-    iconColor: colors.white,
-  },
-];
+}> = [{
+  children: <Separator />,
+  title: 'Seen',
+  iconName: 'eye',
+  iconColor: colors.orange,
+}, {
+  children: <Separator />,
+  title: 'Favorites',
+  iconName: 'heart',
+  iconColor: colors.orange,
+}, {
+  children: <View style={{ height: 20, backgroundColor: colors.bg }} />,
+  title: 'Ratings',
+  iconName: 'star',
+  iconColor: colors.orange,
+}, {
+  children: <Separator />,
+  title: 'Security',
+  iconName: 'lock',
+  iconColor: colors.white,
+}, {
+  children: <Separator />,
+  title: 'Privacy Policy',
+  iconName: 'shield-alert',
+  iconColor: colors.white,
+}, {
+  title: 'About',
+  iconName: 'help',
+  iconColor: colors.white,
+}];
 
-export default function AccountScreen({
+export default function SettingsScreen({
   navigation,
-}: NativeStackScreenProps<SettingsTabParamList, 'My Account'>) {
-  const { data: user, isLoading: loading } = useCurrentUser();
+}: NativeStackScreenProps<SettingsTabParamList, 'Settings'>) {
+  const { data: user, isLoading } = useCurrentUser();
 
   const navigate = useNavigate();
 
   return (
-    <Screen isLoading={loading} style={styles.screen}>
+    <Screen isLoading={isLoading} style={styles.screen}>
       <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
         <View style={styles.container}>
           <ListItem
@@ -152,11 +145,13 @@ export default function AccountScreen({
 const styles = StyleSheet.create({
   container: {
     marginVertical: 20,
+    backgroundColor: colors.bg,
+    width: '100%',
   },
   screen: {
     backgroundColor: colors.bg,
-    paddingTop: 0,
-    paddingBottom: 0,
+    padding: 0,
+    width: '100%',
   },
   tagline: {
     marginTop: 40,

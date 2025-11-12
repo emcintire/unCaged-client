@@ -1,12 +1,12 @@
 import { StyleSheet, View, Text } from 'react-native';
 import * as Yup from 'yup';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Screen from '../components/Screen';
-import { AppForm, AppFormField, SubmitButton } from '../components/forms';
-import colors from '../config/colors';
-import { showErrorToast } from '../config/helperFunctions';
-import type { WelcomeStackParamList } from '../types';
-import { useCheckCode } from '../api/controllers/users.controller';
+import Screen from '../../components/Screen';
+import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
+import colors from '../../config/colors';
+import { showErrorToast } from '../../config/helperFunctions';
+import type { WelcomeStackParamList } from '../../types';
+import { useCheckCode } from '../../api/controllers/users.controller';
 
 const validationSchema = Yup.object().shape({
   code: Yup.string().required().label('Code'),

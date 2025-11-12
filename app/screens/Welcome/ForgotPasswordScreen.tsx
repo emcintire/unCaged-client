@@ -1,13 +1,13 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import * as Yup from 'yup';
 
-import Screen from '../components/Screen';
-import { AppForm, AppFormField, SubmitButton } from '../components/forms';
-import colors from '../config/colors';
-import { showErrorToast } from '../config/helperFunctions';
+import Screen from '../../components/Screen';
+import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
+import colors from '../../config/colors';
+import { showErrorToast } from '../../config/helperFunctions';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { WelcomeStackParamList } from '../types';
-import { useForgotPassword } from '../api/controllers/users.controller';
+import { WelcomeStackParamList } from '../../types';
+import { useForgotPassword } from '../../api/controllers/users.controller';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
@@ -33,9 +33,9 @@ export default function ForgotPasswordScreen({
       showErrorToast(message);
     }
   };
+
   return (
     <Screen style={styles.container}>
-      <Text style={styles.tagline}>Reset Password</Text>
       <View style={styles.formContainer}>
         <AppForm<ForgotPasswordFormValues>
           initialValues={{ email: '' }}
@@ -61,23 +61,12 @@ export default function ForgotPasswordScreen({
 const styles = StyleSheet.create({
   container: {
     padding: 15,
+    paddingTop: 0,
     backgroundColor: colors.bg,
     height: '100%',
     width: '100%',
     alignItems: 'center',
   },
-  submitButton: {
-    marginTop: 30,
-  },
-  formContainer: {
-    width: '100%',
-    top: 15,
-  },
-  tagline: {
-    fontFamily: 'Montserrat-ExtraBold',
-    fontSize: 30,
-    marginTop: 10,
-    color: 'white',
-    alignSelf: 'center',
-  },
+  submitButton: { marginTop: 30 },
+  formContainer: { width: '100%', top: 15 },
 });

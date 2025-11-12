@@ -1,5 +1,5 @@
 import { ComponentType, useEffect } from 'react';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {
   MaterialCommunityIcons, type MaterialCommunityIcons as MaterialCommunityIconsType,
@@ -14,7 +14,7 @@ import SearchStackScreen from './SearchStackScreen';
 import RandomMovieStackScreen from './RandomMovieStackScreen';
 import SettingsStackScreen from './SettingsStackScreen';
 
-const Home_Stack = createMaterialBottomTabNavigator();
+const Home_Stack = createBottomTabNavigator();
 
 const screens: Array<{
   name: string;
@@ -62,23 +62,31 @@ export default function HomeStack() {
   return (
     <NavigationContainer>
       <Home_Stack.Navigator
-        activeColor={colors.orange}
-        inactiveColor={colors.medium}
-        barStyle={{ backgroundColor: colors.black, height: 60, elevation: 0 }}
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: colors.orange,
+          tabBarInactiveTintColor: colors.medium,
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            backgroundColor: colors.black,
+            height: 60,
+            borderTopWidth: 0,
+            elevation: 0,
+          },
+        }}
         initialRouteName="HomeTab"
-        shifting={false}
-        labeled={false}
       >
         {map(screens, (screen) => (
           <Home_Stack.Screen
             key={screen.name}
             name={screen.name}
+            component={screen.Component}
             options={{
-              tabBarIcon: ({ color }) => <MaterialCommunityIcons style={{ backgroundColor: 'transparent' }} name={screen.icon} color={color} size={28} />,
+              tabBarIcon: ({ color }: { color: string }) => (
+                <MaterialCommunityIcons name={screen.icon} color={color} size={28} />
+              ),
             }}
-          >
-            {(props) => <screen.Component navigation={props.navigation} />}
-          </Home_Stack.Screen>
+          />
         ))}
       </Home_Stack.Navigator>
     </NavigationContainer>

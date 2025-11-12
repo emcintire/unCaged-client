@@ -2,49 +2,43 @@ import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { map } from 'lodash';
+import AdBanner from '../../components/AdBanner';
 
-import { changeResolution } from '../config/helperFunctions';
-import Screen from '../components/Screen';
-import colors from '../config/colors';
-import MovieModal from '../components/movieModal/MovieModal';
-import { Movie } from '../types';
-import { useSeen } from '../api/controllers/users.controller';
+import { changeResolution } from '../../config/helperFunctions';
+import Screen from '../../components/Screen';
+import colors from '../../config/colors';
+import MovieModal from '../../components/movieModal/MovieModal';
+import { Movie } from '../../types';
+import { useCurrentUser, useFavorites } from '../../api/controllers/users.controller';
 
-export default function SeenScreen() {
+export default function FavoritesScreen() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   
-  const { data: movies = [], isLoading } = useSeen();
+  const { data: user, isLoading: isUserLoading } = useCurrentUser();
+  const { data: movies = [], isLoading: isMoviesLoading } = useFavorites();
+  
+  const isLoading = isUserLoading || isMoviesLoading;
+  const isAdmin = user?.isAdmin ?? false;
 
   const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
 
   return (
-    <Screen isLoading={isLoading} style={movies.length === 0 ? styles.noMoviesContainer : styles.container}>
+    <Screen isLoading={isLoading} style={movies.length === 0 ? styles.noMoviesContainer : null}>
+      {!isAdmin && <AdBanner />}
       {movies.length === 0 ? (
-        <Text style={styles.text}>What are you doing here... go watch a Nicolas Cage movie</Text>
+        <Text style={styles.text}>You will see your favorite movies here</Text>
       ) : (
         <>
           <MovieModal
-            isOpen={selectedMovie !== null}
+            isOpen={selectedMovie != null}
             movie={selectedMovie!}
             onClose={() => setSelectedMovie(null)}
           />
           <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
-            <View>
-              <Text style={styles.header}>
-                You've seen
-                <Text style={styles.number}> {movies.length}</Text>{' '}
-              </Text>
-              <Text style={styles.subHeader}>
-                {movies.length === 1 ? 'cinematic masterpiece' : 'cinematic masterpieces'}
-              </Text>
-            </View>
             <View style={styles.scrollContainer}>
               {map(movies, (movie) => (
                 <View style={styles.movieContainer} key={movie._id}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => setSelectedMovie(movie)}
-                  >
+                  <TouchableOpacity style={styles.button} onPress={() => setSelectedMovie(movie)} >
                     <Image source={{ uri: getMovieWithChangedResolution(movie).img }} style={styles.image} />
                   </TouchableOpacity>
                 </View>
@@ -58,12 +52,6 @@ export default function SeenScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    fontFamily: 'Montserrat-ExtraBold',
-    backgroundColor: colors.bg,
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
   scrollContainer: {
     flexDirection: 'row',
     flex: 1,
@@ -110,25 +98,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.bg,
-  },
-  header: {
-    marginTop: 10,
-    color: 'white',
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 20,
-    textAlign: 'center',
-  },
-  subHeader: {
-    color: 'white',
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 20,
-    textAlign: 'center',
-  },
-  number: {
-    marginTop: 20,
-    color: colors.orange,
-    fontFamily: 'Montserrat-Bold',
-    fontSize: 40,
-    textAlign: 'center',
   },
 });

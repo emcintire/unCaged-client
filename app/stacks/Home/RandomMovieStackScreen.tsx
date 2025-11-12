@@ -3,7 +3,7 @@ import { TouchableOpacity, Image } from 'react-native';
 import { createNativeStackNavigator, NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { map } from 'lodash';
 import SmallLogo from '../../assets/imgs/small_logo.svg';
-import RandomMovieScreen from '../../screens/RandomMovieScreen';
+import RandomMovieScreen from '../../screens/Home/RandomMovieScreen';
 import { useCurrentUser } from '../../api/controllers/users.controller';
 import type { HomeStackParamList } from '../../types';
 import { screenOptions } from './screenOptions';

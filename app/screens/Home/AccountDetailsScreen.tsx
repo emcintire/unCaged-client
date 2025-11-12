@@ -5,13 +5,13 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { EventRegister } from 'react-native-event-listeners';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import Screen from '../components/Screen';
-import colors from '../config/colors';
-import PicturePicker from '../components/PicturePicker';
-import { AppForm, AppFormField, SubmitButton } from '../components/forms';
-import { showErrorToast, showSuccessToast } from '../config/helperFunctions';
-import type { HomeStackParamList } from '../types/homeStackParamList';
-import { useCurrentUser, useUpdateUser } from '../api/controllers/users.controller';
+import Screen from '../../components/Screen';
+import colors from '../../config/colors';
+import PicturePicker from '../../components/PicturePicker';
+import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
+import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
+import type { HomeStackParamList } from '../../types/homeStackParamList';
+import { useCurrentUser, useUpdateUser } from '../../api/controllers/users.controller';
 
 type FormValues = {
   name: string;

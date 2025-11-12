@@ -3,14 +3,13 @@ import { View } from 'react-native';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import WelcomeScreen from '../screens/WelcomeScreen';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
-import EmailCodeScreen from '../screens/EmailCodeScreen';
-import PasswordResetScreen from '../screens/PasswordResetScreen';
+import WelcomeScreen from '../screens/Welcome/WelcomeScreen';
+import LoginScreen from '../screens/Welcome/LoginScreen';
+import RegisterScreen from '../screens/Welcome/RegisterScreen';
+import ForgotPasswordScreen from '../screens/Welcome/ForgotPasswordScreen';
+import EmailCodeScreen from '../screens/Welcome/EmailCodeScreen';
+import PasswordResetScreen from '../screens/Welcome/PasswordResetScreen';
 import colors from '../config/colors';
-import SmallLogo from '../assets/imgs/small_logo.svg';
 import type { WelcomeStackParamList } from '../types/welcomeStackParamList';
 import { map } from 'lodash';
 import { screenOptions } from './Home/screenOptions';
@@ -21,7 +20,7 @@ const screens: ReadonlyArray<{
   name: keyof WelcomeStackParamList;
   component: ComponentType<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   icon: keyof typeof MaterialCommunityIconsType.glyphMap;
-  titleWidth?: number;
+  title?: string;
 }> = [
   {
     name: 'Welcome',
@@ -31,27 +30,27 @@ const screens: ReadonlyArray<{
     name: 'Login',
     component: LoginScreen,
     icon: 'login',
-    titleWidth: 100,
+    title: 'Login',
   }, {
     name: 'Register',
     component: RegisterScreen,
     icon: 'account-plus',
-    titleWidth: 110,
+    title: 'Register',
   }, {
     name: 'ForgotPassword',
     component: ForgotPasswordScreen,
     icon: 'lock-reset',
-    titleWidth: 110,
+    title: 'Reset Password',
   }, {
     name: 'EmailCode',
     component: EmailCodeScreen,
     icon: 'email-check',
-    titleWidth: 110,
+    title: 'Email Code',
   }, {
     name: 'PasswordReset',
     component: PasswordResetScreen,
     icon: 'lock-check',
-    titleWidth: 110,
+    title: 'Password Reset',
   },
 ];
 
@@ -65,12 +64,7 @@ export default function WelcomeStack() {
               key={screen.name}
               name={screen.name}
               component={screen.component}
-              options={{
-                headerTitleAlign: 'center',
-                headerTitle: () => screen.titleWidth == null
-                  ? null
-                  : <SmallLogo width={screen.titleWidth} height={20} />,
-              }}
+              options={{ title: screen.title || screen.name }}
             />
           ))}
         </Welcome_Stack.Navigator>
