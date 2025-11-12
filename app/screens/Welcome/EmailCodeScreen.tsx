@@ -1,6 +1,8 @@
 import { StyleSheet, View, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Yup from 'yup';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
 import Screen from '../../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
 import colors from '../../config/colors';
@@ -16,17 +18,16 @@ type EmailCodeFormValues = {
   code: string;
 };
 
-export default function EmailCodeScreen({
-  navigation,
-}: NativeStackScreenProps<WelcomeStackParamList, 'EmailCode'>) {
+export default function EmailCodeScreen() {
   const checkCodeMutation = useCheckCode();
+  const { navigate } = useNavigation<NativeStackNavigationProp<WelcomeStackParamList>>();
 
   const handleSubmit = async (values: EmailCodeFormValues) => {
     try {
       await checkCodeMutation.mutateAsync({
         code: values.code,
       });
-      navigation.navigate('PasswordReset');
+      navigate('Password Reset');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Invalid code';
       showErrorToast(message);
@@ -60,9 +61,6 @@ export default function EmailCodeScreen({
 const styles = StyleSheet.create({
   container: {
     padding: 15,
-    backgroundColor: colors.bg,
-    height: '100%',
-    width: '100%',
     alignItems: 'center',
   },
   submitButton: {

@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Modal } from 'react-native';
 import * as Yup from 'yup';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { EventRegister } from 'react-native-event-listeners';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import Screen from '../../components/Screen';
 import colors from '../../config/colors';
 import PicturePicker from '../../components/PicturePicker';
 import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
 import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
-import type { HomeStackParamList } from '../../types/homeStackParamList';
+import type { HomeStackParamList } from '../../types';
 import { useCurrentUser, useUpdateUser } from '../../api/controllers/users.controller';
+import { useNavigation } from '@react-navigation/native';
+import { toLower, trim } from 'lodash';
 
 type FormValues = {
   name: string;
@@ -23,24 +24,23 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().email().label('Email').required(),
 });
 
-export default function AccountDetailsScreen({
-  navigation,
-}: NativeStackScreenProps<HomeStackParamList, 'SettingsTab'>) {
+export default function AccountDetailsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
+  const { navigate } = useNavigation<NativeStackNavigationProp<HomeStackParamList, 'SettingsTab'>>();
   
-  const { data: user, isLoading } = useCurrentUser();
+  const { data: user, isLoading, refetch } = useCurrentUser();
   const updateUserMutation = useUpdateUser();
 
   const handleSubmit = async (values: FormValues) => {
-    if (!user) return;
+    if (user == null) return;
 
     try {
       await updateUserMutation.mutateAsync({
-        name: values.name || user.name,
-        email: values.email.toLowerCase() || user.email,
+        name: trim(values.name || user.name),
+        email: trim(toLower(values.email)),
       });
-      navigation.navigate('SettingsTab');
-      EventRegister.emit('refreshPic');
+      navigate('SettingsTab');
+      refetch();
       showSuccessToast();
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to update account';
@@ -57,15 +57,9 @@ export default function AccountDetailsScreen({
             animationType="slide"
             transparent={true}
             visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(!modalVisible);
-            }}
+            onRequestClose={() => setModalVisible(!modalVisible)}
           >
-            <PicturePicker
-              modalVisible={modalVisible}
-              setModalVisible={setModalVisible}
-              user={user}
-            />
+            <PicturePicker modalVisible={modalVisible} setModalVisible={setModalVisible} />
           </Modal>
           <View style={styles.imageContainer}>
             <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>

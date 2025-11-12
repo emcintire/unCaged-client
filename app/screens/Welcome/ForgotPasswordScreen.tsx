@@ -1,13 +1,15 @@
 import { StyleSheet, View } from 'react-native';
 import * as Yup from 'yup';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import Screen from '../../components/Screen';
-import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
+import { useForgotPassword } from '../../api/controllers/users.controller';
 import colors from '../../config/colors';
 import { showErrorToast } from '../../config/helperFunctions';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { WelcomeStackParamList } from '../../types';
-import { useForgotPassword } from '../../api/controllers/users.controller';
+import type { WelcomeStackParamList } from '../../types';
+import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
+import Screen from '../../components/Screen';
+import { toLower, trim } from 'lodash';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
@@ -17,17 +19,16 @@ type ForgotPasswordFormValues = {
   email: string;
 };
 
-export default function ForgotPasswordScreen({
-  navigation,
-}: NativeStackScreenProps<WelcomeStackParamList, 'ForgotPassword'>) {
+export default function ForgotPasswordScreen() {
   const forgotPasswordMutation = useForgotPassword();
+  const { navigate } = useNavigation<NativeStackNavigationProp<WelcomeStackParamList>>();
 
   const handleSubmit = async (values: ForgotPasswordFormValues) => {
     try {
       await forgotPasswordMutation.mutateAsync({
-        email: values.email.toLowerCase(),
+        email: trim(toLower(values.email)),
       });
-      navigation.navigate('EmailCode');
+      navigate('Email Code');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to send reset email';
       showErrorToast(message);

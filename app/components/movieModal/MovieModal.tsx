@@ -10,7 +10,7 @@ import type { Movie } from '../../types';
 import { reject } from 'lodash';
 import MovieDetails from './MovieDetails';
 import MovieActions from './MovieActions';
-import { useUser } from '../../api';
+import { useCurrentUser } from '../../api';
 import { useAverageRating } from '../../api/controllers/movies.controller';
 
 type Props = {
@@ -26,7 +26,7 @@ export default function MovieModal({
 }: Props) {
   const [movie, setMovie] = useState<Movie>(propsMovie);
 
-  const { data: user, isLoading: isUserLoading } = useUser();
+  const { data: user, isLoading: isUserLoading } = useCurrentUser();
   const { data: ratingData, isLoading: isRatingLoading } = useAverageRating(propsMovie?._id || '');
   
   const isLoading = isUserLoading || isRatingLoading;

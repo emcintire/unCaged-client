@@ -1,59 +1,20 @@
-import React, { Fragment, ReactNode } from 'react';
+import { Fragment, ReactNode } from 'react';
 import { StyleSheet, View, ScrollView, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { map } from 'lodash';
+import { useNavigation } from '@react-navigation/native';
+import { useNavigate } from 'react-router-native';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
+import { useCurrentUser, useDeleteUser } from '../../api/controllers/users.controller';
+import { useClearCache } from '../../api';
+import type { SettingsTabParamList } from '../../types';
 import Screen from '../../components/Screen';
 import ListItem from '../../components/ListItem';
 import Separator from '../../components/Separator';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
-import { NavigateFunction, useNavigate } from 'react-router-native';
-import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
-import { SettingsTabParamList } from '../../types';
-import { map } from 'lodash';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCurrentUser } from '../../api/controllers/users.controller';
-import { apiClient } from '../../api/client';
-
-const deleteAccount = async (navigate: NavigateFunction) => {
-  Alert.alert('Are you sure?', 'Daddy would not be pleased', [
-    {
-      text: 'Cancel',
-      style: 'cancel',
-    },
-    {
-      text: 'Ok',
-      onPress: async () => {
-        try {
-          await apiClient.delete('/users/', {});
-          await AsyncStorage.removeItem('token');
-          showSuccessToast('Account deleted :(');
-          navigate('/');
-        } catch (error: unknown) {
-          const message = error instanceof Error ? error.message : 'Failed to delete account';
-          showErrorToast(message);
-        }
-      },
-    },
-  ]);
-};
-
-const handleLogOut = (navigate: NavigateFunction) => {
-  Alert.alert('Are you sure you want to log out?', '', [
-    {
-      text: 'Cancel',
-      style: 'cancel',
-    },
-    {
-      text: 'Ok',
-      onPress: async () => {
-        await AsyncStorage.removeItem('token');
-        navigate('/');
-      },
-    },
-  ]);
-};
 
 const accountItems: Array<{
   children?: ReactNode;
@@ -91,15 +52,50 @@ const accountItems: Array<{
   iconColor: colors.white,
 }];
 
-export default function SettingsScreen({
-  navigation,
-}: NativeStackScreenProps<SettingsTabParamList, 'Settings'>) {
+export default function SettingsScreen() {
   const { data: user, isLoading } = useCurrentUser();
-
+  const deleteUserMutation = useDeleteUser();
+  const clearCache = useClearCache();
   const navigate = useNavigate();
+  const navigation = useNavigation<NativeStackNavigationProp<SettingsTabParamList>>();
+
+  const deleteAccount = async () => {
+    Alert.alert('Are you sure?', 'Daddy would not be pleased', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Ok',
+        onPress: async () => {
+          try {
+            await deleteUserMutation.mutateAsync({ id: user!._id });
+            showSuccessToast('Account deleted :(');
+            navigate('/');
+          } catch (error) {
+            const message = error instanceof Error ? error.message : 'Failed to delete account';
+            showErrorToast(message);
+          }
+        },
+      },
+    ]);
+  };
+
+  const logOut = () => {
+    Alert.alert('Are you sure you want to log out?', '', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Ok',
+        onPress: async () => {
+          clearCache();
+          navigate('/');
+        },
+      },
+    ]);
+  };
 
   return (
-    <Screen isLoading={isLoading} style={styles.screen}>
+    <Screen isLoading={isLoading}>
       <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
         <View style={styles.container}>
           <ListItem
@@ -126,13 +122,13 @@ export default function SettingsScreen({
         </View>
         <View style={{ height: 20, backgroundColor: colors.bg }} />
         <ListItem
-          onPress={() => handleLogOut(navigate)}
+          onPress={logOut}
           title="Log Out"
           IconComponent={<Icon name="logout" backgroundColor={colors.bg} iconColor={colors.red} />}
         />
         <Separator />
         <ListItem
-          onPress={() => deleteAccount(navigate)}
+          onPress={deleteAccount}
           title="Delete Account"
           IconComponent={<Icon name="delete" backgroundColor={colors.bg} iconColor={colors.red} />}
         />
@@ -147,23 +143,5 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     backgroundColor: colors.bg,
     width: '100%',
-  },
-  screen: {
-    backgroundColor: colors.bg,
-    padding: 0,
-    width: '100%',
-  },
-  tagline: {
-    marginTop: 40,
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 16,
-    color: colors.white,
-    alignSelf: 'center',
-  },
-  subTagline: {
-    fontFamily: 'Montserrat-Light',
-    fontSize: 13,
-    color: colors.white,
-    alignSelf: 'flex-start',
   },
 });

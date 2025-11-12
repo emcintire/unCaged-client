@@ -1,44 +1,234 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { apiClient } from '../client';
-import type { User, Movie } from '../../types';
+import { makeApi } from '@zodios/core';
+import { z } from 'zod';
+import { zodiosClient } from '../zodiosClient';
+import { useClearCache } from '../hooks';
+import {
+  ChangePasswordDataSchema,
+  CheckCodeDataSchema,
+  DeleteRatingDataSchema,
+  DeleteUserDataSchema,
+  ForgotPasswordDataSchema,
+  IdSchema,
+  LoginCredentialsSchema,
+  MoviesArraySchema,
+  RateMovieDataSchema,
+  RegisterDataSchema,
+  TokenResponseSchema,
+  UpdateUserDataSchema,
+  UserSchema,
+} from '../schemas';
+import { movieKeys } from './movies.controller';
 
-// ============================================
-// Types
-// ============================================
-
-export type LoginCredentials = {
-  email: string;
-  password: string;
-};
-
-export type RegisterData = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-export type ForgotPasswordData = {
-  email: string;
-};
-
-export type CheckCodeData = {
-  code: string;
-};
-
-export type ChangePasswordData = {
-  password: string;
-};
-
-export type UpdateUserImageData = {
-  img: string;
-};
-
-export type UpdateUserData = {
-  name?: string;
-  email?: string;
-  img?: string;
-};
+export const userApi = makeApi([
+  {
+    method: 'get',
+    path: '/',
+    alias: 'getCurrentUser',
+    response: UserSchema,
+  }, {
+    method: 'put',
+    path: '/',
+    alias: 'updateUser',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: UpdateUserDataSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'delete',
+    path: '/',
+    alias: 'deleteUser',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: DeleteUserDataSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'get',
+    path: '/watchlist',
+    alias: 'getWatchlist',
+    response: MoviesArraySchema,
+  }, {
+    method: 'get',
+    path: '/favorites',
+    alias: 'getFavorites',
+    response: MoviesArraySchema,
+  }, {
+    method: 'get',
+    path: '/seen',
+    alias: 'getSeen',
+    response: MoviesArraySchema,
+  }, {
+    method: 'get',
+    path: '/rate',
+    alias: 'getRatings',
+    response: MoviesArraySchema,
+  }, {
+    method: 'post',
+    path: '/login',
+    alias: 'login',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: LoginCredentialsSchema,
+      },
+    ],
+    response: TokenResponseSchema,
+  }, {
+    method: 'post',
+    path: '/register',
+    alias: 'register',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: RegisterDataSchema,
+      },
+    ],
+    response: TokenResponseSchema,
+  }, {
+    method: 'post',
+    path: '/forgotPassword',
+    alias: 'forgotPassword',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: ForgotPasswordDataSchema,
+      },
+    ],
+    response: TokenResponseSchema,
+  }, {
+    method: 'post',
+    path: '/checkcode',
+    alias: 'checkCode',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: CheckCodeDataSchema,
+      },
+    ],
+    response: z.object({ message: z.string() }),
+  }, {
+    method: 'put',
+    path: '/changepassword',
+    alias: 'changePassword',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: ChangePasswordDataSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'put',
+    path: '/watchlist',
+    alias: 'addToWatchlist',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: IdSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'delete',
+    path: '/watchlist',
+    alias: 'removeFromWatchlist',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: IdSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'put',
+    path: '/favorites',
+    alias: 'addToFavorites',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: IdSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'delete',
+    path: '/favorites',
+    alias: 'removeFromFavorites',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: IdSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'put',
+    path: '/seen',
+    alias: 'addToSeen',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: IdSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'post',
+    path: '/rate',
+    alias: 'rateMovie',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: RateMovieDataSchema,
+      },
+    ],
+    response: TokenResponseSchema,
+  }, {
+    method: 'delete',
+    path: '/seen',
+    alias: 'removeFromSeen',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: IdSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'delete',
+    path: '/rating',
+    alias: 'deleteRating',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: DeleteRatingDataSchema,
+      },
+    ],
+    response: z.void(),
+  },
+]);
 
 // ============================================
 // Query Keys
@@ -54,94 +244,41 @@ export const userKeys = {
 };
 
 // ============================================
-// API Functions
-// ============================================
-
-const userApi = {
-  // GET requests
-  getCurrentUser: () => apiClient.get<User>('/users/'),
-  getUser: () => apiClient.get<User>('/users'),
-  getWatchlist: () => apiClient.get<Array<Movie>>('/users/watchlist'),
-  getFavorites: () => apiClient.get<Array<Movie>>('/users/favorites'),
-  getSeen: () => apiClient.get<Array<Movie>>('/users/seen'),
-  getRatings: () => apiClient.get<Array<Movie>>('/users/rate'),
-
-  // POST requests
-  login: (credentials: LoginCredentials) => 
-    apiClient.post<string>('/users/login', credentials),
-  register: (data: RegisterData) => 
-    apiClient.post<string>('/users/', data),
-  forgotPassword: (data: ForgotPasswordData) => 
-    apiClient.post<string>('/users/forgotPassword', data),
-  checkCode: (data: CheckCodeData) => 
-    apiClient.post<string>('/users/checkCode', data),
-
-  // PUT requests
-  changePassword: (data: ChangePasswordData) => 
-    apiClient.put<string>('/users/changePassword', data),
-  updateUser: (data: UpdateUserData) =>
-    apiClient.put<User>('/users/', data),
-  updateUserImage: (data: UpdateUserImageData) => 
-    apiClient.put<User>('/users/', data),
-  addToWatchlist: (id: string) => 
-    apiClient.put<string>('/users/watchlist', { id }),
-  addToFavorites: (id: string) => 
-    apiClient.put<string>('/users/favorites', { id }),
-  addToSeen: (id: string) => 
-    apiClient.put<string>('/users/seen', { id }),
-
-  // DELETE requests
-  removeFromWatchlist: (id: string) => 
-    apiClient.delete<string>('/users/watchlist', { id }),
-  removeFromFavorites: (id: string) => 
-    apiClient.delete<string>('/users/favorites', { id }),
-  removeFromSeen: (id: string) => 
-    apiClient.delete<string>('/users/seen', { id }),
-};
-
-// ============================================
 // Query Hooks
 // ============================================
 
 export const useCurrentUser = () => {
   return useQuery({
     queryKey: userKeys.detail(),
-    queryFn: userApi.getCurrentUser,
-  });
-};
-
-export const useUser = () => {
-  return useQuery({
-    queryKey: userKeys.all,
-    queryFn: userApi.getUser,
+    queryFn: zodiosClient.getCurrentUser,
   });
 };
 
 export const useWatchlist = () => {
   return useQuery({
     queryKey: userKeys.watchlist(),
-    queryFn: userApi.getWatchlist,
+    queryFn: zodiosClient.getWatchlist,
   });
 };
 
 export const useFavorites = () => {
   return useQuery({
     queryKey: userKeys.favorites(),
-    queryFn: userApi.getFavorites,
+    queryFn: zodiosClient.getFavorites,
   });
 };
 
 export const useSeen = () => {
   return useQuery({
     queryKey: userKeys.seen(),
-    queryFn: userApi.getSeen,
+    queryFn: zodiosClient.getSeen,
   });
 };
 
 export const useRatings = () => {
   return useQuery({
     queryKey: userKeys.ratings(),
-    queryFn: userApi.getRatings,
+    queryFn: zodiosClient.getRatings,
   });
 };
 
@@ -151,8 +288,8 @@ export const useRatings = () => {
 
 export const useLogin = () => {
   return useMutation({
-    mutationFn: userApi.login,
-    onSuccess: async (token) => {
+    mutationFn: (credentials: { email: string; password: string }) => zodiosClient.login(credentials),
+    onSuccess: async (token: string) => {
       await AsyncStorage.setItem('token', token);
     },
   });
@@ -160,8 +297,8 @@ export const useLogin = () => {
 
 export const useRegister = () => {
   return useMutation({
-    mutationFn: userApi.register,
-    onSuccess: async (token) => {
+    mutationFn: (data: { name: string; email: string; password: string }) => zodiosClient.register(data),
+    onSuccess: async (token: string) => {
       await AsyncStorage.setItem('token', token);
     },
   });
@@ -169,8 +306,8 @@ export const useRegister = () => {
 
 export const useForgotPassword = () => {
   return useMutation({
-    mutationFn: userApi.forgotPassword,
-    onSuccess: async (token) => {
+    mutationFn: (data: { email: string }) => zodiosClient.forgotPassword(data),
+    onSuccess: async (token: string) => {
       await AsyncStorage.setItem('token', token);
     },
   });
@@ -178,13 +315,13 @@ export const useForgotPassword = () => {
 
 export const useCheckCode = () => {
   return useMutation({
-    mutationFn: userApi.checkCode,
+    mutationFn: (data: { code: string }) => zodiosClient.checkCode(data),
   });
 };
 
 export const useChangePassword = () => {
   return useMutation({
-    mutationFn: userApi.changePassword,
+    mutationFn: (data: { password: string }) => zodiosClient.changePassword(data),
   });
 };
 
@@ -192,7 +329,7 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: userApi.updateUser,
+    mutationFn: (data: { name?: string; email?: string; img?: string }) => zodiosClient.updateUser(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
       queryClient.invalidateQueries({ queryKey: userKeys.all });
@@ -204,7 +341,7 @@ export const useUpdateUserImage = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: userApi.updateUserImage,
+    mutationFn: (data: { img: string }) => zodiosClient.updateUser(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
       queryClient.invalidateQueries({ queryKey: userKeys.all });
@@ -216,7 +353,7 @@ export const useAddToWatchlist = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: userApi.addToWatchlist,
+    mutationFn: (id: string) => zodiosClient.addToWatchlist({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.watchlist() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
@@ -228,7 +365,7 @@ export const useRemoveFromWatchlist = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: userApi.removeFromWatchlist,
+    mutationFn: (id: string) => zodiosClient.removeFromWatchlist({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.watchlist() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
@@ -240,7 +377,7 @@ export const useAddToFavorites = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: userApi.addToFavorites,
+    mutationFn: (id: string) => zodiosClient.addToFavorites({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.favorites() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
@@ -252,7 +389,7 @@ export const useRemoveFromFavorites = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: userApi.removeFromFavorites,
+    mutationFn: (id: string) => zodiosClient.removeFromFavorites({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.favorites() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
@@ -264,7 +401,7 @@ export const useAddToSeen = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: userApi.addToSeen,
+    mutationFn: (id: string) => zodiosClient.addToSeen({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.seen() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
@@ -276,10 +413,34 @@ export const useRemoveFromSeen = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: userApi.removeFromSeen,
+    mutationFn: (id: string) => zodiosClient.removeFromSeen({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.seen() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
+    },
+  });
+};
+
+export const useRateMovie = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (data: { id: string; rating: number }) => zodiosClient.rateMovie(data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
+      queryClient.invalidateQueries({ queryKey: ['users', 'ratings'] });
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const clearCache = useClearCache();
+  
+  return useMutation({
+    mutationFn: (data: { id: string }) => zodiosClient.deleteUser(data),
+    onSuccess: () => {
+      clearCache();
+      AsyncStorage.removeItem('token');
     },
   });
 };

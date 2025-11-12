@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Image, Modal, TouchableOpacity, Text } from 'react-native';
 import { changeResolution } from '../../config/helperFunctions';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ import colors from '../../config/colors';
 import AdBanner from '../../components/AdBanner';
 import MovieModal from '../../components/movieModal/MovieModal';
 import RandomMovieFilters from '../../components/RandomMovieFilters';
-import { useUser } from '../../api/controllers/users.controller';
+import { useCurrentUser } from '../../api/controllers/users.controller';
 import { useMovies } from '../../api/controllers/movies.controller';
 
 export default function RandomMovieScreen() {
@@ -21,7 +21,7 @@ export default function RandomMovieScreen() {
   const [watchlistFilter, setWatchlistFilter] = useState(false);
   const [unseenFilter, setUnseenFilter] = useState(false);
   
-  const { data: user, isLoading: isUserLoading } = useUser();
+  const { data: user, isLoading: isUserLoading } = useCurrentUser();
   const { data: allMovies = [], isLoading: isMoviesLoading } = useMovies();
   const isAdmin = user?.isAdmin ?? false;
   const isLoading = isUserLoading || isMoviesLoading;

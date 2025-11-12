@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingBottom: 0,
-    padding: 15,
     paddingTop: 0,
     width: '100%',
   },

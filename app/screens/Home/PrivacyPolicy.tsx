@@ -3,7 +3,7 @@ import HTMLView from 'react-native-htmlview';
 
 import Screen from '../../components/Screen';
 
-function PrivacyPolicyScreen() {
+export default function PrivacyPolicyScreen() {
   const htmlContent = `<style>
     [data-custom-class='body'], [data-custom-class='body'] * {
             background: transparent !important;
@@ -68,5 +68,3 @@ function PrivacyPolicyScreen() {
     </Screen>
   );
 }
-
-export default PrivacyPolicyScreen;

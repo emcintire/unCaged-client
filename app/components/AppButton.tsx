@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import colors from '../config/colors';
-import type { ColorKey } from '../types/Colors';
+import type { ColorKey } from '../types';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 type Props = {

@@ -1,4 +1,5 @@
 import { StyleSheet, View } from 'react-native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Yup from 'yup';
 
 import Screen from '../../components/Screen';
@@ -6,6 +7,8 @@ import { AppForm, SubmitButton } from '../../components/forms';
 import PasswordInput from '../../components/forms/PasswordInput';
 import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
 import { useChangePassword } from '../../api/controllers/users.controller';
+import { useNavigation } from '@react-navigation/native';
+import { HomeStackParamList } from '../../types';
 
 type SecurityFormValues = {
   currentPassword: string;
@@ -13,7 +16,8 @@ type SecurityFormValues = {
   confirmPassword: string;
 };
 
-function SecurityScreen({ navigation }: { navigation: { navigate: (route: string) => void } }) {
+export default function SecurityScreen() {
+  const { navigate } = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const changePasswordMutation = useChangePassword();
 
   const handleSubmit = async (values: SecurityFormValues) => {
@@ -30,12 +34,13 @@ function SecurityScreen({ navigation }: { navigation: { navigate: (route: string
         password: values.newPassword,
       });
       showSuccessToast('Password updated!');
-      navigation.navigate('Settings');
+      navigate('SettingsTab');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to update password';
       showErrorToast(message);
     }
   };
+
   return (
     <Screen style={styles.container}>
       <View style={styles.formContainer}>
@@ -69,6 +74,7 @@ function SecurityScreen({ navigation }: { navigation: { navigate: (route: string
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    paddingHorizontal: 15,
   },
   scrollContainer: {
     height: '100%',
@@ -100,5 +106,3 @@ const validationSchema = Yup.object().shape({
       'Must contain 8 characters, 1 uppercase, and 1 number'
     ),
 });
-
-export default SecurityScreen;

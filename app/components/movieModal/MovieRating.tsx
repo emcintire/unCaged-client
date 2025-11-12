@@ -4,7 +4,8 @@ import Icon from '../Icon'
 import type { Movie, SetState } from '../../types';
 import colors from '../../config/colors';
 import { showErrorToast } from '../../config/helperFunctions';
-import { useRateMovie, useDeleteRating, useUpdateMovieRating } from '../../api/controllers/movies.controller';
+import { useDeleteRating, useUpdateMovieRating } from '../../api/controllers/movies.controller';
+import { useRateMovie } from '../../api';
 
 const styles = StyleSheet.create({
   stars: {

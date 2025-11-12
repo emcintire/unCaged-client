@@ -1,11 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity, TextInput } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { filter, includes, map } from 'lodash';
 import colors from '../../config/colors';
 import { changeResolution } from '../../config/helperFunctions';
 import type { Movie } from '../../types';
-import { useMovies, useQuote, useAddQuote, useUser } from '../../api';
+import { useMovies, useQuote, useAddQuote, useCurrentUser } from '../../api';
 
 import Screen from '../../components/Screen';
 import AppButton from '../../components/AppButton';
@@ -108,7 +108,7 @@ export default function HomeScreen() {
   const [newSubQuote, setNewSubQuote] = useState('');
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const { data: user } = useUser();
+  const { data: user } = useCurrentUser();
   const { data: movies = [], isLoading: moviesLoading } = useMovies();
   const { data: quote, isLoading: quoteLoading } = useQuote();
   const addQuoteMutation = useAddQuote();

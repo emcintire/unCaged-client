@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { NativeRouter, Route, Routes } from 'react-router-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
@@ -13,6 +13,7 @@ import { queryClient } from './app/api/queryClient';
 import { toastConfig } from './app/config/toastConfig';
 import { StyleSheet } from 'react-native';
 import colors from './app/config/colors';
+import { NavigationContainer } from '@react-navigation/native';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -58,13 +59,15 @@ export default function App() {
       <StatusBar barStyle="light-content" backgroundColor={colors.black} translucent={false} />
       <QueryClientProvider client={queryClient}>
         <GestureHandlerRootView>
-          <NativeRouter>
-            <Routes>
-              <Route path="/" element={<WelcomeStack />} />
-              <Route path="/home" element={<HomeStack />} />
-            </Routes>
-            <Toast config={toastConfig} />
-          </NativeRouter>
+          <NavigationContainer>
+            <NativeRouter>
+              <Routes>
+                <Route path="/" element={<WelcomeStack />} />
+                <Route path="/home" element={<HomeStack />} />
+              </Routes>
+              <Toast config={toastConfig} />
+            </NativeRouter>
+          </NavigationContainer>
         </GestureHandlerRootView>
       </QueryClientProvider>
     </SafeAreaView>

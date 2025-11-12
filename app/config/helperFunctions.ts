@@ -1,5 +1,5 @@
 import Toast from 'react-native-toast-message';
-import type { Movie } from '../types/movie';
+import { Movie } from '../api';
 
 export const changeResolution = (res: string, movie: Movie): Movie => {
   const imgStr = movie.img.split('');

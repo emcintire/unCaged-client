@@ -1,46 +1,109 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../client';
-import type { Movie } from '../../types';
+import { makeApi } from '@zodios/core';
+import { z } from 'zod';
+import { zodiosClient } from '../zodiosClient';
+import type { FilteredMoviesData } from '../schemas';
+import {
+  AddQuoteDataSchema,
+  AverageRatingSchema,
+  FilteredMoviesDataSchema,
+  MoviesArraySchema,
+  QuoteOrArraySchema,
+  QuoteSchema,
+  SearchMovieDataSchema,
+  UpdateMovieRatingDataSchema,
+} from '../schemas';
 
 // ============================================
-// Types
+// Movie API Definition
 // ============================================
 
-export type Quote = {
-  quote: string;
-  subquote: string;
-};
-
-export type AddQuoteData = {
-  quote: string;
-  subquote: string;
-};
-
-export type RateMovieData = {
-  id: string;
-  rating: number;
-};
-
-export type DeleteRatingData = {
-  id: string;
-};
-
-export type UpdateMovieRatingData = {
-  id: string;
-};
-
-export type FilteredMoviesData = {
-  seen: boolean;
-  rotten: boolean;
-  time: number;
-  genres: Array<string>;
-  min: number;
-  max: number;
-};
-
-export type SearchMovieData = {
-  search: string;
-};
+export const movieApi = makeApi([
+  {
+    method: 'post',
+    path: '/getMovies',
+    alias: 'getMovies',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: z.object({}),
+      },
+    ],
+    response: MoviesArraySchema,
+  },
+  {
+    method: 'get',
+    path: '/quote',
+    alias: 'getQuote',
+    response: QuoteOrArraySchema,
+  },
+  {
+    method: 'get',
+    path: '/avgRating/:id',
+    alias: 'getAverageRating',
+    parameters: [
+      {
+        name: 'id',
+        type: 'Path',
+        schema: z.string(),
+      },
+    ],
+    response: AverageRatingSchema,
+  },
+  {
+    method: 'post',
+    path: '/quote',
+    alias: 'addQuote',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: AddQuoteDataSchema,
+      },
+    ],
+    response: QuoteSchema,
+  },
+  {
+    method: 'post',
+    path: '/filteredMovies',
+    alias: 'getFilteredMovies',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: FilteredMoviesDataSchema,
+      },
+    ],
+    response: MoviesArraySchema,
+  },
+  {
+    method: 'post',
+    path: '/findByTitle',
+    alias: 'searchMovies',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: SearchMovieDataSchema,
+      },
+    ],
+    response: MoviesArraySchema,
+  },
+  {
+    method: 'put',
+    path: '/updateRating',
+    alias: 'updateMovieRating',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: UpdateMovieRatingDataSchema,
+      },
+    ],
+    response: z.void(),
+  },
+]);
 
 // ============================================
 // Query Keys
@@ -59,42 +122,14 @@ export const movieKeys = {
 };
 
 // ============================================
-// API Functions
-// ============================================
-
-const movieApi = {
-  // GET requests
-  getMovies: () => apiClient.post<Array<Movie>>('/movies/getMovies'),
-  getQuote: () => apiClient.get<Quote | Quote[]>('/movies/quote'),
-  getAverageRating: (id: string) => apiClient.get<string>(`/movies/avgRating/${id}`),
-
-  // POST requests
-  addQuote: (data: AddQuoteData) => apiClient.post<Quote>('/movies/quote', data),
-  getFilteredMovies: (data: FilteredMoviesData) => 
-    apiClient.post<Array<Movie>>('/movies/filteredMovies', data),
-  searchMovies: (data: SearchMovieData) => 
-    apiClient.post<Array<Movie>>('/movies/findByTitle', data),
-  rateMovie: (data: RateMovieData) => 
-    apiClient.post<string>('/users/rate', data),
-
-  // PUT requests
-  updateMovieRating: (data: UpdateMovieRatingData) => 
-    apiClient.put<void>('/movies/updateRating', data),
-
-  // DELETE requests
-  deleteRating: (data: DeleteRatingData) => 
-    apiClient.delete<string>('/users/rate', data),
-};
-
-// ============================================
 // Query Hooks
 // ============================================
 
 export const useMovies = () => {
   return useQuery({
     queryKey: movieKeys.list(),
-    queryFn: movieApi.getMovies,
-    staleTime: 10 * 60 * 1000, // 10 minutes
+    queryFn: () => zodiosClient.getMovies({}),
+    staleTime: 10 * 60 * 1000, // 10 minutes,
   });
 };
 
@@ -102,7 +137,7 @@ export const useQuote = () => {
   return useQuery({
     queryKey: movieKeys.quote(),
     queryFn: async () => {
-      const result = await movieApi.getQuote();
+      const result = await zodiosClient.getQuote();
       // Handle both single quote and array of quotes
       return Array.isArray(result) ? result[0] : result;
     },
@@ -113,7 +148,7 @@ export const useQuote = () => {
 export const useAverageRating = (movieId: string) => {
   return useQuery({
     queryKey: movieKeys.avgRating(movieId),
-    queryFn: () => movieApi.getAverageRating(movieId),
+    queryFn: () => zodiosClient.getAverageRating({ params: { id: movieId } }),
     enabled: !!movieId,
   });
 };
@@ -121,7 +156,7 @@ export const useAverageRating = (movieId: string) => {
 export const useFilteredMovies = (filters: FilteredMoviesData, enabled: boolean = true) => {
   return useQuery({
     queryKey: movieKeys.list(JSON.stringify(filters)),
-    queryFn: () => movieApi.getFilteredMovies(filters),
+    queryFn: () => zodiosClient.getFilteredMovies(filters),
     enabled,
   });
 };
@@ -129,7 +164,7 @@ export const useFilteredMovies = (filters: FilteredMoviesData, enabled: boolean 
 export const useSearchMovies = (searchQuery: string) => {
   return useQuery({
     queryKey: movieKeys.search(searchQuery),
-    queryFn: () => movieApi.searchMovies({ search: searchQuery }),
+    queryFn: () => zodiosClient.searchMovies({ search: searchQuery }),
     enabled: searchQuery.length > 0,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -143,21 +178,9 @@ export const useAddQuote = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: movieApi.addQuote,
+    mutationFn: (data: { quote: string; subquote: string }) => zodiosClient.addQuote(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: movieKeys.quote() });
-    },
-  });
-};
-
-export const useRateMovie = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: movieApi.rateMovie,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
-      queryClient.invalidateQueries({ queryKey: ['users', 'ratings'] });
     },
   });
 };
@@ -166,7 +189,7 @@ export const useDeleteRating = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: movieApi.deleteRating,
+    mutationFn: (data: { id: string }) => zodiosClient.deleteRating(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
       queryClient.invalidateQueries({ queryKey: ['users', 'ratings'] });
@@ -178,7 +201,7 @@ export const useUpdateMovieRating = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: movieApi.updateMovieRating,
+    mutationFn: (data: { id: string }) => zodiosClient.updateMovieRating(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
     },

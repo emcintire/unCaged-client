@@ -1,33 +1,31 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigate } from 'react-router-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import AppButton from '../../components/AppButton';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import colors from '../../config/colors';
 import Logo from '../../assets/imgs/logo.svg';
-import Screen from '../../components/Screen';
 import type { WelcomeStackParamList } from '../../types';
+import AppButton from '../../components/AppButton';
+import Screen from '../../components/Screen';
 
-export default function WelcomeScreen({ navigation }: NativeStackScreenProps<WelcomeStackParamList, 'Welcome'>) {
+export default function WelcomeScreen() {
   const navigate = useNavigate();
+  const navigation = useNavigation<NativeStackNavigationProp<WelcomeStackParamList>>();
+
+  const checkToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (token != null) { navigate('/home'); }
+  };
 
   useEffect(() => {
-    const checkToken = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (token != null) {
-          navigate('/home');
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
     checkToken();
-  }, [navigate]);
+  }, []);
 
   return (
-    <Screen>
+    <Screen style={styles.container}>
       <View style={styles.logoContainer}>
         <Logo width={260} height={240} />
       </View>
@@ -44,7 +42,7 @@ export default function WelcomeScreen({ navigation }: NativeStackScreenProps<Wel
         />
         <TouchableOpacity
           style={{ marginTop: 10 }}
-          onPress={() => navigation.navigate('ForgotPassword')}
+          onPress={() => navigation.navigate('Forgot Password')}
         >
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
@@ -54,6 +52,9 @@ export default function WelcomeScreen({ navigation }: NativeStackScreenProps<Wel
 }
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+  },
   buttonContainer: {
     justifyContent: 'flex-start',
     alignItems: 'center',

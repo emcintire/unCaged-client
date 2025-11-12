@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { userKeys } from './controllers/users.controller';
 import { movieKeys } from './controllers/movies.controller';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
  * Hook to manually refetch user data
@@ -35,26 +36,8 @@ export const useRefetchMovies = () => {
  */
 export const useClearCache = () => {
   const queryClient = useQueryClient();
-  
   return useCallback(() => {
     queryClient.clear();
-  }, [queryClient]);
-};
-
-/**
- * Hook to prefetch data (useful for improving perceived performance)
- */
-export const usePrefetchMovie = () => {
-  const queryClient = useQueryClient();
-  
-  return useCallback(async (movieId: string) => {
-    // Prefetch average rating when hovering over a movie
-    await queryClient.prefetchQuery({
-      queryKey: movieKeys.avgRating(movieId),
-      queryFn: async () => {
-        const { apiClient } = await import('./client');
-        return apiClient.get(`/movies/avgRating/${movieId}`);
-      },
-    });
+    AsyncStorage.removeItem('token');
   }, [queryClient]);
 };

@@ -1,4 +1,4 @@
-import type { Colors } from '../types/Colors';
+import type { Colors } from '../types';
 
 const colors: Colors = {
   bg: '#272c36',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import type { ViewStyle, StyleProp } from 'react-native';
 import { useFormikContext } from 'formik';

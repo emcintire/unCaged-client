@@ -1,8 +1,5 @@
-export type { Colors, ColorKey } from './Colors';
-export type { Movie } from './movie';
+export type { Colors, ColorKey } from './colors';
 export type { SetState } from './setState';
-export type { User } from './User';
-export type { UserRating } from './userRating';
 export type { WelcomeStackParamList } from './welcomeStackParamList';
 export type {
   HomeStackParamList,
@@ -12,3 +9,4 @@ export type {
   SettingsTabParamList,
   WatchlistTabParamList,
 } from './homeStackParamList';
+export type { Screen } from './screen';

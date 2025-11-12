@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { EventRegister } from 'react-native-event-listeners';
 import { map } from 'lodash';
 import Screen from './Screen';
 import colors from '../config/colors';
 import AppButton from './AppButton';
 import Icon from './Icon';
 import { showErrorToast } from '../config/helperFunctions';
-import type { User } from '../types';
-import { useUpdateUserImage } from '../api/controllers/users.controller';
+import { useCurrentUser, useUpdateUserImage } from '../api/controllers/users.controller';
 
 type Props = {
   modalVisible: boolean;
   setModalVisible: (visible: boolean) => void;
-  user: User;
 };
 
-export default function PicturePicker({ modalVisible, setModalVisible, user }: Props) {
+export default function PicturePicker({ modalVisible, setModalVisible }: Props) {
   const [selected, setSelected] = useState(0);
+
+  const { data: user, refetch } = useCurrentUser();
   const updateUserImageMutation = useUpdateUserImage();
 
   const imgs = [
@@ -32,7 +31,7 @@ export default function PicturePicker({ modalVisible, setModalVisible, user }: P
 
   const getPicture = () => {
     imgs.forEach((link, index) => {
-      if (link === user.img) {
+      if (link === user?.img) {
         setSelected(index);
       }
     });
@@ -40,28 +39,24 @@ export default function PicturePicker({ modalVisible, setModalVisible, user }: P
 
   useEffect(() => {
     getPicture();
-  }, [user.img]);
+  }, [user?.img]);
 
   const handleSubmit = async () => {
     const selectedImg = imgs[selected];
     if (!selectedImg) return;
     
     try {
-      await updateUserImageMutation.mutateAsync({
-        img: selectedImg,
-      });
+      await updateUserImageMutation.mutateAsync({ img: selectedImg });
       getPicture();
       setModalVisible(false);
-      EventRegister.emit('refreshPic');
+      refetch();
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to update picture';
       showErrorToast(message);
     }
   };
 
-  if (!modalVisible) {
-    return null;
-  }
+  if (!modalVisible) { return null; }
 
   return (
     <Screen style={styles.screen}>

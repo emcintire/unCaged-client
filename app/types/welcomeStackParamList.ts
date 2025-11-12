@@ -2,8 +2,8 @@ export type WelcomeStackParamList = {
   Welcome: undefined;
   Login: undefined;
   Register: undefined;
-  ForgotPassword: undefined;
-  EmailCode: undefined;
-  PasswordReset: undefined;
+  'Forgot Password': undefined;
+  'Email Code': undefined;
+  'Password Reset': undefined;
 };
 

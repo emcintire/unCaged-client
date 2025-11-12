@@ -5,7 +5,7 @@
 
   x eslint(no-unused-vars): Identifier 'Text' is imported but never used.
    ,-[app/stacks/HomeStack.tsx:2:41]
- 1 | import React, { useEffect, useState } from 'react';
+ 1 | import { useEffect, useState } from 'react';
  2 | import { TouchableOpacity, View, Image, Text, StyleSheet } from 'react-native';
    :                                         ^^|^
    :                                           `-- 'Text' is imported here
