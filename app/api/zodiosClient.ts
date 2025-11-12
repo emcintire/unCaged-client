@@ -1,10 +1,11 @@
 import { mergeApis, Zodios } from '@zodios/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import { userApi } from './controllers/users.controller';
 import { movieApi } from './controllers/movies.controller';
 import { showErrorToast } from '../config/helperFunctions';
 
-const API_BASE_URL = 'https://uncaged-server.herokuapp.com/api';
+const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl;
 
 const apiContract = mergeApis({
   'users': userApi,

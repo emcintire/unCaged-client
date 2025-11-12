@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Image, Modal, TouchableOpacity, Text } from 'react-native';
-import { changeResolution } from '../../config/helperFunctions';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import type { Movie } from '../../types';
+import { filter, overEvery, sample, reject, includes } from 'lodash';
+import type { Movie } from '../../api/schemas/movie';
 
 import Screen from '../../components/Screen';
 import colors from '../../config/colors';
@@ -26,43 +26,31 @@ export default function RandomMovieScreen() {
   const isAdmin = user?.isAdmin ?? false;
   const isLoading = isUserLoading || isMoviesLoading;
 
-  const getRandomMovie = useCallback(async () => {
+  const getRandomMovie = useCallback(() => {
     if (!allMovies.length) return;
     
-    // Build filters
-    let filtered = [...allMovies];
+    const predicates = overEvery<Movie>([
+      (m) => !genreFilter || includes(m.genres, genreFilter),
+      (m) => !mandyFilter || m.title.toLowerCase().includes('mandy'),
+      (m) => !unseenFilter || !user || !includes(user.seen, m._id),
+      (m) => !watchlistFilter || !user || includes(user.watchlist, m._id),
+    ]) as (movie: Movie) => boolean;
     
-    if (genreFilter) {
-      filtered = filtered.filter(m => m.genres.includes(genreFilter));
-    }
-    
-    if (mandyFilter) {
-      filtered = filtered.filter(m => m.title.toLowerCase().includes('mandy'));
-    }
-    
-    if (unseenFilter && user) {
-      filtered = filtered.filter(m => !user.seen.includes(m._id));
-    }
-    
-    if (watchlistFilter && user) {
-      filtered = filtered.filter(m => user.watchlist.includes(m._id));
-    }
+    const filtered = filter(allMovies, predicates);
 
     if (filtered.length === 0) {
       setMovie(null);
       return;
     }
 
-    let randInt = Math.floor(Math.random() * filtered.length);
-    let newMovie = filtered[randInt];
+    const candidateMovies = (movie && filtered.length > 1 && !mandyFilter)
+      ? reject(filtered, (m) => m._id === movie._id)
+      : filtered;
 
-    if (movie?._id === newMovie?._id && !mandyFilter) {
-      filtered = filtered.filter((m) => m._id !== newMovie?._id)
-      randInt = Math.floor(Math.random() * filtered.length);
-      newMovie = filtered[randInt];
+    const newMovie = sample(candidateMovies);
+    if (newMovie) {
+      setMovie(newMovie);
     }
-    newMovie = changeResolution('', newMovie!);
-    setMovie(newMovie);
   }, [genreFilter, mandyFilter, unseenFilter, watchlistFilter, movie, allMovies, user]);
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
-import type { Movie } from '../../types';
 import colors from '../../config/colors';
+import type { Movie } from '../../api';
+import { join } from 'lodash';
 
 type Props = {
   movie: Movie;
@@ -38,14 +39,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function MovieDetails({
-  movie,
-}: Props) {
+export default function MovieDetails({ movie }: Props) {
   return (
     <View style={styles.detailsContainer}>
       <View style={styles.textContainer}>
         <Text style={styles.label}>Genres:</Text>
-        <Text style={styles.details}>{movie.genres.join(', ')}</Text>
+        <Text style={styles.details}>{join(movie.genres, ', ')}</Text>
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.label}>Age rating:</Text>

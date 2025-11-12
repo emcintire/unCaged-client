@@ -6,11 +6,10 @@ import Icon from '../Icon';
 import colors from '../../config/colors';
 import { changeResolution } from '../../config/helperFunctions';
 import Loading from '../Loading';
-import type { Movie } from '../../types';
 import { reject } from 'lodash';
 import MovieDetails from './MovieDetails';
 import MovieActions from './MovieActions';
-import { useCurrentUser } from '../../api';
+import {type  Movie, useCurrentUser } from '../../api';
 import { useAverageRating } from '../../api/controllers/movies.controller';
 
 type Props = {
@@ -19,11 +18,7 @@ type Props = {
   onClose: () => void;
 };
 
-export default function MovieModal({
-  isOpen,
-  movie: propsMovie,
-  onClose,
-}: Props) {
+export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props) {
   const [movie, setMovie] = useState<Movie>(propsMovie);
 
   const { data: user, isLoading: isUserLoading } = useCurrentUser();
@@ -33,7 +28,7 @@ export default function MovieModal({
   const movieRating = ratingData ? Number(ratingData) : 0;
 
   useEffect(() => {
-    if (!isOpen) { return; }
+    if (!isOpen || propsMovie == null) { return; }
 
     const parsedMovie = {
       ...(propsMovie.img.length === 32 ? changeResolution('h', propsMovie) : propsMovie),
@@ -123,7 +118,7 @@ export default function MovieModal({
     },
   });
 
-  if (!isOpen) { return null; }
+  if (!isOpen || movie == null) { return null; }
 
   return (
     <Modal
@@ -159,17 +154,12 @@ export default function MovieModal({
                   <Text style={styles.date}>{movieRating}</Text>
                   <Text style={styles.date}> / 5</Text>
                 </View>
-                <Text style={styles.date}>{movie.date.substring(0, 4)}</Text>
+                <Text style={styles.date}>{movie.date?.substring(0, 4)}</Text>
               </View>
             </View>
             <MovieActions movie={movie} />
             <MovieDetails movie={movie} />
           </ScrollView>
-          {!user?.isAdmin && (
-            <View style={styles.adContainerBottom}>
-              <AdBanner />
-            </View>
-          )}
         </View>
       )}
     </Modal>

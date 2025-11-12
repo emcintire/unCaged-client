@@ -2,13 +2,12 @@ import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, View } from '
 import { useEffect, useMemo, useState } from 'react';
 import { find, includes, map } from 'lodash';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
-import type { Movie } from '../../types';
 import Icon from '../Icon';
 import colors from '../../config/colors';
 import MovieRating from './MovieRating';
 import {
   useAddToSeen, useRemoveFromSeen, useAddToFavorites, useRemoveFromFavorites, useAddToWatchlist,
-  useRemoveFromWatchlist, useCurrentUser,
+  useRemoveFromWatchlist, useCurrentUser, type Movie,
 } from '../../api';
 
 type Props = {
@@ -137,13 +136,7 @@ export default function MovieActions({ movie }: Props) {
           </View>
         ))}
       </View>
-      {showStars && (
-        <MovieRating
-          rating={rating}
-          setRating={setRating}
-          movie={movie}
-        />
-      )}
+      {showStars && <MovieRating rating={rating} setRating={setRating} movie={movie} />}
     </>
   );
 }

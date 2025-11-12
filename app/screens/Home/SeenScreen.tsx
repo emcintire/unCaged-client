@@ -3,12 +3,12 @@ import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { map } from 'lodash';
 
-import { changeResolution } from '../../config/helperFunctions';
-import Screen from '../../components/Screen';
-import colors from '../../config/colors';
-import MovieModal from '../../components/movieModal/MovieModal';
-import { Movie } from '../../types';
+import {type Movie } from '../../api';
 import { useSeen } from '../../api/controllers/users.controller';
+import colors from '../../config/colors';
+import { changeResolution } from '../../config/helperFunctions';
+import MovieModal from '../../components/movieModal/MovieModal';
+import Screen from '../../components/Screen';
 
 export default function SeenScreen() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);

@@ -4,23 +4,20 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { map, filter, overEvery, orderBy, some } from 'lodash';
-
-import Screen from '../../components/Screen';
-import colors from '../../config/colors';
-import MovieModal from '../../components/movieModal/MovieModal';
-import Loading from '../../components/Loading';
-import { changeResolution } from '../../config/helperFunctions';
+import type { Movie } from '../../api';
 import { useMovies } from '../../api/controllers/movies.controller';
+import { changeResolution } from '../../config/helperFunctions';
+import colors from '../../config/colors';
+import Loading from '../../components/Loading';
+import MovieModal from '../../components/movieModal/MovieModal';
+import Screen from '../../components/Screen';
 import SearchFilters from '../../components/SearchFilters';
-import { Movie } from '../../api';
 
 export default function SearchScreen() {
   const [open, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [title, setTitle] = useState('');
-  const [ratingUp, setRatingUp] = useState(false);
-  const [yearUp, setYearUp] = useState(false);
-  const [abc, setAbc] = useState(true);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selected, setSelected] = useState('az');
   const [genre, setGenre] = useState('Genre');
   const [genresVisible, setGenresVisible] = useState(false);
@@ -42,45 +39,35 @@ export default function SearchScreen() {
       ? (movie: Movie) => new Date(movie.date).getFullYear()
         : (movie: Movie) => movie.title.toLowerCase();
     
-    const sortDirection: 'asc' | 'desc' = selected === 'rating'
-      ? (ratingUp ? 'asc' : 'desc')
-      : selected === 'year'
-      ? (yearUp ? 'asc' : 'desc')
-      : (abc ? 'asc' : 'desc');
-    
     return orderBy(filtered, sortKey, sortDirection);
-  }, [movies, title, genre, selected, ratingUp, yearUp, abc]);
+  }, [genre, movies, selected, sortDirection, title]);
 
   const styles = StyleSheet.create({
     container: {
-      backgroundColor: colors.bg,
-      height: '100%',
-      width: '100%',
       alignItems: 'center',
-      paddingTop: 0,
     },
     scrollView: {
-      flexDirection: 'row',
       flex: 1,
+      flexDirection: 'row',
       flexWrap: 'wrap',
+      justifyContent: 'space-evenly',
       paddingTop: 15,
       width: '100%',
-      justifyContent: 'space-evenly',
     },
     inputContainer: {
+      alignItems: 'center',
       backgroundColor: colors.white,
-      borderRadius: 25,
       borderBottomEndRadius: open ? 0 : 25,
       borderBottomStartRadius: open ? 0 : 25,
+      borderRadius: 25,
       flexDirection: 'row',
       height: 45,
-      width: '92%',
-      paddingLeft: 20,
-      paddingRight: 25,
+      justifyContent: 'space-between',
       margin: 15,
       marginBottom: 0,
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      paddingLeft: 20,
+      paddingRight: 25,
+      width: '92%',
     },
     text: {
       fontFamily: 'Montserrat-Regular',
@@ -136,67 +123,59 @@ export default function SearchScreen() {
       />
       <View style={styles.inputContainer}>
         <TextInput
-          style={styles.text}
+          onChangeText={setTitle}
           placeholder="Enter title"
           placeholderTextColor={colors.medium}
-          onChangeText={setTitle}
+          style={styles.text}
         />
         <TouchableOpacity style={{ width: 50 }} onPress={() => setOpen(!open)}>
           <MaterialCommunityIcons
+            color={colors.medium}
             name="tune"
             size={30}
-            color={colors.medium}
             style={styles.filtersBtn}
           />
         </TouchableOpacity>
       </View>
       {open && (
         <SearchFilters
-          abc={abc}
           genre={genre}
           genresVisible={genresVisible}
-          ratingUp={ratingUp}
           selected={selected}
-          setAbc={setAbc}
           setGenre={setGenre}
           setGenresVisible={setGenresVisible}
-          setRatingUp={setRatingUp}
           setSelected={setSelected}
-          setYearUp={setYearUp}
-          yearUp={yearUp}
+          setSortDirection={setSortDirection}
+          sortDirection={sortDirection}
         />
       )}
-
-      {!loading ? (displayMovies.length > 0 ? (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            decelerationRate="fast"
-            contentContainerStyle={{ width: '100%' }}
-          >
-            <View style={styles.scrollView}>
-              {map(displayMovies, (movie) => (
-                <View style={styles.movieContainer} key={movie._id}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => setSelectedMovie(movie)}
-                  >
-                    <Image
-                      source={{ uri: getMovieWithChangedResolution(movie).img }}
-                      style={styles.image}
-                    />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-          </ScrollView>
-        ) : (
-          <View style={{ height: '80%', justifyContent: 'center' }}>
-            <Text style={styles.noResults}>No results :(</Text>
+      {loading ? <Loading /> : (displayMovies.length > 0 ? (
+        <ScrollView
+          contentContainerStyle={{ width: '100%' }}
+          decelerationRate="fast"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.scrollView}>
+            {map(displayMovies, (movie) => (
+              <View style={styles.movieContainer} key={movie._id}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => setSelectedMovie(movie)}
+                >
+                  <Image
+                    source={{ uri: getMovieWithChangedResolution(movie).img }}
+                    style={styles.image}
+                  />
+                </TouchableOpacity>
+              </View>
+            ))}
           </View>
-        )
+        </ScrollView>
       ) : (
-        <Loading />
-      )}
+        <View style={{ height: '80%', justifyContent: 'center' }}>
+          <Text style={styles.noResults}>No results :(</Text>
+        </View>
+      ))}
     </Screen>
   );
 }

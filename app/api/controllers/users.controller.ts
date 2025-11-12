@@ -192,7 +192,7 @@ export const userApi = makeApi([
     ],
     response: z.void(),
   }, {
-    method: 'post',
+    method: 'put',
     path: '/rate',
     alias: 'rateMovie',
     parameters: [
@@ -217,7 +217,7 @@ export const userApi = makeApi([
     response: z.void(),
   }, {
     method: 'delete',
-    path: '/rating',
+    path: '/rate',
     alias: 'deleteRating',
     parameters: [
       {

@@ -1,11 +1,11 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { map } from 'lodash';
 import Icon from '../Icon'
-import type { Movie, SetState } from '../../types';
+import type { SetState } from '../../types';
 import colors from '../../config/colors';
 import { showErrorToast } from '../../config/helperFunctions';
 import { useDeleteRating, useUpdateMovieRating } from '../../api/controllers/movies.controller';
-import { useRateMovie } from '../../api';
+import { type Movie, useRateMovie } from '../../api';
 
 const styles = StyleSheet.create({
   stars: {

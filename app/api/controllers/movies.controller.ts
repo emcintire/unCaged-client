@@ -89,8 +89,7 @@ export const movieApi = makeApi([
       },
     ],
     response: MoviesArraySchema,
-  },
-  {
+  }, {
     method: 'put',
     path: '/updateRating',
     alias: 'updateMovieRating',
@@ -99,6 +98,18 @@ export const movieApi = makeApi([
         name: 'body',
         type: 'Body',
         schema: UpdateMovieRatingDataSchema,
+      },
+    ],
+    response: z.void(),
+  }, {
+    method: 'put',
+    path: '/updateRatings',
+    alias: 'updateMovieRatings',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: z.object({}),
       },
     ],
     response: z.void(),
@@ -205,5 +216,11 @@ export const useUpdateMovieRating = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
     },
+  });
+};
+
+export const useUpdateMovieRatings = () => {
+  return useMutation({
+    mutationFn: () => zodiosClient.updateMovieRatings({}),
   });
 };

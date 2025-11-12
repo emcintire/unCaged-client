@@ -26,33 +26,25 @@ const genres = [
 ];
 
 type Props = {
-  abc: boolean;
   genre: string;
   genresVisible: boolean;
-  ratingUp: boolean;
   selected: string;
-  setAbc: SetState<boolean>;
   setGenre: SetState<string>;
   setGenresVisible: SetState<boolean>;
-  setRatingUp: SetState<boolean>;
   setSelected: SetState<string>;
-  setYearUp: SetState<boolean>;
-  yearUp: boolean;
+  setSortDirection: SetState<'asc' | 'desc'>;
+  sortDirection: 'asc' | 'desc';
 }
 
 export default function SearchFilters({
-  abc,
   genre,
   genresVisible,
-  ratingUp,
   selected,
-  setAbc,
   setGenre,
   setGenresVisible,
-  setRatingUp,
   setSelected,
-  setYearUp,
-  yearUp,
+  setSortDirection,
+  sortDirection,
 }: Props) {
   const styles = StyleSheet.create({
     underSearchContainer: {
@@ -76,7 +68,7 @@ export default function SearchFilters({
     },
     gLabel: {
       fontFamily: 'Montserrat-Bold',
-      fontSize: 15,
+      fontSize: 12,
       color: genre === 'Genre' ? colors.white : colors.orange,
     },
     ratingBtn: {
@@ -148,7 +140,7 @@ export default function SearchFilters({
     },
     genreLabel: {
       fontFamily: 'Montserrat-Medium',
-      fontSize: 15,
+      fontSize: 12,
       color: 'black',
       alignSelf: 'center',
     },
@@ -160,21 +152,29 @@ export default function SearchFilters({
     },
   });
 
+  const toggleSortDirection = () => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+
   const handleRatingPress = () => {
-    const newRatingUp = selected === 'rating' ? !ratingUp : ratingUp;
-    setRatingUp(newRatingUp);
+    if (selected === 'rating') {
+      toggleSortDirection();
+      return;
+    }
     setSelected('rating');
   };
 
   const handleYearPress = () => {
-    const newYearUp = selected === 'year' ? !yearUp : yearUp;
-    setYearUp(newYearUp);
+    if (selected === 'year') {
+      toggleSortDirection();
+      return;
+    }
     setSelected('year');
   };
 
   const handleAzPress = () => {
-    const newAbc = selected === 'az' ? !abc : abc;
-    setAbc(newAbc);
+    if (selected === 'az') {
+      toggleSortDirection();
+      return;
+    }
     setSelected('az');
   };
 
@@ -194,7 +194,7 @@ export default function SearchFilters({
         >
           <Text style={styles.label}>Rating</Text>
           <MaterialCommunityIcons
-            name={ratingUp ? 'arrow-up' : 'arrow-down'}
+            name={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}
             size={20}
             color={colors.white}
           />
@@ -205,7 +205,7 @@ export default function SearchFilters({
         >
           <Text style={styles.label}>Year</Text>
           <MaterialCommunityIcons
-            name={yearUp ? 'arrow-up' : 'arrow-down'}
+            name={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}
             size={20}
             color={colors.white}
           />
@@ -214,7 +214,7 @@ export default function SearchFilters({
           onPress={handleAzPress}
           style={styles.azBtn}
         >
-          {abc ? (
+          {sortDirection === 'asc' ? (
             <Text style={styles.label}>A - Z</Text>
           ) : (
             <Text style={styles.label}>Z - A</Text>
@@ -228,9 +228,7 @@ export default function SearchFilters({
         </TouchableOpacity>
       </View>
       {genresVisible ? (
-        <View
-          style={Platform.OS === 'ios' ? styles.scrollContainer : styles.androidScrollContainer}
-        >
+        <View style={Platform.OS === 'ios' ? styles.scrollContainer : styles.androidScrollContainer}>
           <ScrollView decelerationRate="fast">
             {map(genres, (genreItem, index) => (
               <View key={index}>

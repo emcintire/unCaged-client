@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'black',
-    fontSize: 18,
+    fontSize: 15,
     fontFamily: 'Montserrat-Bold',
   },
 });
