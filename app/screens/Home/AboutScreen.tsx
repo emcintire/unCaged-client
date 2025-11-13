@@ -46,12 +46,7 @@ export default function AboutScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.bg,
-    height: '100%',
-    width: '100%',
     padding: 15,
-    paddingTop: 0,
-    paddingBottom: 0,
   },
   header: {
     marginTop: 10,

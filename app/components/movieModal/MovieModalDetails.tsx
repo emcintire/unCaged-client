@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function MovieDetails({ movie }: Props) {
+export default function MovieModalDetails({ movie }: Props) {
   return (
     <View style={styles.detailsContainer}>
       <View style={styles.textContainer}>

@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Image, Modal, TouchableOpacity, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { filter, overEvery, sample, reject, includes } from 'lodash';
-import type { Movie } from '../../api/schemas/movie';
-
+import type { Movie } from '../../api';
 import Screen from '../../components/Screen';
 import colors from '../../config/colors';
 import AdBanner from '../../components/AdBanner';

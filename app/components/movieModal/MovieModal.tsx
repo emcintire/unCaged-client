@@ -7,8 +7,8 @@ import colors from '../../config/colors';
 import { changeResolution } from '../../config/helperFunctions';
 import Loading from '../Loading';
 import { reject } from 'lodash';
-import MovieDetails from './MovieDetails';
-import MovieActions from './MovieActions';
+import MovieModalDetails from './MovieModalDetails';
+import MovieModalActions from './MovieModalActions';
 import {type  Movie, useCurrentUser } from '../../api';
 import { useAverageRating } from '../../api/controllers/movies.controller';
 
@@ -157,8 +157,8 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
                 <Text style={styles.date}>{movie.date?.substring(0, 4)}</Text>
               </View>
             </View>
-            <MovieActions movie={movie} />
-            <MovieDetails movie={movie} />
+            <MovieModalActions movie={movie} />
+            <MovieModalDetails movie={movie} />
           </ScrollView>
         </View>
       )}

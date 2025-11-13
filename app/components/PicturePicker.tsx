@@ -96,9 +96,6 @@ export default function PicturePicker({ modalVisible, setModalVisible }: Props) 
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: '#00000080',
-    height: '100%',
-    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },

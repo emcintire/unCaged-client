@@ -28,7 +28,7 @@ type Props = {
   setRating: SetState<number>;
 };
 
-export default function MovieRating({ movie, rating, setRating }: Props) {
+export default function MovieModalRating({ movie, rating, setRating }: Props) {
   const rateMovieMutation = useRateMovie();
   const deleteRatingMutation = useDeleteRating();
   const updateMovieRatingMutation = useUpdateMovieRating();

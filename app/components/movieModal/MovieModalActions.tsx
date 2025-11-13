@@ -4,7 +4,7 @@ import { find, includes, map } from 'lodash';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
 import Icon from '../Icon';
 import colors from '../../config/colors';
-import MovieRating from './MovieRating';
+import MovieModalRating from './MovieModalRating';
 import {
   useAddToSeen, useRemoveFromSeen, useAddToFavorites, useRemoveFromFavorites, useAddToWatchlist,
   useRemoveFromWatchlist, useCurrentUser, type Movie,
@@ -14,7 +14,7 @@ type Props = {
   movie: Movie;
 };
 
-export default function MovieActions({ movie }: Props) {
+export default function MovieModalActions({ movie }: Props) {
   const [favorite, setFavorite] = useState(false);
   const [seen, setSeen] = useState(false);
   const [watchlist, setWatchlist] = useState(false);
@@ -136,7 +136,7 @@ export default function MovieActions({ movie }: Props) {
           </View>
         ))}
       </View>
-      {showStars && <MovieRating rating={rating} setRating={setRating} movie={movie} />}
+      {showStars && <MovieModalRating rating={rating} setRating={setRating} movie={movie} />}
     </>
   );
 }

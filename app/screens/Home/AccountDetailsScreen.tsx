@@ -93,9 +93,6 @@ export default function AccountDetailsScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: colors.bg,
-    height: '100%',
-    width: '100%',
     padding: 15,
   },
   imageContainer: {
