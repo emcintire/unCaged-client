@@ -9,6 +9,7 @@ import {
   useAddToSeen, useRemoveFromSeen, useAddToFavorites, useRemoveFromFavorites, useAddToWatchlist,
   useRemoveFromWatchlist, useCurrentUser, type Movie,
 } from '../../api';
+import { fontFamily } from '../../config/theme';
 
 type Props = {
   movie: Movie;
@@ -35,7 +36,7 @@ export default function MovieModalActions({ movie }: Props) {
     setFavorite(includes(user.favorites, movie._id));
     setSeen(includes(user.seen, movie._id));
     setWatchlist(includes(user.watchlist, movie._id));
-    setRating(find(user.ratings, ['movieId', movie._id])?.rating || 0);
+    setRating(find(user.ratings, ['movie', movie._id])?.rating || 0);
   }, [user, movie]);
 
   const handleSeenToggle = () => {
@@ -83,7 +84,7 @@ export default function MovieModalActions({ movie }: Props) {
       position: 'absolute',
       top: 45,
       fontFamily: fontFamily.medium,
-      fontSize: fontSize.xs - 1,
+      fontSize: 9,
     },
   });
 

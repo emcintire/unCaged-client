@@ -22,10 +22,9 @@ type Props = {
 export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props) {
   const [movie, setMovie] = useState<Movie>(propsMovie);
 
-  const { data: user, isLoading: isUserLoading } = useCurrentUser();
-  const { data: ratingData, isLoading: isRatingLoading } = useAverageRating(propsMovie?._id || '');
+  const { data: user } = useCurrentUser();
+  const { data: ratingData, isLoading } = useAverageRating(propsMovie?._id || '');
   
-  const isLoading = isUserLoading || isRatingLoading;
   const movieRating = ratingData ? Number(ratingData) : 0;
 
   useEffect(() => {
@@ -109,7 +108,7 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
     },
   });
 
-  if (!isOpen || movie == null) { return null; }
+  if (!isOpen) { return null; }
 
   return (
     <Modal
@@ -118,13 +117,13 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
       visible={isOpen}
       onRequestClose={onClose}
     >
-      {(isLoading || isUserLoading) ? <Loading /> : (
-        <View style={styles.background}>
-          {!user?.isAdmin && (
-            <View style={styles.adContainerTop}>
-              <AdBanner />
-            </View>
-          )}
+      <View style={styles.background}>
+        {!user?.isAdmin && (
+          <View style={styles.adContainerTop}>
+            <AdBanner />
+          </View>
+        )}
+        {(isLoading || movie == null) ? <Loading /> : (
           <ScrollView
             horizontal={false}
             showsVerticalScrollIndicator={false}
@@ -151,8 +150,8 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
             <MovieModalActions movie={movie} />
             <MovieModalDetails movie={movie} />
           </ScrollView>
-        </View>
-      )}
+        )}
+      </View>
     </Modal>
   );
 }

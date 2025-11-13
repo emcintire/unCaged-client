@@ -437,7 +437,7 @@ export const useRateMovie = () => {
     mutationFn: (data: { id: string; rating: number }) => zodiosClient.rateMovie(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
-      queryClient.invalidateQueries({ queryKey: ['users', 'ratings'] });
+      queryClient.invalidateQueries({ queryKey: userKeys.ratings() });
     },
   });
 };

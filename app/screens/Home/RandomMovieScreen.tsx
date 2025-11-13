@@ -11,6 +11,7 @@ import RandomMovieFilters from '../../components/RandomMovieFilters';
 import { useCurrentUser } from '../../api/controllers/users.controller';
 import { useMovies } from '../../api/controllers/movies.controller';
 import { shadow, spacing, borderRadius, fontSize, fontFamily } from '../../config/theme';
+import { changeResolution } from '../../config/helperFunctions';
 
 export default function RandomMovieScreen() {
   const [filtersModalVisible, setFiltersModalVisible] = useState(false);
@@ -49,7 +50,7 @@ export default function RandomMovieScreen() {
 
     const newMovie = sample(candidateMovies);
     if (newMovie) {
-      setMovie(newMovie);
+      setMovie(newMovie.img.length === 32 ? changeResolution('', newMovie) : newMovie);
     }
   }, [genreFilter, mandyFilter, unseenFilter, watchlistFilter, movie, allMovies, user]);
 

@@ -13,6 +13,7 @@ import {
   SearchMovieDataSchema,
   UpdateMovieRatingDataSchema,
 } from '../schemas';
+import { userKeys } from './users.controller';
 
 // ============================================
 // Movie API Definition
@@ -203,7 +204,7 @@ export const useDeleteRating = () => {
     mutationFn: (data: { id: string }) => zodiosClient.deleteRating(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
-      queryClient.invalidateQueries({ queryKey: ['users', 'ratings'] });
+      queryClient.invalidateQueries({ queryKey: userKeys.ratings() });
     },
   });
 };

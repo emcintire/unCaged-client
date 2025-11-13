@@ -4,7 +4,7 @@ import Icon from '../Icon'
 import type { SetState } from '../../types';
 import colors from '../../config/colors';
 import { showErrorToast } from '../../config/helperFunctions';
-import { useDeleteRating, useUpdateMovieRating } from '../../api/controllers/movies.controller';
+import { useDeleteRating } from '../../api/controllers/movies.controller';
 import { type Movie, useRateMovie } from '../../api';
 import { spacing, borderRadius } from '../../config/theme';
 
@@ -32,7 +32,6 @@ type Props = {
 export default function MovieModalRating({ movie, rating, setRating }: Props) {
   const rateMovieMutation = useRateMovie();
   const deleteRatingMutation = useDeleteRating();
-  const updateMovieRatingMutation = useUpdateMovieRating();
 
   const handleRating = (newRating: number) => async () => {
     try {
@@ -49,8 +48,6 @@ export default function MovieModalRating({ movie, rating, setRating }: Props) {
         await rateMovieMutation.mutateAsync({ id: movie._id, rating: newRating });
         setRating(newRating);
       }
-      
-      updateMovieRatingMutation.mutate({ id: movie._id });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to update rating';
       showErrorToast(message);

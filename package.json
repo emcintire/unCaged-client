@@ -2,8 +2,8 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
@@ -63,5 +63,7 @@
     "prettier": "^3.6.2",
     "typescript": "^5.9.3"
   },
-  "private": true
+  "private": true,
+  "name": "unCaged-client",
+  "version": "1.0.0"
 }
