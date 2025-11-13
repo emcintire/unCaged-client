@@ -8,6 +8,7 @@ import AppButton from './AppButton';
 import Icon from './Icon';
 import { showErrorToast } from '../config/helperFunctions';
 import { useCurrentUser, useUpdateUserImage } from '../api/controllers/users.controller';
+import { spacing, borderRadius } from '../config/theme';
 
 type Props = {
   modalVisible: boolean;
@@ -102,22 +103,22 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.bg,
     width: '90%',
-    padding: 15,
+    padding: spacing.md,
     borderColor: colors.orange,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: borderRadius.md,
   },
   closeButton: {
     position: 'absolute',
-    right: 10,
-    top: 10,
+    right: spacing.sm,
+    top: spacing.sm,
   },
   imagesContainer: {
     width: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginBottom: 5,
+    marginBottom: spacing.xs,
   },
   imgContainer: {
     width: '50%',
@@ -128,11 +129,11 @@ const styles = StyleSheet.create({
     height: 120,
     width: 120,
     zIndex: 1,
-    borderRadius: 60,
+    borderRadius: borderRadius.circle * 2,
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    bottom: 10,
+    bottom: spacing.sm,
   },
   notSelected: {
     display: 'none',
@@ -140,11 +141,11 @@ const styles = StyleSheet.create({
   imgBtn: {
     width: 120,
     height: 120,
-    marginVertical: 10,
+    marginVertical: spacing.sm,
   },
   img: {
     width: '100%',
     height: '100%',
-    borderRadius: 60,
+    borderRadius: borderRadius.circle * 2,
   },
 });

@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -9,6 +9,7 @@ import type { WelcomeStackParamList } from '../../types';
 import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
 import Screen from '../../components/Screen';
 import { toLower, trim } from 'lodash';
+import { form, screen } from '../../config/theme';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
@@ -36,8 +37,8 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <Screen style={styles.container}>
-      <View style={styles.formContainer}>
+    <Screen style={screen.withPadding}>
+      <View style={form.container}>
         <AppForm<ForgotPasswordFormValues>
           initialValues={{ email: '' }}
           onSubmit={handleSubmit}
@@ -52,17 +53,9 @@ export default function ForgotPasswordScreen() {
             placeholder="Email                                  "
             textContentType="emailAddress"
           />
-          <SubmitButton<ForgotPasswordFormValues> title="Submit" style={styles.submitButton} />
+          <SubmitButton<ForgotPasswordFormValues> title="Submit" style={form.submitButton} />
         </AppForm>
       </View>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 15,
-  },
-  submitButton: { marginTop: 30 },
-  formContainer: { width: '100%', top: 15 },
-});

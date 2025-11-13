@@ -82,8 +82,8 @@ export default function MovieModalActions({ movie }: Props) {
     shared: {
       position: 'absolute',
       top: 45,
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 9,
+      fontFamily: fontFamily.medium,
+      fontSize: fontSize.xs - 1,
     },
   });
 

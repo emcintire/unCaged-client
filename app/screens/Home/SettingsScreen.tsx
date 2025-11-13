@@ -2,19 +2,19 @@ import { Fragment, ReactNode } from 'react';
 import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import { map } from 'lodash';
 import { useNavigation } from '@react-navigation/native';
-import { useNavigate } from 'react-router-native';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
 import { useCurrentUser, useDeleteUser } from '../../api/controllers/users.controller';
 import { useClearCache } from '../../api';
-import type { SettingsTabParamList } from '../../types';
+import type { SettingsTabParamList, RootStackParamList } from '../../types';
 import Screen from '../../components/Screen';
 import ListItem from '../../components/ListItem';
 import Separator from '../../components/Separator';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
+import { spacing } from '../../config/theme';
 
 const accountItems: Array<{
   children?: ReactNode;
@@ -56,8 +56,8 @@ export default function SettingsScreen() {
   const { data: user, isLoading } = useCurrentUser();
   const deleteUserMutation = useDeleteUser();
   const clearCache = useClearCache();
-  const navigate = useNavigate();
-  const navigation = useNavigation<NativeStackNavigationProp<SettingsTabParamList>>();
+  const { navigate: settingsNavigate } = useNavigation<NativeStackNavigationProp<SettingsTabParamList>>();
+  const { navigate: rootNavigate } = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const deleteAccount = async () => {
     Alert.alert('Are you sure?', 'Daddy would not be pleased', [
@@ -68,7 +68,7 @@ export default function SettingsScreen() {
           try {
             await deleteUserMutation.mutateAsync({ id: user!._id });
             showSuccessToast('Account deleted :(');
-            navigate('/');
+            rootNavigate('Welcome');
           } catch (error) {
             const message = error instanceof Error ? error.message : 'Failed to delete account';
             showErrorToast(message);
@@ -88,7 +88,7 @@ export default function SettingsScreen() {
         text: 'Ok',
         onPress: async () => {
           clearCache();
-          navigate('/');
+          rootNavigate('Welcome');
         },
       },
     ]);
@@ -99,7 +99,7 @@ export default function SettingsScreen() {
       <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
         <View style={styles.container}>
           <ListItem
-            onPress={() => navigation.navigate('My Account')}
+            onPress={() => settingsNavigate('My Account')}
             title={user!.name}
             subTitle={user!.email}
             image={{ uri: user!.img }}
@@ -110,7 +110,7 @@ export default function SettingsScreen() {
           {map(accountItems, (item) => (
             <Fragment key={item.title}>
               <ListItem
-                onPress={() => navigation.navigate(item.title)}
+                onPress={() => settingsNavigate(item.title)}
                 title={item.title}
                 IconComponent={(
                   <Icon name={item.iconName} iconColor={item.iconColor} backgroundColor={colors.bg} />
@@ -140,7 +140,7 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 20,
+    marginVertical: spacing.lg,
     backgroundColor: colors.bg,
     width: '100%',
   },

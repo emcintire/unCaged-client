@@ -10,6 +10,7 @@ import MovieModal from '../../components/movieModal/MovieModal';
 import RandomMovieFilters from '../../components/RandomMovieFilters';
 import { useCurrentUser } from '../../api/controllers/users.controller';
 import { useMovies } from '../../api/controllers/movies.controller';
+import { shadow, spacing, borderRadius, fontSize, fontFamily } from '../../config/theme';
 
 export default function RandomMovieScreen() {
   const [filtersModalVisible, setFiltersModalVisible] = useState(false);
@@ -134,22 +135,14 @@ const styles = StyleSheet.create({
     width: '85%',
     maxWidth: 400,
     aspectRatio: 2 / 3,
-    shadowColor: '#00000080',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowRadius: 5,
-    shadowOpacity: 1.0,
-    backgroundColor: '#000000',
-    elevation: 3,
-    borderRadius: 8,
+    ...shadow.lg,
+    borderRadius: borderRadius.sm,
   },
   image: {
     height: '100%',
     width: '100%',
     resizeMode: 'cover',
-    borderRadius: 8,
+    borderRadius: borderRadius.sm,
     borderWidth: 1,
     borderColor: 'transparent',
     overflow: 'hidden',
@@ -158,26 +151,26 @@ const styles = StyleSheet.create({
     height: 60,
     width: 150,
     backgroundColor: '#976000',
-    borderRadius: 12,
+    borderRadius: borderRadius.md,
     padding: 0,
-    marginVertical: 10,
+    marginVertical: spacing.sm,
   },
   noResults: {
     color: 'white',
-    fontFamily: 'Montserrat-Bold',
-    fontSize: 30,
+    fontFamily: fontFamily.bold,
+    fontSize: fontSize.xxxl,
   },
   inner: {
     justifyContent: 'center',
     alignItems: 'center',
     height: 55,
     width: 150,
-    borderRadius: 12,
+    borderRadius: borderRadius.md,
     backgroundColor: colors.orange,
   },
   text: {
-    fontSize: 22,
-    fontFamily: 'Montserrat-Black',
+    fontSize: fontSize.xxl,
+    fontFamily: fontFamily.black,
     color: 'white',
   },
   filtersBtn: {

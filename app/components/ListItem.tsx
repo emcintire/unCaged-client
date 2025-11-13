@@ -1,9 +1,10 @@
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import type { StyleProp, ViewStyle, ImageSourcePropType } from 'react-native';
 import type { ReactNode } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AppText from './AppText';
 import colors from '../config/colors';
+import { spacing, borderRadius, fontSize, fontFamily } from '../config/theme';
 
 type Props = {
   IconComponent?: ReactNode;
@@ -39,30 +40,30 @@ export default function ListItem({ title, subTitle, image, IconComponent, onPres
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: 15,
-    marginHorizontal: 10,
+    padding: spacing.md,
+    marginHorizontal: spacing.sm,
     backgroundColor: colors.black,
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: borderRadius.lg,
   },
   detailsContainer: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: spacing.sm,
     justifyContent: 'center',
   },
   image: {
     width: 70,
     height: 70,
-    borderRadius: 35,
+    borderRadius: borderRadius.circle,
   },
   subTitle: {
     color: colors.light,
-    fontSize: 14,
-    fontFamily: 'Montserrat-Light',
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.light,
   },
   title: {
-    fontSize: 18,
+    fontSize: fontSize.lg,
     color: colors.white,
-    fontFamily: 'Montserrat-Medium',
+    fontFamily: fontFamily.medium,
   },
 });

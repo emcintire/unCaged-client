@@ -11,6 +11,7 @@ import MovieModalDetails from './MovieModalDetails';
 import MovieModalActions from './MovieModalActions';
 import {type  Movie, useCurrentUser } from '../../api';
 import { useAverageRating } from '../../api/controllers/movies.controller';
+import { modal, borderRadius, spacing, fontSize, fontFamily } from '../../config/theme';
 
 type Props = {
   isOpen: boolean;
@@ -39,22 +40,12 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
   }, [propsMovie, isOpen]);
 
   const styles = StyleSheet.create({
-    background: {
-      backgroundColor: '#00000090',
-      height: '100%',
-      width: '100%',
-    },
+    background: modal.background,
     container: {
-      width: '90%',
-      height: '100%',
-      alignSelf: 'center',
-      backgroundColor: colors.bg,
+      ...modal.container,
       borderColor: colors.orange,
       borderWidth: 1,
-      borderRadius: 10,
-      marginTop: 60,
-      marginBottom: 60,
-      padding: 15,
+      padding: spacing.md,
     },
     btnContainer: {
       position: 'absolute',
@@ -63,11 +54,11 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
       zIndex: 10,
     },
     image: {
-      marginTop: 20,
+      marginTop: spacing.lg,
       height: 320,
       width: 215,
       resizeMode: 'cover',
-      borderRadius: 8,
+      borderRadius: borderRadius.sm,
       borderWidth: 1,
       borderColor: 'transparent',
       overflow: 'hidden',
@@ -77,30 +68,30 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
       width: '90%',
       alignItems: 'center',
       alignSelf: 'center',
-      marginTop: 10,
+      marginTop: spacing.sm,
     },
     title: {
       color: colors.white,
-      fontFamily: 'Montserrat-Bold',
-      fontSize: 26,
+      fontFamily: fontFamily.bold,
+      fontSize: fontSize.xxl + 4,
       textAlign: 'center',
     },
     subtitle: {
       flexDirection: 'row',
       justifyContent: 'space-evenly',
-      marginTop: 10,
+      marginTop: spacing.sm,
       width: '100%',
     },
     date: {
       color: colors.white,
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 18,
+      fontFamily: fontFamily.medium,
+      fontSize: fontSize.lg,
       textAlign: 'left',
     },
     director: {
       color: colors.white,
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 18,
+      fontFamily: fontFamily.medium,
+      fontSize: fontSize.lg,
     },
     adContainerTop: {
       position: 'absolute',

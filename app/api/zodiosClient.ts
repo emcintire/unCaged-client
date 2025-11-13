@@ -1,20 +1,19 @@
 import { mergeApis, Zodios } from '@zodios/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
 import { userApi } from './controllers/users.controller';
 import { movieApi } from './controllers/movies.controller';
-
-const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl;
+import { env } from '../config/env';
+import { STORAGE_KEYS } from '../constants';
 
 const apiContract = mergeApis({
   'users': userApi,
   'movies': movieApi,
 });
 
-const baseClient = new Zodios(API_BASE_URL, apiContract);
+const baseClient = new Zodios(env.apiBaseUrl, apiContract);
 
 baseClient.axios.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem('token');
+  const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
   if (token) {
     config.headers['x-auth-token'] = token;
   }
@@ -24,6 +23,22 @@ baseClient.axios.interceptors.request.use(async (config) => {
 baseClient.axios.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Enhanced error logging in development
+    if (env.isDev) {
+      console.error('API Error:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+    }
+    
+    // Handle common error cases
+    if (error.response?.status === 401) {
+      // Unauthorized - clear token and redirect to login
+      AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+    }
+    
     return Promise.reject(error);
   }
 );

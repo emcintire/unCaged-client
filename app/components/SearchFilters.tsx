@@ -6,6 +6,7 @@ import { map } from 'lodash';
 
 import colors from '../config/colors';
 import type { SetState } from '../types';
+import { borderRadius, fontSize, fontFamily, spacing } from '../config/theme';
 
 const genres = [
   'Genre',
@@ -53,7 +54,7 @@ export default function SearchFilters({
     },
     sortContainer: {
       backgroundColor: colors.dark,
-      borderRadius: 25,
+      borderRadius: borderRadius.round,
       borderTopLeftRadius: 0,
       borderTopRightRadius: 0,
       flexDirection: 'row',
@@ -62,19 +63,19 @@ export default function SearchFilters({
       alignItems: 'center',
     },
     label: {
-      fontFamily: 'Montserrat-Bold',
-      fontSize: 15,
+      fontFamily: fontFamily.bold,
+      fontSize: fontSize.md,
       color: colors.white,
     },
     gLabel: {
-      fontFamily: 'Montserrat-Bold',
-      fontSize: 12,
+      fontFamily: fontFamily.bold,
+      fontSize: fontSize.xs + 2,
       color: genre === 'Genre' ? colors.white : colors.orange,
     },
     ratingBtn: {
       width: '25%',
       height: '100%',
-      borderBottomLeftRadius: 25,
+      borderBottomLeftRadius: borderRadius.round,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
@@ -106,8 +107,8 @@ export default function SearchFilters({
       width: '25%',
       height: 150,
       backgroundColor: colors.white,
-      borderBottomLeftRadius: 12,
-      borderBottomRightRadius: 12,
+      borderBottomLeftRadius: borderRadius.md,
+      borderBottomRightRadius: borderRadius.md,
       position: 'absolute',
       right: 0,
       top: 45,
@@ -115,16 +116,16 @@ export default function SearchFilters({
     androidScrollContainer: {
       width: '25%',
       height: 150,
-      marginBottom: 10,
+      marginBottom: spacing.sm,
       backgroundColor: colors.white,
-      borderBottomLeftRadius: 12,
-      borderBottomRightRadius: 12,
+      borderBottomLeftRadius: borderRadius.md,
+      borderBottomRightRadius: borderRadius.md,
       alignSelf: 'flex-end',
     },
     genresBtn: {
       width: '25%',
       height: '100%',
-      borderBottomRightRadius: genresVisible ? 0 : 25,
+      borderBottomRightRadius: genresVisible ? 0 : borderRadius.round,
       justifyContent: 'center',
       alignItems: 'center',
       borderColor: colors.white,
@@ -139,8 +140,8 @@ export default function SearchFilters({
       justifyContent: 'center',
     },
     genreLabel: {
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 12,
+      fontFamily: fontFamily.medium,
+      fontSize: fontSize.xs,
       color: 'black',
       alignSelf: 'center',
     },

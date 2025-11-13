@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import { NativeRouter, Route, Routes } from 'react-router-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -11,9 +13,9 @@ import WelcomeStack from './app/stacks/WelcomeStack';
 import HomeStack from './app/stacks/Home/HomeStack';
 import { queryClient } from './app/api/queryClient';
 import { toastConfig } from './app/config/toastConfig';
-import { StyleSheet } from 'react-native';
 import colors from './app/config/colors';
-import { NavigationContainer } from '@react-navigation/native';
+import { layout } from './app/config/theme';
+import { RootStackParamList } from './app/types';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -31,15 +33,24 @@ const loadFonts = async (): Promise<boolean> => {
   return true;
 };
 
+const RootStack = createNativeStackNavigator<RootStackParamList>();
+
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     async function prepare() {
       try {
         await loadFonts();
-      } catch (e) {
-        console.warn(e);
+        const token = await AsyncStorage.getItem('token');
+        if (token != null) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        if (__DEV__) {
+          console.error('Failed to load fonts:', error);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -55,28 +66,26 @@ export default function App() {
   if (isLoading) { return null; }
 
   return (
-    <SafeAreaView style={styles.container} onLayout={onLayoutRootView} edges={['bottom', 'left', 'right']}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.black} translucent={false} />
-      <QueryClientProvider client={queryClient}>
-        <GestureHandlerRootView>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaView style={styles.container} onLayout={onLayoutRootView} edges={['bottom', 'left', 'right']}>
+        <StatusBar barStyle="light-content" backgroundColor={colors.black} translucent={false} />
+        <GestureHandlerRootView style={styles.container}>
           <NavigationContainer>
-            <NativeRouter>
-              <Routes>
-                <Route path="/" element={<WelcomeStack />} />
-                <Route path="/home" element={<HomeStack />} />
-              </Routes>
-              <Toast config={toastConfig} />
-            </NativeRouter>
+            <RootStack.Navigator screenOptions={{ headerShown: false }} initialRouteName={isAuthenticated ? 'Home' : 'Welcome'}>
+              <RootStack.Screen name="Welcome" component={WelcomeStack} />
+              <RootStack.Screen name="Home" component={HomeStack} />
+            </RootStack.Navigator>
           </NavigationContainer>
+          <Toast config={toastConfig} />
         </GestureHandlerRootView>
-      </QueryClientProvider>
-    </SafeAreaView>
+      </SafeAreaView>
+    </QueryClientProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...layout.container,
     backgroundColor: colors.black,
   },
 });

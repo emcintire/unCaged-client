@@ -5,7 +5,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import Screen from '../../components/Screen';
-import colors from '../../config/colors';
 import PicturePicker from '../../components/PicturePicker';
 import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
 import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
@@ -13,6 +12,7 @@ import type { HomeStackParamList } from '../../types';
 import { useCurrentUser, useUpdateUser } from '../../api/controllers/users.controller';
 import { useNavigation } from '@react-navigation/native';
 import { toLower, trim } from 'lodash';
+import { spacing, borderRadius } from '../../config/theme';
 
 type FormValues = {
   name: string;
@@ -93,30 +93,30 @@ export default function AccountDetailsScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    padding: 15,
+    padding: spacing.md,
   },
   imageContainer: {
     height: '20%',
     width: '100%',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: spacing.sm,
   },
   image: {
     height: 150,
     width: 150,
-    borderRadius: 75,
+    borderRadius: borderRadius.circle * 2,
   },
   saveButton: {
-    marginTop: 30,
+    marginTop: spacing.xxl,
   },
   formContainer: {
-    marginTop: 50,
+    marginTop: spacing.xxl + spacing.lg,
   },
   overlay: {
     position: 'absolute',
     height: 150,
     width: 150,
-    borderRadius: 75,
+    borderRadius: borderRadius.circle * 2,
     backgroundColor: '#00000060',
     zIndex: 2,
     alignItems: 'center',

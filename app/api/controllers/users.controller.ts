@@ -4,6 +4,8 @@ import { makeApi } from '@zodios/core';
 import { z } from 'zod';
 import { zodiosClient } from '../zodiosClient';
 import { useClearCache } from '../hooks';
+import { STORAGE_KEYS } from '../../constants';
+import { logger } from '../../utils/logger';
 import {
   ChangePasswordDataSchema,
   CheckCodeDataSchema,
@@ -307,12 +309,15 @@ export const useRegister = () => {
 export const useForgotPassword = () => {
   return useMutation({
     mutationFn: async (data: { email: string }) => {
-      const test = await zodiosClient.forgotPassword(data);
-      console.log('Forgot password response:', test);
-      return test;
+      const response = await zodiosClient.forgotPassword(data);
+      logger.debug('Forgot password response received', { context: 'useForgotPassword' });
+      return response;
     },
     onSuccess: async (token: string) => {
-      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+    },
+    onError: (error) => {
+      logger.error('Forgot password failed', error, { context: 'useForgotPassword' });
     },
   });
 };

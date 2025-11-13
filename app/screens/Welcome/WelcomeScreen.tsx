@@ -1,7 +1,4 @@
-import { useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigate } from 'react-router-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -10,19 +7,10 @@ import Logo from '../../assets/imgs/logo.svg';
 import type { WelcomeStackParamList } from '../../types';
 import AppButton from '../../components/AppButton';
 import Screen from '../../components/Screen';
+import { fontFamily, spacing } from '../../config/theme';
 
 export default function WelcomeScreen() {
-  const navigate = useNavigate();
-  const navigation = useNavigation<NativeStackNavigationProp<WelcomeStackParamList>>();
-
-  const checkToken = async () => {
-    const token = await AsyncStorage.getItem('token');
-    if (token != null) { navigate('/home'); }
-  };
-
-  useEffect(() => {
-    checkToken();
-  }, []);
+  const { navigate } = useNavigation<NativeStackNavigationProp<WelcomeStackParamList>>();
 
   return (
     <Screen style={styles.container}>
@@ -33,16 +21,16 @@ export default function WelcomeScreen() {
         <AppButton
           title="LOGIN"
           color={'darkOrange'}
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigate('Login')}
         />
         <AppButton
           title="REGISTER"
           color={'orange'}
-          onPress={() => navigation.navigate('Register')}
+          onPress={() => navigate('Register')}
         />
         <TouchableOpacity
-          style={{ marginTop: 10 }}
-          onPress={() => navigation.navigate('Forgot Password')}
+          style={{ marginTop: spacing.sm }}
+          onPress={() => navigate('Forgot Password')}
         >
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
@@ -67,7 +55,7 @@ const styles = StyleSheet.create({
     height: '50%',
   },
   forgot: {
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: fontFamily.regular,
     color: colors.white,
   },
 });

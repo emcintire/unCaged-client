@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { map } from 'lodash';
 
@@ -9,6 +9,7 @@ import colors from '../../config/colors';
 import { changeResolution } from '../../config/helperFunctions';
 import MovieModal from '../../components/movieModal/MovieModal';
 import Screen from '../../components/Screen';
+import { movieCard, screen, typography } from '../../config/theme';
 
 export default function SeenScreen() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -18,9 +19,9 @@ export default function SeenScreen() {
   const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
 
   return (
-    <Screen isLoading={isLoading} style={movies.length === 0 ? styles.noMoviesContainer : styles.container}>
+    <Screen isLoading={isLoading} style={movies.length === 0 ? screen.centered : screen.noPadding}>
       {movies.length === 0 ? (
-        <Text style={styles.text}>What are you doing here... go watch a Nicolas Cage movie</Text>
+        <Text style={typography.h1}>What are you doing here... go watch a Nicolas Cage movie</Text>
       ) : (
         <>
           <MovieModal
@@ -30,22 +31,22 @@ export default function SeenScreen() {
           />
           <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
             <View>
-              <Text style={styles.header}>
+              <Text style={[typography.h2, { textAlign: 'center' }]}>
                 You've seen
-                <Text style={styles.number}> {movies.length}</Text>{' '}
+                <Text style={[typography.h2, { color: colors.orange }]}> {movies.length}</Text>{' '}
               </Text>
-              <Text style={styles.subHeader}>
+              <Text style={[typography.h3, { textAlign: 'center' }]}>
                 {movies.length === 1 ? 'cinematic masterpiece' : 'cinematic masterpieces'}
               </Text>
             </View>
-            <View style={styles.scrollContainer}>
+            <View style={movieCard.scrollContainer}>
               {map(movies, (movie) => (
-                <View style={styles.movieContainer} key={movie._id}>
+                <View style={movieCard.container} key={movie._id}>
                   <TouchableOpacity
-                    style={styles.button}
+                    style={movieCard.button}
                     onPress={() => setSelectedMovie(movie)}
                   >
-                    <Image source={{ uri: getMovieWithChangedResolution(movie).img }} style={styles.image} />
+                    <Image source={{ uri: getMovieWithChangedResolution(movie).img }} style={movieCard.image} />
                   </TouchableOpacity>
                 </View>
               ))}
@@ -56,79 +57,3 @@ export default function SeenScreen() {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    fontFamily: 'Montserrat-ExtraBold',
-    backgroundColor: colors.bg,
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-  scrollContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    flexWrap: 'wrap',
-    marginTop: 25,
-    width: '100%',
-    justifyContent: 'space-evenly',
-  },
-  movieContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  button: {
-    width: 150,
-    height: 230,
-    shadowColor: '#00000070',
-    shadowOffset: {
-      width: 3,
-      height: 3,
-    },
-    shadowRadius: 5,
-    shadowOpacity: 1.0,
-    elevation: 3,
-    borderRadius: 8,
-  },
-  image: {
-    height: '100%',
-    width: '100%',
-    resizeMode: 'cover',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'transparent',
-    overflow: 'hidden',
-  },
-  text: {
-    color: 'white',
-    fontFamily: 'Montserrat-Bold',
-    fontSize: 30,
-    textAlign: 'center',
-    width: '90%',
-  },
-  noMoviesContainer: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.bg,
-  },
-  header: {
-    marginTop: 10,
-    color: 'white',
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 20,
-    textAlign: 'center',
-  },
-  subHeader: {
-    color: 'white',
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 20,
-    textAlign: 'center',
-  },
-  number: {
-    marginTop: 20,
-    color: colors.orange,
-    fontFamily: 'Montserrat-Bold',
-    fontSize: 40,
-    textAlign: 'center',
-  },
-});

@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import colors from '../config/colors';
 import type { ColorKey } from '../types';
 import type { StyleProp, ViewStyle } from 'react-native';
+import { borderRadius, spacing, fontSize, fontFamily } from '../config/theme';
 
 type Props = {
   color?: ColorKey;
@@ -24,17 +25,17 @@ export default function AppButton({ style, title, onPress, color = 'orange' }: P
 const styles = StyleSheet.create({
   button: {
     backgroundColor: colors.orangeBg,
-    borderRadius: 25,
+    borderRadius: borderRadius.round,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 15,
+    padding: spacing.md,
     width: '100%',
-    marginVertical: 10,
+    marginVertical: spacing.sm,
   },
   text: {
     color: colors.white,
-    fontSize: 18,
+    fontSize: fontSize.lg,
     textTransform: 'uppercase',
-    fontFamily: 'Montserrat-ExtraBold',
+    fontFamily: fontFamily.extraBold,
   },
 });

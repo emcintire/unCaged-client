@@ -12,6 +12,7 @@ import Loading from '../../components/Loading';
 import MovieModal from '../../components/movieModal/MovieModal';
 import Screen from '../../components/Screen';
 import SearchFilters from '../../components/SearchFilters';
+import { spacing, borderRadius, fontSize, fontFamily, movieCard } from '../../config/theme';
 
 export default function SearchScreen() {
   const [open, setOpen] = useState(false);
@@ -51,61 +52,39 @@ export default function SearchScreen() {
       flexDirection: 'row',
       flexWrap: 'wrap',
       justifyContent: 'space-evenly',
-      paddingTop: 15,
+      paddingTop: spacing.md,
       width: '100%',
     },
     inputContainer: {
       alignItems: 'center',
       backgroundColor: colors.white,
-      borderBottomEndRadius: open ? 0 : 25,
-      borderBottomStartRadius: open ? 0 : 25,
-      borderRadius: 25,
+      borderBottomEndRadius: open ? 0 : borderRadius.round,
+      borderBottomStartRadius: open ? 0 : borderRadius.round,
+      borderRadius: borderRadius.round,
       flexDirection: 'row',
       height: 45,
       justifyContent: 'space-between',
-      margin: 15,
+      margin: spacing.md,
       marginBottom: 0,
-      paddingLeft: 20,
-      paddingRight: 25,
+      paddingLeft: spacing.lg,
+      paddingRight: borderRadius.round,
       width: '92%',
     },
     text: {
-      fontFamily: 'Montserrat-Regular',
-      fontSize: 18,
+      fontFamily: fontFamily.regular,
+      fontSize: fontSize.lg,
       color: 'black',
       height: 40,
       width: '80%',
     },
     noResults: {
       color: 'white',
-      fontFamily: 'Montserrat-Bold',
-      fontSize: 30,
+      fontFamily: fontFamily.bold,
+      fontSize: fontSize.xxxl,
     },
     movieContainer: {
       alignItems: 'center',
-      marginBottom: 30,
-    },
-    button: {
-      width: 150,
-      height: 230,
-      shadowColor: '#00000060',
-      shadowOffset: {
-        width: 3,
-        height: 3,
-      },
-      shadowRadius: 5,
-      shadowOpacity: 1.0,
-      elevation: 3,
-      borderRadius: 8,
-    },
-    image: {
-      height: '100%',
-      width: '100%',
-      resizeMode: 'cover',
-      borderRadius: 8,
-      borderWidth: 1,
-      borderColor: 'transparent',
-      overflow: 'hidden',
+      marginBottom: spacing.xxl,
     },
     filtersBtn: {
       alignSelf: 'flex-end',
@@ -159,12 +138,12 @@ export default function SearchScreen() {
             {map(displayMovies, (movie) => (
               <View style={styles.movieContainer} key={movie._id}>
                 <TouchableOpacity
-                  style={styles.button}
+                  style={movieCard.button}
                   onPress={() => setSelectedMovie(movie)}
                 >
                   <Image
                     source={{ uri: getMovieWithChangedResolution(movie).img }}
-                    style={styles.image}
+                    style={movieCard.image}
                   />
                 </TouchableOpacity>
               </View>

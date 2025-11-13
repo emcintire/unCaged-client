@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
 import AppText from '../AppText';
+import { typography } from '../../config/theme';
 
 type Props = {
   error?: string | Array<string>;
@@ -9,13 +9,5 @@ type Props = {
 export default function ErrorMessage({ error, visible }: Props) {
   if (!visible || !error) return null;
 
-  return <AppText style={styles.error}>{error}</AppText>;
+  return <AppText style={typography.error}>{error}</AppText>;
 }
-
-const styles = StyleSheet.create({
-  error: {
-    fontSize: 14,
-    paddingLeft: 10,
-    color: '#ff4949',
-  },
-});

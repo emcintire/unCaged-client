@@ -2,9 +2,10 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userKeys } from './controllers/users.controller';
 import { movieKeys } from './controllers/movies.controller';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { STORAGE_KEYS } from '../constants';
 
 /**
  * Hook to manually refetch user data
@@ -36,8 +37,8 @@ export const useRefetchMovies = () => {
  */
 export const useClearCache = () => {
   const queryClient = useQueryClient();
-  return useCallback(() => {
+  return useCallback(async () => {
     queryClient.clear();
-    AsyncStorage.removeItem('token');
+    await AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
   }, [queryClient]);
 };

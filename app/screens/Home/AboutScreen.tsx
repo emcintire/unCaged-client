@@ -2,6 +2,7 @@ import { StyleSheet, Text, ScrollView } from 'react-native';
 
 import Screen from '../../components/Screen';
 import colors from '../../config/colors';
+import { spacing, fontSize, fontFamily } from '../../config/theme';
 
 export default function AboutScreen() {
   return (
@@ -46,36 +47,36 @@ export default function AboutScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
+    padding: spacing.md,
   },
   header: {
-    marginTop: 10,
-    fontFamily: 'Montserrat-Bold',
-    fontSize: 25,
+    marginTop: spacing.sm,
+    fontFamily: fontFamily.bold,
+    fontSize: fontSize.xxl,
     color: colors.white,
-    marginBottom: 10,
+    marginBottom: spacing.sm,
   },
   body: {
-    fontFamily: 'Montserrat-Regular',
-    fontSize: 18,
+    fontFamily: fontFamily.regular,
+    fontSize: fontSize.lg,
     color: colors.white,
-    marginBottom: 40,
+    marginBottom: spacing.xxl,
   },
   bodyHeader: {
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 18,
+    fontFamily: fontFamily.medium,
+    fontSize: fontSize.lg,
     color: colors.white,
   },
   tagline: {
-    marginTop: 10,
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 18,
+    marginTop: spacing.sm,
+    fontFamily: fontFamily.medium,
+    fontSize: fontSize.lg,
     color: colors.white,
     alignSelf: 'center',
   },
   subTagline: {
-    fontFamily: 'Montserrat-Light',
-    fontSize: 14,
+    fontFamily: fontFamily.light,
+    fontSize: fontSize.md,
     color: colors.white,
     alignSelf: 'flex-start',
   },

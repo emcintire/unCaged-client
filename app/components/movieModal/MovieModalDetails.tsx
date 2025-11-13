@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import colors from '../../config/colors';
 import type { Movie } from '../../api';
 import { join } from 'lodash';
+import { spacing, fontSize, fontFamily } from '../../config/theme';
 
 type Props = {
   movie: Movie;
@@ -9,27 +10,27 @@ type Props = {
 
 const styles = StyleSheet.create({
   detailsContainer: {
-    marginTop: 20,
-    marginBottom: 60,
+    marginTop: spacing.lg,
+    marginBottom: spacing.xxl * 2,
     alignItems: 'center',
   },
   label: {
     color: colors.white,
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 15,
-    marginBottom: 10,
+    fontFamily: fontFamily.medium,
+    fontSize: fontSize.md,
+    marginBottom: spacing.sm,
     width: '50%',
   },
   details: {
     color: colors.white,
-    fontFamily: 'Montserrat-Light',
-    fontSize: 15,
+    fontFamily: fontFamily.light,
+    fontSize: fontSize.md,
     width: '50%',
   },
   description: {
     color: colors.white,
-    fontFamily: 'Montserrat-Light',
-    fontSize: 15,
+    fontFamily: fontFamily.light,
+    fontSize: fontSize.md,
     width: '95%',
   },
   textContainer: {

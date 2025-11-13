@@ -1,5 +1,6 @@
-import Toast from 'react-native-toast-message';
+import Toast, { ToastType } from 'react-native-toast-message';
 import type { Movie } from '../api';
+import { TOAST_DURATION } from '../constants';
 
 export const changeResolution = (res: string, movie: Movie): Movie => {
   const imgStr = movie.img.split('');
@@ -17,24 +18,34 @@ export const changeProfilePicRes = (res: string, imgStr: string): string => {
   return newImgStr;
 };
 
-export const showSuccessToast = (text1: string = 'Changes saved successfully!'): void => {
-  Toast.show({
-    type: 'success',
-    text1,
-    autoHide: true,
-  });
-};
+const showToast = (
+  text1: string,
+  duration: number = TOAST_DURATION.MEDIUM,
+  type: ToastType,
+): void => Toast.show({
+  type,
+  text1,
+  autoHide: true,
+  visibilityTime: duration,
+});
 
-export const showErrorToast = (text1: string = 'Something went wrong'): void => {
-  Toast.show({
-    type: 'error',
-    text1,
-    autoHide: true,
-  });
-};
+export const showSuccessToast = (
+  text1: string = 'Changes saved successfully!',
+  duration: number = TOAST_DURATION.MEDIUM
+): void => showToast(text1, duration, 'success');
 
-export const genres: Array<string> = [
-  'Select',
+export const showErrorToast = (
+  text1: string = 'Something went wrong',
+  duration: number = TOAST_DURATION.MEDIUM
+): void => showToast(text1, duration, 'error');
+
+export const showInfoToast = (
+  text1: string,
+  duration: number = TOAST_DURATION.MEDIUM
+): void => showToast(text1, duration, 'info');
+
+export const genres = [
+  'All',
   'Action',
   'Adventure',
   'Animation',
@@ -50,3 +61,4 @@ export const genres: Array<string> = [
   'Thriller',
   'War',
 ];
+

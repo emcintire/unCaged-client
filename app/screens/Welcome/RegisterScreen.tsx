@@ -1,12 +1,16 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-native';
 
 import Screen from '../../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
 import PasswordInput from '../../components/forms/PasswordInput';
 import { showErrorToast } from '../../config/helperFunctions';
 import { useRegister } from '../../api/controllers/users.controller';
+import { form, screen } from '../../config/theme';
+import { PASSWORD_ERROR_MESSAGE, PASSWORD_REGEX } from '../../constants';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../types';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required().label('Name'),
@@ -14,17 +18,11 @@ const validationSchema = Yup.object().shape({
   password: Yup.string()
     .required()
     .label('Password')
-    .matches(
-      /^.*(?=.{8,})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
-      'Must contain 8 characters, 1 uppercase, and 1 number'
-    ),
+    .matches(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
   confirmPassword: Yup.string()
     .required()
     .label('Password')
-    .matches(
-      /^.*(?=.{8,})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
-      'Must contain 8 characters, 1 uppercase, and 1 number'
-    ),
+    .matches(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
 });
 
 type RegisterFormValues = {
@@ -35,7 +33,7 @@ type RegisterFormValues = {
 };
 
 export default function RegisterScreen() {
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const registerMutation = useRegister();
 
   const handleSubmit = async (values: RegisterFormValues) => {
@@ -50,7 +48,7 @@ export default function RegisterScreen() {
         email: values.email.toLowerCase(),
         password: values.password,
       });
-      navigate('/home');
+      navigate('Home');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Registration failed';
       showErrorToast(message);
@@ -58,8 +56,8 @@ export default function RegisterScreen() {
   };
 
   return (
-    <Screen style={styles.container}>
-      <View style={styles.formContainer}>
+    <Screen style={screen.withPadding}>
+      <View style={form.container}>
         <AppForm<RegisterFormValues>
           initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
           onSubmit={handleSubmit}
@@ -87,26 +85,9 @@ export default function RegisterScreen() {
             name="confirmPassword"
             placeholder="Confirm Password"
           />
-          <SubmitButton<RegisterFormValues> title="Register" style={styles.registerButton} />
+          <SubmitButton<RegisterFormValues> title="Register" style={form.submitButton} />
         </AppForm>
       </View>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 15,
-  },
-  scrollContainer: {
-    height: '100%',
-    width: '100%',
-  },
-  formContainer: {
-    width: '100%',
-    top: 15,
-  },
-  registerButton: {
-    marginTop: 30,
-  },
-});

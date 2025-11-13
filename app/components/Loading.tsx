@@ -1,5 +1,6 @@
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import colors from '../config/colors';
+import { fontSize, fontFamily, spacing } from '../config/theme';
 
 type Props = {
   visible?: boolean;
@@ -26,8 +27,8 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'white',
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 20,
-    marginTop: 20,
+    fontFamily: fontFamily.medium,
+    fontSize: fontSize.lg,
+    marginTop: spacing.lg,
   },
 });

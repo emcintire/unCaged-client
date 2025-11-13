@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import type { PropsWithChildren } from 'react';
 import Loading from './Loading';
@@ -11,19 +11,20 @@ type Props = PropsWithChildren & {
 
 export default function Screen({ children, isLoading = false, style }: Props) {
   return (
-    <View style={[styles.screen, style]}>
+    <View
+      style={[
+        {
+          backgroundColor: colors.bg,
+          flex: 1,
+          height: '100%',
+          paddingBottom: 0,
+          paddingTop: 0,
+          width: '100%',
+        },
+        style,
+      ]}
+    >
       {isLoading ? <Loading /> : children}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    backgroundColor: colors.bg,
-    flex: 1,
-    height: '100%',
-    paddingBottom: 0,
-    paddingTop: 0,
-    width: '100%',
-  },
-});

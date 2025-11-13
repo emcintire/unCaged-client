@@ -5,6 +5,7 @@ import { map } from 'lodash'
 import { SetState } from '../types'
 import colors from '../config/colors'
 import { genres } from '../config/helperFunctions'
+import { spacing, borderRadius, fontSize, fontFamily } from '../config/theme'
 
 type Props = {
   genreFilter: string;
@@ -97,11 +98,11 @@ export default function RandomMovieFilters({
 const styles = StyleSheet.create({
   headerContainer: {
     position: 'absolute',
-    top: 10,
+    top: spacing.sm,
   },
   headerText: {
-    fontFamily: 'Montserrat-Black',
-    fontSize: 26,
+    fontFamily: fontFamily.black,
+    fontSize: fontSize.xxl + 1,
   },
   filtersModalContainer: {
     height: '100%',
@@ -114,15 +115,15 @@ const styles = StyleSheet.create({
   filtersModal: {
     position: 'absolute',
     bottom: 0,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
+    borderTopLeftRadius: borderRadius.circle + 15,
+    borderTopRightRadius: borderRadius.circle + 15,
     borderColor: colors.orange,
     borderWidth: 4,
     borderBottomWidth: 0,
     backgroundColor: colors.white,
     height: 'auto',
-    padding: 20,
-    paddingTop: 50,
+    padding: spacing.lg,
+    paddingTop: borderRadius.circle + 15,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'black',
-    fontSize: 15,
-    fontFamily: 'Montserrat-Bold',
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.bold,
   },
 });

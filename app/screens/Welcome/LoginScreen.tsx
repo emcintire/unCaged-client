@@ -1,10 +1,13 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-native';
 import Screen from '../../components/Screen';
 import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
 import { AppForm, AppFormField, PasswordInput, SubmitButton } from '../../components/forms';
 import { useLogin } from '../../api';
+import { form, screen } from '../../config/theme';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../types';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
@@ -17,7 +20,7 @@ type LoginFormValues = {
 };
 
 export default function LoginScreen() {
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const loginMutation = useLogin();
 
   const handleSubmit = async (values: LoginFormValues): Promise<void> => {
@@ -27,7 +30,7 @@ export default function LoginScreen() {
     }, {
       onSuccess: () => {
         showSuccessToast('Login successful!');
-        navigate('/home');
+        navigate('Home');
       },
       onError: (error) => {
         showErrorToast(error instanceof Error ? error.message : 'Login failed');
@@ -36,8 +39,8 @@ export default function LoginScreen() {
   };
 
   return (
-    <Screen style={styles.container}>
-      <View style={styles.formContainer}>
+    <Screen style={screen.withPadding}>
+      <View style={form.container}>
         <AppForm<LoginFormValues>
           initialValues={{ email: '', password: '' }}
           onSubmit={handleSubmit}
@@ -51,22 +54,9 @@ export default function LoginScreen() {
             textContentType="emailAddress"
           />
           <PasswordInput<LoginFormValues> name="password" placeholder="Password" />
-          <SubmitButton<LoginFormValues> title="Login" style={styles.loginButton} />
+          <SubmitButton<LoginFormValues> title="Login" style={form.submitButton} />
         </AppForm>
       </View>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 15,
-  },
-  loginButton: {
-    marginTop: 30,
-  },
-  formContainer: {
-    width: '100%',
-    top: 15,
-  },
-});

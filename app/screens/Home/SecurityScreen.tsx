@@ -9,6 +9,8 @@ import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
 import { useChangePassword } from '../../api/controllers/users.controller';
 import { useNavigation } from '@react-navigation/native';
 import { HomeStackParamList } from '../../types';
+import { form, spacing } from '../../config/theme';
+import { PASSWORD_ERROR_MESSAGE, PASSWORD_REGEX } from '../../constants';
 
 type SecurityFormValues = {
   currentPassword: string;
@@ -74,19 +76,14 @@ export default function SecurityScreen() {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    paddingHorizontal: 15,
+    paddingHorizontal: spacing.md,
   },
   scrollContainer: {
     height: '100%',
     width: '100%',
   },
-  formContainer: {
-    width: '100%',
-    top: 15,
-  },
-  submitButton: {
-    marginTop: 30,
-  },
+  formContainer: form.container,
+  submitButton: form.submitButton,
 });
 
 const validationSchema = Yup.object().shape({
@@ -94,15 +91,9 @@ const validationSchema = Yup.object().shape({
   newPassword: Yup.string()
     .required()
     .label('New Password')
-    .matches(
-      /^.*(?=.{8,})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
-      'Must contain 8 characters, 1 uppercase, and 1 number'
-    ),
+    .matches(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
   confirmPassword: Yup.string()
     .required()
     .label('Confirm Password')
-    .matches(
-      /^.*(?=.{8,})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
-      'Must contain 8 characters, 1 uppercase, and 1 number'
-    ),
+    .matches(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
 });

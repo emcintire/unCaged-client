@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Icon from '../components/Icon';
 import colors from './colors';
+import { borderRadius, spacing, fontSize, fontFamily } from './theme';
 
 type ToastConfigProps = {
   text1?: string;
@@ -15,11 +16,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 2,
     borderColor: colors.green,
-    borderRadius: 10,
+    borderRadius: borderRadius.md,
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingLeft: 10,
+    paddingLeft: spacing.sm,
   },
   errorContainer: {
     minHeight: 60,
@@ -28,17 +29,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 2,
     borderColor: colors.red,
-    borderRadius: 10,
+    borderRadius: borderRadius.md,
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingLeft: 10,
+    paddingLeft: spacing.sm,
   },
   notificationText: {
-    fontSize: 14,
-    fontFamily: 'Montserrat-Medium',
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.medium,
     color: colors.bg,
-    paddingLeft: 10,
+    paddingLeft: spacing.sm,
     width: '88%',
   },
 });

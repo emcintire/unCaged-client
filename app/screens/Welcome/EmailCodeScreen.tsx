@@ -1,12 +1,12 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Yup from 'yup';
 
 import Screen from '../../components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '../../components/forms';
-import colors from '../../config/colors';
 import { showErrorToast } from '../../config/helperFunctions';
+import { form, typography, utils, spacing } from '../../config/theme';
 import type { WelcomeStackParamList } from '../../types';
 import { useCheckCode } from '../../api/controllers/users.controller';
 
@@ -32,10 +32,10 @@ export default function EmailCodeScreen() {
   };
 
   return (
-    <Screen style={styles.container}>
-      <Text style={styles.tagline}>Check Email</Text>
-      <Text style={styles.subTitle}>(Check spam folder)</Text>
-      <View style={styles.formContainer}>
+    <Screen style={{ padding: spacing.md }}>
+      <Text style={[typography.h1, utils.selfCenter, utils.mt10]}>Check Email</Text>
+      <Text style={[typography.caption, utils.selfCenter]}>(Check spam folder)</Text>
+      <View style={form.container}>
         <AppForm<EmailCodeFormValues>
           initialValues={{ code: '' }}
           onSubmit={handleSubmit}
@@ -48,35 +48,9 @@ export default function EmailCodeScreen() {
             name="code"
             placeholder="Enter Code                                  "
           />
-          <SubmitButton<EmailCodeFormValues> title="Submit" style={styles.submitButton} />
+          <SubmitButton<EmailCodeFormValues> title="Submit" style={form.submitButton} />
         </AppForm>
       </View>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 15,
-  },
-  submitButton: {
-    marginTop: 30,
-  },
-  formContainer: {
-    width: '100%',
-    top: 15,
-  },
-  tagline: {
-    fontFamily: 'Montserrat-ExtraBold',
-    fontSize: 30,
-    marginTop: 10,
-    color: colors.white,
-    alignSelf: 'center',
-  },
-  subTitle: {
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 12,
-    color: colors.light,
-    alignSelf: 'center',
-  },
-});

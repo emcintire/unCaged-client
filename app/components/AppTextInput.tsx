@@ -4,6 +4,7 @@ import {
   MaterialCommunityIcons, type MaterialCommunityIcons as MaterialCommunityIconsType,
 } from '@expo/vector-icons';
 import defaultStyles from '../config/styles';
+import { borderRadius, spacing } from '../config/theme';
 
 type Props = TextInputProps & {
   icon?: keyof typeof MaterialCommunityIconsType.glyphMap | undefined;
@@ -34,13 +35,13 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     backgroundColor: defaultStyles.colors.light,
-    borderRadius: 25,
+    borderRadius: borderRadius.round,
     flexDirection: 'row',
-    marginVertical: 10,
-    padding: 10,
+    marginVertical: spacing.sm,
+    padding: spacing.sm,
   },
   icon: {
-    marginRight: 10,
+    marginRight: spacing.sm,
   },
   input: {
     width: '90%',

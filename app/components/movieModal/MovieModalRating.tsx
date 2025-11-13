@@ -6,17 +6,18 @@ import colors from '../../config/colors';
 import { showErrorToast } from '../../config/helperFunctions';
 import { useDeleteRating, useUpdateMovieRating } from '../../api/controllers/movies.controller';
 import { type Movie, useRateMovie } from '../../api';
+import { spacing, borderRadius } from '../../config/theme';
 
 const styles = StyleSheet.create({
   stars: {
-    marginTop: 5,
+    marginTop: spacing.xs,
     backgroundColor: colors.black,
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'center',
     alignSelf: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: borderRadius.md,
   },
 });
 

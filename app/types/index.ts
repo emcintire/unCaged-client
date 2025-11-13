@@ -10,3 +10,4 @@ export type {
   WatchlistTabParamList,
 } from './homeStackParamList';
 export type { Screen } from './screen';
+export type { RootStackParamList } from './rootStackParamList';
