@@ -1,5 +1,5 @@
 import { mergeApis, Zodios } from '@zodios/core';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { userApi } from './controllers/users.controller';
 import { movieApi } from './controllers/movies.controller';
 import { env } from '../config/env';
@@ -13,7 +13,7 @@ const apiContract = mergeApis({
 const baseClient = new Zodios(env.apiBaseUrl, apiContract);
 
 baseClient.axios.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  const token = await SecureStore.getItemAsync(STORAGE_KEYS.AUTH_TOKEN);
   if (token) {
     config.headers['x-auth-token'] = token;
   }
@@ -36,7 +36,7 @@ baseClient.axios.interceptors.response.use(
     // Handle common error cases
     if (error.response?.status === 401) {
       // Unauthorized - clear token and redirect to login
-      AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+      SecureStore.deleteItemAsync(STORAGE_KEYS.AUTH_TOKEN);
     }
     
     return Promise.reject(error);

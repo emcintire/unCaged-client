@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { userKeys } from './controllers/users.controller';
 import { movieKeys } from './controllers/movies.controller';
 import { STORAGE_KEYS } from '../constants';
@@ -39,6 +39,6 @@ export const useClearCache = () => {
   const queryClient = useQueryClient();
   return useCallback(async () => {
     queryClient.clear();
-    await AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.AUTH_TOKEN);
   }, [queryClient]);
 };

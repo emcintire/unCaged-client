@@ -48,20 +48,6 @@ All API endpoints are defined in `app/api/controllers/` with:
 - React Query integration
 - Error handling
 
-## Testing
-
-Testing infrastructure is set up with Jest and React Native Testing Library:
-
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Generate coverage report
-npm run test:coverage
-```
 ## Architecture Decisions
 
 ### Why TanStack Query?

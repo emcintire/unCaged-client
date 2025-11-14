@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { makeApi } from '@zodios/core';
 import { z } from 'zod';
 import { zodiosClient } from '../zodiosClient';
@@ -292,7 +292,7 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (credentials: { email: string; password: string }) => zodiosClient.login(credentials),
     onSuccess: async (token: string) => {
-      await AsyncStorage.setItem('token', token);
+      await SecureStore.setItemAsync('token', token);
     },
   });
 };
@@ -301,7 +301,7 @@ export const useRegister = () => {
   return useMutation({
     mutationFn: (data: { name: string; email: string; password: string }) => zodiosClient.register(data),
     onSuccess: async (token: string) => {
-      await AsyncStorage.setItem('token', token);
+      await SecureStore.setItemAsync('token', token);
     },
   });
 };
@@ -314,7 +314,7 @@ export const useForgotPassword = () => {
       return response;
     },
     onSuccess: async (token: string) => {
-      await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+      await SecureStore.setItemAsync(STORAGE_KEYS.AUTH_TOKEN, token);
     },
     onError: (error) => {
       logger.error('Forgot password failed', error, { context: 'useForgotPassword' });
@@ -449,7 +449,7 @@ export const useDeleteUser = () => {
     mutationFn: (data: { id: string }) => zodiosClient.deleteUser(data),
     onSuccess: () => {
       clearCache();
-      AsyncStorage.removeItem('token');
+      SecureStore.deleteItemAsync('token');
     },
   });
 };

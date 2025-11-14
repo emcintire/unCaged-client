@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -43,7 +43,7 @@ export default function App() {
     async function prepare() {
       try {
         await loadFonts();
-        const token = await AsyncStorage.getItem('token');
+        const token = await SecureStore.getItemAsync('token');
         if (token != null) {
           setIsAuthenticated(true);
         }

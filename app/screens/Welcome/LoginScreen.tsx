@@ -34,8 +34,8 @@ export default function LoginScreen() {
         showSuccessToast('Login successful!');
         navigate('Home');
       },
-      onError: (error) => {
-        showErrorToast(error instanceof Error ? error.message : 'Login failed');
+      onError: () => {
+        showErrorToast('Login failed');
       },
     });
   };
