@@ -9,26 +9,24 @@ import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { QueryClientProvider } from '@tanstack/react-query';
-import WelcomeStack from './app/stacks/WelcomeStack';
-import HomeStack from './app/stacks/Home/HomeStack';
-import { queryClient } from './app/api/queryClient';
-import { toastConfig } from './app/config/toastConfig';
-import colors from './app/config/colors';
-import { layout } from './app/config/theme';
-import { RootStackParamList } from './app/types';
+import type { RootStackParamList } from '@/types';
+import { queryClient } from '@/services';
+import { colors, toastConfig, layout } from '@/config';
+import WelcomeStack from '@/navigation/stacks/WelcomeStack';
+import HomeStack from '@/navigation/stacks/Home/HomeStack';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 const loadFonts = async (): Promise<boolean> => {
   await Font.loadAsync({
-    'Montserrat-ExtraLight': require('./app/assets/fonts/Montserrat-ExtraLight.ttf'),
-    'Montserrat-Light': require('./app/assets/fonts/Montserrat-Light.ttf'),
-    'Montserrat-Regular': require('./app/assets/fonts/Montserrat-Regular.ttf'),
-    'Montserrat-Medium': require('./app/assets/fonts/Montserrat-Medium.ttf'),
-    'Montserrat-Bold': require('./app/assets/fonts/Montserrat-Bold.ttf'),
-    'Montserrat-ExtraBold': require('./app/assets/fonts/Montserrat-ExtraBold.ttf'),
-    'Montserrat-Black': require('./app/assets/fonts/Montserrat-Black.ttf'),
+    'Montserrat-ExtraLight': require('@/assets/fonts/Montserrat-ExtraLight.ttf'),
+    'Montserrat-Light': require('@/assets/fonts/Montserrat-Light.ttf'),
+    'Montserrat-Regular': require('@/assets/fonts/Montserrat-Regular.ttf'),
+    'Montserrat-Medium': require('@/assets/fonts/Montserrat-Medium.ttf'),
+    'Montserrat-Bold': require('@/assets/fonts/Montserrat-Bold.ttf'),
+    'Montserrat-ExtraBold': require('@/assets/fonts/Montserrat-ExtraBold.ttf'),
+    'Montserrat-Black': require('@/assets/fonts/Montserrat-Black.ttf'),
   });
   return true;
 };
