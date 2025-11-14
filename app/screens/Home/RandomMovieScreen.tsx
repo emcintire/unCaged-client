@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Image, Modal, TouchableOpacity, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { filter, overEvery, sample, reject, includes } from 'lodash';
+import { filter, overEvery, sample, reject, includes, toLower } from 'lodash';
 import type { Movie } from '../../api';
 import Screen from '../../components/Screen';
 import colors from '../../config/colors';
@@ -10,7 +10,7 @@ import MovieModal from '../../components/movieModal/MovieModal';
 import RandomMovieFilters from '../../components/RandomMovieFilters';
 import { useCurrentUser } from '../../api/controllers/users.controller';
 import { useMovies } from '../../api/controllers/movies.controller';
-import { shadow, spacing, borderRadius, fontSize, fontFamily } from '../../config/theme';
+import { shadow, spacing, borderRadius, fontSize, fontFamily, movieCard } from '../../config/theme';
 import { changeResolution } from '../../config/helperFunctions';
 
 export default function RandomMovieScreen() {
@@ -32,7 +32,7 @@ export default function RandomMovieScreen() {
     
     const predicates = overEvery<Movie>([
       (m) => !genreFilter || includes(m.genres, genreFilter),
-      (m) => !mandyFilter || m.title.toLowerCase().includes('mandy'),
+      (m) => !mandyFilter ||  includes(toLower(m.title), 'mandy'),
       (m) => !unseenFilter || !user || !includes(user.seen, m._id),
       (m) => !watchlistFilter || !user || includes(user.watchlist, m._id),
     ]) as (movie: Movie) => boolean;
@@ -68,7 +68,7 @@ export default function RandomMovieScreen() {
         </View>
       )}
       <MovieModal
-        movie={movie!}
+        movie={movie}
         onClose={() => setModalVisible(false)}
         isOpen={modalVisible}
       />
@@ -90,14 +90,14 @@ export default function RandomMovieScreen() {
           watchlistFilter={watchlistFilter}
         />
       </Modal>
-      {movie === null ? (
+      {movie == null ? (
         <View style={{ height: '80%', justifyContent: 'center' }}>
           <Text style={styles.noResults}>No results :(</Text>
         </View>
       ) : (
         <View style={styles.movieContainer}>
           <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-            <Image source={{ uri: movie.img }} style={styles.image} />
+            <Image source={{ uri: movie.img }} style={movieCard.image} />
           </TouchableOpacity>
         </View>
       )}
@@ -138,15 +138,6 @@ const styles = StyleSheet.create({
     aspectRatio: 2 / 3,
     ...shadow.lg,
     borderRadius: borderRadius.sm,
-  },
-  image: {
-    height: '100%',
-    width: '100%',
-    resizeMode: 'cover',
-    borderRadius: borderRadius.sm,
-    borderWidth: 1,
-    borderColor: 'transparent',
-    overflow: 'hidden',
   },
   refreshBtn: {
     height: 60,

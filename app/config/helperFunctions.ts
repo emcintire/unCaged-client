@@ -45,7 +45,6 @@ export const showInfoToast = (
 ): void => showToast(text1, duration, 'info');
 
 export const genres = [
-  'All',
   'Action',
   'Adventure',
   'Animation',

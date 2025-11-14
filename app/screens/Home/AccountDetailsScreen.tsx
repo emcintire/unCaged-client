@@ -12,7 +12,7 @@ import type { HomeStackParamList } from '../../types';
 import { useCurrentUser, useUpdateUser } from '../../api/controllers/users.controller';
 import { useNavigation } from '@react-navigation/native';
 import { toLower, trim } from 'lodash';
-import { spacing, borderRadius } from '../../config/theme';
+import { spacing } from '../../config/theme';
 
 type FormValues = {
   name: string;
@@ -32,13 +32,12 @@ export default function AccountDetailsScreen() {
   const updateUserMutation = useUpdateUser();
 
   const handleSubmit = async (values: FormValues) => {
-    if (user == null) return;
+    if (user == null || (values.name === user.name && values.email === user.email)) { return; }
 
     try {
-      await updateUserMutation.mutateAsync({
-        name: trim(values.name || user.name),
-        email: trim(toLower(values.email)),
-      });
+      const email = toLower(trim(values.email));
+      const name = trim(values.name);
+      await updateUserMutation.mutateAsync({ name, email });
       navigate('SettingsTab');
       refetch();
       showSuccessToast();
@@ -104,7 +103,7 @@ const styles = StyleSheet.create({
   image: {
     height: 150,
     width: 150,
-    borderRadius: borderRadius.circle * 2,
+    borderRadius: 75,
   },
   saveButton: {
     marginTop: spacing.xxl,
@@ -116,7 +115,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: 150,
     width: 150,
-    borderRadius: borderRadius.circle * 2,
+    borderRadius: 75,
     backgroundColor: '#00000060',
     zIndex: 2,
     alignItems: 'center',

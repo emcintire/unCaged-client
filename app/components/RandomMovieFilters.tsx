@@ -85,7 +85,7 @@ export default function RandomMovieFilters({
             style={{ height: 50, width: 150 }}
             onValueChange={setGenreFilter}
           >
-            {map(genres, (genre) => (
+            {map(['All', ...genres], (genre) => (
               <Picker.Item key={genre} style={styles.label} label={genre} value={genre} />
             ))}
           </Picker>

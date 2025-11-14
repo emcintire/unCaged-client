@@ -31,7 +31,7 @@ export default function RatingsScreen() {
         <>
           <MovieModal
             isOpen={selectedMovie != null}
-            movie={selectedMovie!}
+            movie={selectedMovie}
             onClose={() => setSelectedMovie(null)}
           />
           <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">

@@ -1,9 +1,9 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useRef } from 'react';
 import {
   StyleSheet, View, Image, Text, TouchableOpacity, TextInput, ScrollView,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { map, filter, overEvery, orderBy, some } from 'lodash';
+import { map, filter, overEvery, orderBy, some, debounce, toLower, includes } from 'lodash';
 import type { Movie } from '../../api';
 import { useMovies } from '../../api/controllers/movies.controller';
 import { changeResolution } from '../../config/helperFunctions';
@@ -18,6 +18,7 @@ export default function SearchScreen() {
   const [open, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [title, setTitle] = useState('');
+  const [debouncedTitle, setDebouncedTitle] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selected, setSelected] = useState('az');
   const [genre, setGenre] = useState('Genre');
@@ -25,10 +26,22 @@ export default function SearchScreen() {
   
   const { data: movies = [], isLoading: loading } = useMovies();
 
+  // Debounce search input using lodash
+  const debouncedSetTitle = useRef(
+    debounce((value: string) => {
+      setDebouncedTitle(value);
+    }, 300)
+  ).current;
+
+  const handleTitleChange = (value: string) => {
+    setTitle(value);
+    debouncedSetTitle(value);
+  };
+
   const displayMovies = useMemo(() => {
     const predicates = overEvery<Movie>([
-      (movie) => !title || movie.title.toLowerCase().includes(title.toLowerCase()),
-      (movie) => genre === 'Genre' || some(movie.genres, (g: string) => g.toLowerCase() === genre.toLowerCase()),
+      (movie) => !debouncedTitle || includes(toLower(movie.title), toLower(debouncedTitle)),
+      (movie) => genre === 'Genre' || some(movie.genres, (g: string) => toLower(g) === toLower(genre)),
     ]) as (movie: Movie) => boolean;
     
     const filtered = filter(movies, predicates);
@@ -38,23 +51,12 @@ export default function SearchScreen() {
       ? (movie: Movie) => movie.avgRating || 0
         : selected === 'year'
       ? (movie: Movie) => new Date(movie.date).getFullYear()
-        : (movie: Movie) => movie.title.toLowerCase();
+        : (movie: Movie) => toLower(movie.title);
     
     return orderBy(filtered, sortKey, sortDirection);
-  }, [genre, movies, selected, sortDirection, title]);
+  }, [genre, movies, selected, sortDirection, debouncedTitle]);
 
   const styles = StyleSheet.create({
-    container: {
-      alignItems: 'center',
-    },
-    scrollView: {
-      flex: 1,
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-evenly',
-      paddingTop: spacing.md,
-      width: '100%',
-    },
     inputContainer: {
       alignItems: 'center',
       backgroundColor: colors.white,
@@ -66,8 +68,7 @@ export default function SearchScreen() {
       justifyContent: 'space-between',
       margin: spacing.md,
       marginBottom: 0,
-      paddingLeft: spacing.lg,
-      paddingRight: borderRadius.round,
+      paddingHorizontal: spacing.lg,
       width: '92%',
     },
     text: {
@@ -82,10 +83,6 @@ export default function SearchScreen() {
       fontFamily: fontFamily.bold,
       fontSize: fontSize.xxxl,
     },
-    movieContainer: {
-      alignItems: 'center',
-      marginBottom: spacing.xxl,
-    },
     filtersBtn: {
       alignSelf: 'flex-end',
     },
@@ -94,15 +91,16 @@ export default function SearchScreen() {
   const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
 
   return (
-    <Screen style={styles.container}>
+    <Screen>
       <MovieModal
-        isOpen={selectedMovie !== null}
-        movie={selectedMovie!}
+        isOpen={selectedMovie != null}
+        movie={selectedMovie}
         onClose={() => setSelectedMovie(null)}
       />
       <View style={styles.inputContainer}>
         <TextInput
-          onChangeText={setTitle}
+          onChangeText={handleTitleChange}
+          value={title}
           placeholder="Enter title"
           placeholderTextColor={colors.medium}
           style={styles.text}
@@ -130,25 +128,23 @@ export default function SearchScreen() {
       )}
       {loading ? <Loading /> : (displayMovies.length > 0 ? (
         <ScrollView
-          contentContainerStyle={{ width: '100%' }}
+          contentContainerStyle={movieCard.scrollContainer}
           decelerationRate="fast"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.scrollView}>
-            {map(displayMovies, (movie) => (
-              <View style={styles.movieContainer} key={movie._id}>
-                <TouchableOpacity
-                  style={movieCard.button}
-                  onPress={() => setSelectedMovie(movie)}
-                >
-                  <Image
-                    source={{ uri: getMovieWithChangedResolution(movie).img }}
-                    style={movieCard.image}
-                  />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
+          {map(displayMovies, (movie) => (
+            <View style={movieCard.container} key={movie._id}>
+              <TouchableOpacity
+                style={movieCard.button}
+                onPress={() => setSelectedMovie(movie)}
+              >
+                <Image
+                  source={{ uri: getMovieWithChangedResolution(movie).img }}
+                  style={movieCard.image}
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
         </ScrollView>
       ) : (
         <View style={{ height: '80%', justifyContent: 'center' }}>

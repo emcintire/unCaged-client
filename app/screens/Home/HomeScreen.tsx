@@ -9,7 +9,7 @@ import { useMovies, useQuote, useAddQuote, useCurrentUser } from '../../api';
 import Screen from '../../components/Screen';
 import AppButton from '../../components/AppButton';
 import MovieModal from '../../components/movieModal/MovieModal';
-import { spacing, borderRadius, fontSize, fontFamily } from '../../config/theme';
+import { spacing, borderRadius, fontSize, fontFamily, movieCard } from '../../config/theme';
 
 const styles = StyleSheet.create({
   quote: {
@@ -47,15 +47,6 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
     width: 135,
     height: 200,
-  },
-  image: {
-    height: '100%',
-    width: '100%',
-    resizeMode: 'cover',
-    borderRadius: borderRadius.sm,
-    borderWidth: 1,
-    borderColor: 'transparent',
-    overflow: 'hidden',
   },
   tagline: {
     marginTop: spacing.sm,
@@ -138,7 +129,7 @@ export default function HomeScreen() {
     <Screen isLoading={isLoading}>
       <MovieModal
         isOpen={selectedMovie != null}
-        movie={selectedMovie!}
+        movie={selectedMovie}
         onClose={() => setSelectedMovie(null)}
       />
       <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
@@ -178,7 +169,7 @@ export default function HomeScreen() {
                   key={`${genre}-${movie._id}`}
                   onPress={() => setSelectedMovie(movie)}
                 >
-                  <Image source={{ uri: getMovieWithChangedResolution(movie).img }} style={styles.image} />
+                  <Image source={{ uri: getMovieWithChangedResolution(movie).img }} style={movieCard.image} />
                 </TouchableOpacity>
               ))}
               <View style={{ width: 20 }} />

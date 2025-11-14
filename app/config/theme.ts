@@ -193,21 +193,21 @@ export const movieCard = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   image: {
-    height: '100%',
-    width: '100%',
-    resizeMode: 'cover',
+    borderColor: 'transparent',
     borderRadius: borderRadius.sm,
     borderWidth: 1,
-    borderColor: 'transparent',
+    height: '100%',
     overflow: 'hidden',
+    resizeMode: 'cover',
+    width: '100%',
   },
   scrollContainer: {
-    flexDirection: 'row',
     flex: 1,
+    flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
     marginTop: spacing.xl,
     width: '100%',
-    justifyContent: 'space-evenly',
   },
 });
 

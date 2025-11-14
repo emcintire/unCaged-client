@@ -11,16 +11,16 @@ import MovieModalDetails from './MovieModalDetails';
 import MovieModalActions from './MovieModalActions';
 import {type  Movie, useCurrentUser } from '../../api';
 import { useAverageRating } from '../../api/controllers/movies.controller';
-import { modal, borderRadius, spacing, fontSize, fontFamily } from '../../config/theme';
+import { modal, spacing, fontSize, fontFamily, movieCard } from '../../config/theme';
 
 type Props = {
   isOpen: boolean;
-  movie: Movie;
+  movie: Movie | null;
   onClose: () => void;
 };
 
 export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props) {
-  const [movie, setMovie] = useState<Movie>(propsMovie);
+  const [movie, setMovie] = useState<Movie | null>(propsMovie);
 
   const { data: user } = useCurrentUser();
   const { data: ratingData, isLoading } = useAverageRating(propsMovie?._id || '');
@@ -53,15 +53,11 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
       zIndex: 10,
     },
     image: {
-      marginTop: spacing.lg,
-      height: 320,
-      width: 215,
-      resizeMode: 'cover',
-      borderRadius: borderRadius.sm,
-      borderWidth: 1,
-      borderColor: 'transparent',
-      overflow: 'hidden',
+      ...movieCard.image,
       alignSelf: 'center',
+      height: 320,
+      marginTop: spacing.lg,
+      width: 215,
     },
     titleContainer: {
       width: '90%',

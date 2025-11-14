@@ -7,24 +7,7 @@ import { map } from 'lodash';
 import colors from '../config/colors';
 import type { SetState } from '../types';
 import { borderRadius, fontSize, fontFamily, spacing } from '../config/theme';
-
-const genres = [
-  'Genre',
-  'Action',
-  'Adventure',
-  'Animation',
-  'Comedy',
-  'Crime',
-  'Drama',
-  'Family',
-  'Fantasy',
-  'Horror',
-  'Mystery',
-  'Romance',
-  'Sci-Fi',
-  'Thriller',
-  'War',
-];
+import { genres } from '../config/helperFunctions';
 
 type Props = {
   genre: string;
@@ -35,7 +18,7 @@ type Props = {
   setSelected: SetState<string>;
   setSortDirection: SetState<'asc' | 'desc'>;
   sortDirection: 'asc' | 'desc';
-}
+};
 
 export default function SearchFilters({
   genre,
@@ -48,6 +31,10 @@ export default function SearchFilters({
   sortDirection,
 }: Props) {
   const styles = StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      width: '100%',
+    },
     underSearchContainer: {
       width: '92%',
       zIndex: 999,
@@ -187,64 +174,47 @@ export default function SearchFilters({
   };
 
   return (
-    <View style={styles.underSearchContainer}>
-      <View style={styles.sortContainer}>
-        <TouchableOpacity
-          onPress={handleRatingPress}
-          style={styles.ratingBtn}
-        >
-          <Text style={styles.label}>Rating</Text>
-          <MaterialCommunityIcons
-            name={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}
-            size={20}
-            color={colors.white}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleYearPress}
-          style={styles.yearBtn}
-        >
-          <Text style={styles.label}>Year</Text>
-          <MaterialCommunityIcons
-            name={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}
-            size={20}
-            color={colors.white}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleAzPress}
-          style={styles.azBtn}
-        >
-          {sortDirection === 'asc' ? (
-            <Text style={styles.label}>A - Z</Text>
-          ) : (
-            <Text style={styles.label}>Z - A</Text>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleGenresToggle}
-          style={styles.genresBtn}
-        >
-          <Text style={styles.gLabel}>{genre}</Text>
-        </TouchableOpacity>
-      </View>
-      {genresVisible ? (
-        <View style={Platform.OS === 'ios' ? styles.scrollContainer : styles.androidScrollContainer}>
-          <ScrollView decelerationRate="fast">
-            {map(genres, (genreItem, index) => (
-              <View key={index}>
-                <TouchableOpacity
-                  style={styles.genreBtn}
-                  onPress={() => handleGenreSelect(genreItem)}
-                >
-                  <Text style={styles.genreLabel}>{genreItem}</Text>
-                </TouchableOpacity>
-                <View style={genre === 'Fantasy' ? {} : styles.separator} />
-              </View>
-            ))}
-          </ScrollView>
+    <View style={styles.container}>
+      <View style={styles.underSearchContainer}>
+        <View style={styles.sortContainer}>
+          <TouchableOpacity onPress={handleRatingPress} style={styles.ratingBtn}>
+            <Text style={styles.label}>Rating</Text>
+            <MaterialCommunityIcons
+              name={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}
+              size={20}
+              color={colors.white}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleYearPress} style={styles.yearBtn}>
+            <Text style={styles.label}>Year</Text>
+            <MaterialCommunityIcons
+              name={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}
+              size={20}
+              color={colors.white}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleAzPress} style={styles.azBtn}>
+            <Text style={styles.label}>{sortDirection === 'asc' ? 'A - Z' : 'Z - A'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleGenresToggle} style={styles.genresBtn}>
+            <Text style={styles.gLabel}>{genre}</Text>
+          </TouchableOpacity>
         </View>
-      ) : null}
+        {genresVisible ? (
+          <View style={Platform.OS === 'ios' ? styles.scrollContainer : styles.androidScrollContainer}>
+            <ScrollView decelerationRate="fast">
+              {map(['Genre', ...genres], (genreItem, index) => (
+                <View key={index}>
+                  <TouchableOpacity style={styles.genreBtn} onPress={() => handleGenreSelect(genreItem)}>
+                    <Text style={styles.genreLabel}>{genreItem}</Text>
+                  </TouchableOpacity>
+                  <View style={genre === 'Fantasy' ? {} : styles.separator} />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 }

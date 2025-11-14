@@ -11,6 +11,7 @@ import { PASSWORD_ERROR_MESSAGE, PASSWORD_REGEX } from '../../constants';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types';
+import { toLower, trim } from 'lodash';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required().label('Name'),
@@ -43,9 +44,10 @@ export default function RegisterScreen() {
     }
 
     try {
+      const email = toLower(trim(values.email));
       await registerMutation.mutateAsync({
         name: values.name,
-        email: values.email.toLowerCase(),
+        email,
         password: values.password,
       });
       navigate('Home');

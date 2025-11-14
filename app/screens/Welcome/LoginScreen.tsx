@@ -1,14 +1,15 @@
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
+import { toLower, trim } from 'lodash';
 import Screen from '../../components/Screen';
 import { showErrorToast, showSuccessToast } from '../../config/helperFunctions';
 import { AppForm, AppFormField, PasswordInput, SubmitButton } from '../../components/forms';
 import { useLogin } from '../../api';
 import { form, screen } from '../../config/theme';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../types';
-
+import type { RootStackParamList } from '../../types';
+ 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
   password: Yup.string().required().label('Password'),
@@ -24,8 +25,9 @@ export default function LoginScreen() {
   const loginMutation = useLogin();
 
   const handleSubmit = async (values: LoginFormValues): Promise<void> => {
+    const email = toLower(trim(values.email));
     loginMutation.mutate({
-      email: values.email.toLowerCase(),
+      email,
       password: values.password,
     }, {
       onSuccess: () => {

@@ -25,8 +25,8 @@ export default function SeenScreen() {
       ) : (
         <>
           <MovieModal
-            isOpen={selectedMovie !== null}
-            movie={selectedMovie!}
+            isOpen={selectedMovie != null}
+            movie={selectedMovie}
             onClose={() => setSelectedMovie(null)}
           />
           <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
