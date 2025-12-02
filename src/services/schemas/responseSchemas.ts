@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { MovieSchema } from './movie';
-import { QuoteSchema } from './quote';
+import { MovieSchema, QuoteSchema } from './movie';
 
 export const TokenResponseSchema = z.string();
 export const MoviesArraySchema = z.array(MovieSchema);
