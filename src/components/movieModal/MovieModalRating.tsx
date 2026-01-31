@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
-import { map } from 'lodash';
+import { includes, map } from 'lodash';
 import type { SetState } from '@/types';
-import { type Movie, useDeleteRating, useRateMovie } from '@/services';
+import { type Movie, useDeleteRating, useRateMovie, useAddToSeen, useCurrentUser } from '@/services';
 import { borderRadius, colors, showErrorToast, spacing } from '@/config';
 import Icon from '../Icon'
 
@@ -22,16 +22,21 @@ const stars = [1, 2, 3, 4, 5];
 
 type Props = {
   movie: Movie;
+  onSeenAdded: () => void;
   rating: number;
   setRating: SetState<number>;
 };
 
-export default function MovieModalRating({ movie, rating, setRating }: Props) {
+export default function MovieModalRating({ movie, onSeenAdded, rating, setRating }: Props) {
   const rateMovieMutation = useRateMovie();
   const deleteRatingMutation = useDeleteRating();
+  const addToSeenMutation = useAddToSeen();
+  const { data: user } = useCurrentUser();
 
   const handleRating = (newRating: number) => async () => {
     try {
+      const isMovieSeen = user && includes(user.seen, movie._id);
+      
       if (rating) {
         if (rating === newRating) {
           await deleteRatingMutation.mutateAsync({ id: movie._id });
@@ -44,6 +49,11 @@ export default function MovieModalRating({ movie, rating, setRating }: Props) {
       } else {
         await rateMovieMutation.mutateAsync({ id: movie._id, rating: newRating });
         setRating(newRating);
+        
+        if (!isMovieSeen) {
+          await addToSeenMutation.mutateAsync(movie._id);
+          onSeenAdded();
+        }
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to update rating';

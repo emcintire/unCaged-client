@@ -12,6 +12,7 @@ import Screen from '@/components/Screen';
 import ListItem from '@/components/ListItem';
 import Separator from '@/components/Separator';
 import Icon from '@/components/Icon';
+import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
 
 const accountItems: Array<{
   children?: ReactNode;
@@ -94,6 +95,7 @@ export default function SettingsScreen() {
   return (
     <Screen isLoading={isLoading}>
       <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
+        <BuyMeCoffeeButton style={{ marginBottom: 0 }} />
         <View style={styles.container}>
           <ListItem
             onPress={() => settingsNavigate('My Account')}

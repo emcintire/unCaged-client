@@ -7,6 +7,7 @@ import { changeResolution, movieCard, screen, typography } from '@/config';
 import Screen from '@/components/Screen';
 import MovieModal from '@/components/movieModal/MovieModal';
 import AdBanner from '@/components/AdBanner';
+import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
 
 export default function WatchlistScreen() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -21,7 +22,10 @@ export default function WatchlistScreen() {
     <Screen isLoading={isLoading} style={movies.length === 0 ? screen.centered : screen.noPadding}>
       {!isAdmin && <AdBanner />}
       {movies.length === 0 ? (
-        <Text style={typography.h1}>Add movies to your watchlist and you will see them here</Text>
+        <>
+          <Text style={typography.h1}>Add movies to your watchlist and you will see them here!</Text>
+          <BuyMeCoffeeButton />
+        </>
       ) : (
         <>
           <MovieModal
@@ -44,6 +48,7 @@ export default function WatchlistScreen() {
                   </TouchableOpacity>
                 </View>
               ))}
+              <BuyMeCoffeeButton />
             </View>
           </ScrollView>
         </>

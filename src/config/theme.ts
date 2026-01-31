@@ -223,6 +223,7 @@ export const screen = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.bg,
+    paddingHorizontal: 20,
   },
   noPadding: {
     paddingTop: 0,

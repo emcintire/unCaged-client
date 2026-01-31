@@ -46,7 +46,6 @@ export default function PicturePicker({ modalVisible, setModalVisible }: Props) 
     
     try {
       await updateUserImageMutation.mutateAsync({ img: selectedImg });
-      getPicture();
       setModalVisible(false);
       refetch();
     } catch (error: unknown) {

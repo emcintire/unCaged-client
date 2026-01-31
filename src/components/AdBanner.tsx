@@ -29,8 +29,8 @@ export default function AdBanner({ bannerSize }: Props) {
   const adUnitId = __DEV__
     ? TestIds.BANNER
     : Platform.OS === 'ios'
-      ? 'ca-app-pub-7328192473595101~2186093958'
-      : 'ca-app-pub-7328192473595101~8779422463';
+      ? ''
+      : '';
 
   return (
     <BannerAd

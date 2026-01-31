@@ -3,7 +3,7 @@ import { StyleSheet, View, Image, Modal, TouchableOpacity, Text } from 'react-na
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { filter, overEvery, sample, reject, includes, toLower } from 'lodash';
 import { type Movie, useCurrentUser, useMovies } from '@/services';
-import { borderRadius, changeResolution, colors, fontFamily, fontSize, movieCard, shadow, spacing } from '@/config';
+import { borderRadius, changeResolution, colors, fontFamily, fontSize, shadow, spacing } from '@/config';
 import AdBanner from '@/components/AdBanner';
 import MovieModal from '@/components/movieModal/MovieModal';
 import RandomMovieFilters from '@/components/RandomMovieFilters';
@@ -24,29 +24,41 @@ export default function RandomMovieScreen() {
   const isLoading = isUserLoading || isMoviesLoading;
 
   const getRandomMovie = useCallback(() => {
-    if (!allMovies.length) return;
-    
-    const predicates = overEvery<Movie>([
-      (m) => !genreFilter || includes(m.genres, genreFilter),
-      (m) => !mandyFilter ||  includes(toLower(m.title), 'mandy'),
-      (m) => !unseenFilter || !user || !includes(user.seen, m._id),
-      (m) => !watchlistFilter || !user || includes(user.watchlist, m._id),
-    ]) as (movie: Movie) => boolean;
-    
-    const filtered = filter(allMovies, predicates);
+    try {
+      if (!allMovies.length) {
+        return;
+      }
+      
+      const predicates = overEvery<Movie>([
+        (m) => !genreFilter || genreFilter === 'All' || includes(m.genres, genreFilter),
+        (m) => !mandyFilter ||  includes(toLower(m.title), 'mandy'),
+        (m) => !unseenFilter || !user || !includes(user.seen, m._id),
+        (m) => !watchlistFilter || !user || includes(user.watchlist, m._id),
+      ]) as (movie: Movie) => boolean;
+      
+      const filtered = filter(allMovies, predicates);
+      if (filtered.length === 0) {
+        setMovie(null);
+        return;
+      }
 
-    if (filtered.length === 0) {
-      setMovie(null);
-      return;
-    }
+      const candidateMovies = (movie && filtered.length > 1 && !mandyFilter)
+        ? reject(filtered, (m) => m._id === movie._id)
+        : filtered;
 
-    const candidateMovies = (movie && filtered.length > 1 && !mandyFilter)
-      ? reject(filtered, (m) => m._id === movie._id)
-      : filtered;
-
-    const newMovie = sample(candidateMovies);
-    if (newMovie) {
-      setMovie(newMovie.img.length === 32 ? changeResolution('', newMovie) : newMovie);
+      const newMovie = sample(candidateMovies);
+      if (newMovie) {
+        if (!newMovie.img) {
+          console.warn('getRandomMovie: Movie has no img property', newMovie._id);
+          setMovie(newMovie);
+        } else {
+          const movieToSet = newMovie.img.length === 32 ? changeResolution('', newMovie) : newMovie;
+          setMovie(movieToSet);
+        }
+      } else {
+      }
+    } catch (error) {
+      console.error('getRandomMovie error:', error);
     }
   }, [genreFilter, mandyFilter, unseenFilter, watchlistFilter, movie, allMovies, user]);
 
@@ -58,14 +70,12 @@ export default function RandomMovieScreen() {
 
   return (
     <Screen isLoading={isLoading} style={styles.container}>
-      {!isAdmin && (
-        <View style={styles.adContainer}>
-          <AdBanner />
-        </View>
-      )}
+      {!isAdmin && <AdBanner />}
       <MovieModal
         movie={movie}
-        onClose={() => setModalVisible(false)}
+        onClose={() => {
+          setModalVisible(false);
+        }}
         isOpen={modalVisible}
       />
       <Modal
@@ -86,19 +96,31 @@ export default function RandomMovieScreen() {
           watchlistFilter={watchlistFilter}
         />
       </Modal>
-      {movie == null ? (
-        <View style={{ height: '80%', justifyContent: 'center' }}>
-          <Text style={styles.noResults}>No results :(</Text>
-        </View>
-      ) : (
-        <View style={styles.movieContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-            <Image source={{ uri: movie.img }} style={movieCard.image} />
-          </TouchableOpacity>
-        </View>
-      )}
+      <View style={styles.content}>
+        {movie == null ? (
+          <View style={styles.noResultsContainer}>
+            <Text style={styles.noResults}>No results :(</Text>
+          </View>
+        ) : (
+          <View style={styles.movieContainer}>
+            <TouchableOpacity 
+              style={styles.movieButton} 
+              onPress={() => {
+                setModalVisible(true);
+              }}
+            >
+              <Image source={{ uri: movie.img }} style={styles.movieImage} />
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.refreshBtn} onPress={getRandomMovie}>
+        <TouchableOpacity 
+          style={styles.refreshBtn} 
+          onPress={() => {
+            getRandomMovie();
+          }}
+        >
           <View style={styles.inner}>
             <Text style={styles.text}>CAGE ME</Text>
           </View>
@@ -113,40 +135,60 @@ export default function RandomMovieScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-evenly',
+    justifyContent: 'flex-start',
+    paddingHorizontal: spacing.md,
   },
-  buttonContainer: {
-    flexDirection: 'row',
+  content: {
+    flex: 1,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
+    marginBottom: spacing.md,
+  },
+  noResultsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noResults: {
+    color: 'white',
+    fontFamily: fontFamily.bold,
+    fontSize: fontSize.xxxl,
+    textAlign: 'center',
   },
   movieContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    paddingHorizontal: 20,
   },
-  button: {
+  movieButton: {
     width: '85%',
     maxWidth: 400,
     aspectRatio: 2 / 3,
     ...shadow.lg,
     borderRadius: borderRadius.sm,
+    overflow: 'hidden',
+  },
+  movieImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  buttonContainer: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.md,
+    width: '100%',
   },
   refreshBtn: {
     height: 60,
     width: 150,
     backgroundColor: '#976000',
     borderRadius: borderRadius.md,
-    padding: 0,
-    marginVertical: spacing.sm,
-  },
-  noResults: {
-    color: 'white',
-    fontFamily: fontFamily.bold,
-    fontSize: fontSize.xxxl,
   },
   inner: {
     justifyContent: 'center',
@@ -163,15 +205,8 @@ const styles = StyleSheet.create({
   },
   filtersBtn: {
     position: 'absolute',
-    right: -50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  adContainer: {
-    position: 'absolute',
-    width: '100%',
-    height: 'auto',
-    left: 0,
-    top: -25,
+    left: '50%',
+    marginLeft: 75 + spacing.md,
+    padding: spacing.sm,
   },
 });

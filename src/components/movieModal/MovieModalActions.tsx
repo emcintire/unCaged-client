@@ -38,7 +38,7 @@ export default function MovieModalActions({ movie }: Props) {
     setRating(find(user.ratings, ['movie', movie._id])?.rating || 0);
   }, [user, movie]);
 
-  const handleSeenToggle = () => {
+  const toggleSeen = () => {
     if (seen) {
       removeFromSeenMutation.mutate(movie._id, {
         onSuccess: () => setSeen(false),
@@ -50,7 +50,7 @@ export default function MovieModalActions({ movie }: Props) {
     }
   };
 
-  const handleFavoriteToggle = () => {
+  const toggleFavorite = () => {
     if (favorite) {
       removeFromFavoritesMutation.mutate(movie._id, {
         onSuccess: () => setFavorite(false),
@@ -62,7 +62,7 @@ export default function MovieModalActions({ movie }: Props) {
     }
   };
 
-  const handleWatchlistToggle = () => {
+  const toggleWatchlist = () => {
     if (watchlist) {
       removeFromWatchlistMutation.mutate(movie._id, {
         onSuccess: () => setWatchlist(false),
@@ -97,7 +97,7 @@ export default function MovieModalActions({ movie }: Props) {
     active: seen,
     icon: 'eye',
     label: 'Seen',
-    onPress: handleSeenToggle,
+    onPress: toggleSeen,
     style: styles.seenLabel,
   }, {
     active: rating > 0,
@@ -109,13 +109,13 @@ export default function MovieModalActions({ movie }: Props) {
     active: favorite,
     icon: 'heart',
     label: 'Favorite',
-    onPress: handleFavoriteToggle,
+    onPress: toggleFavorite,
     style: styles.favLabel,
   }, {
     active: watchlist,
     icon: 'bookmark',
     label: 'Watchlist',
-    onPress: handleWatchlistToggle,
+    onPress: toggleWatchlist,
     style: styles.watchLabel,
   }], [favorite, rating, seen, showStars, watchlist]);
 
@@ -136,7 +136,7 @@ export default function MovieModalActions({ movie }: Props) {
           </View>
         ))}
       </View>
-      {showStars && <MovieModalRating rating={rating} setRating={setRating} movie={movie} />}
+      {showStars && <MovieModalRating rating={rating} setRating={setRating} movie={movie} onSeenAdded={() => setSeen(true)} />}
     </>
   );
 }

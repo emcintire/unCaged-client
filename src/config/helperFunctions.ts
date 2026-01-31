@@ -5,9 +5,9 @@ import { TOAST_DURATION } from '@/constants';
 export const changeResolution = (res: string, movie: Movie): Movie => {
   const imgStr = movie.img.split('');
   imgStr[movie.img.length - 5] = res;
-  movie.img = imgStr.join('');
+  const newImg = imgStr.join('');
 
-  return movie;
+  return { ...movie, img: newImg };
 };
 
 export const changeProfilePicRes = (res: string, imgStr: string): string => {

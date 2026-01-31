@@ -41,23 +41,23 @@ export default {
       supportsTablet: true,
       bundleIdentifier: 'uncaged.app',
       config: {
-        googleMobileAdsAppId: 'ca-app-pub-7328192473595101~2186093958',
+        googleMobileAdsAppId: '',
       },
     },
     android: {
       package: 'uncaged.app',
       versionCode: 9,
       adaptiveIcon: {
-        foregroundImage: './app/assets/imgs/appleIcon.png',
+        foregroundImage: './src/assets/imgs/appleIcon.png',
         backgroundColor: '#000000',
       },
       config: {
-        googleMobileAdsAppId: 'ca-app-pub-7328192473595101~8779422463',
+        googleMobileAdsAppId: '',
       },
     },
     web: {
-      favicon: './app/assets/imgs/icon.png',
+      favicon: './src/assets/imgs/icon.png',
     },
-    plugins: ['expo-font'],
+    plugins: ['expo-font', 'expo-secure-store'],
   },
 };

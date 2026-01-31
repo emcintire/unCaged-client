@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, Text, TextStyle, TouchableOpacity, type StyleProp, type ViewStyle } from 'react-native';
 import type { ColorKey } from '@/types';
 import { borderRadius, colors, fontFamily, fontSize, spacing } from '@/config';
 
@@ -6,16 +6,17 @@ type Props = {
   color?: ColorKey;
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
   title: string;
 };
 
-export default function AppButton({ style, title, onPress, color = 'orange' }: Props) {
+export default function AppButton({ style, textStyle, title, onPress, color = 'orange' }: Props) {
   return (
     <TouchableOpacity
       style={[styles.button, { backgroundColor: colors[color] }, style]}
       onPress={onPress}
     >
-      <Text style={styles.text}>{title}</Text>
+      <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 }

@@ -15,6 +15,10 @@ export const useCurrentUser = () => {
   return useQuery({
     queryKey: userKeys.detail(),
     queryFn: zodiosClient.getCurrentUser,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    throwOnError: false,
   });
 };
 
@@ -109,14 +113,8 @@ export const useUpdateUser = () => {
 };
 
 export const useUpdateUserImage = () => {
-  const queryClient = useQueryClient();
-  
   return useMutation({
     mutationFn: (data: { img: string }) => zodiosClient.updateUser(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userKeys.detail() });
-      queryClient.invalidateQueries({ queryKey: userKeys.all });
-    },
   });
 };
 
@@ -200,6 +198,7 @@ export const useRateMovie = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
       queryClient.invalidateQueries({ queryKey: userKeys.ratings() });
+      queryClient.invalidateQueries({ queryKey: userKeys.detail() });
     },
   });
 };

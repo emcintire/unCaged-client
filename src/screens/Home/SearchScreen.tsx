@@ -10,6 +10,7 @@ import Loading from '@/components/Loading';
 import MovieModal from '@/components/movieModal/MovieModal';
 import Screen from '@/components/Screen';
 import SearchFilters from '@/components/SearchFilters';
+import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
 
 export default function SearchScreen() {
   const [open, setOpen] = useState(false);
@@ -124,28 +125,28 @@ export default function SearchScreen() {
         />
       )}
       {loading ? <Loading /> : (displayMovies.length > 0 ? (
-        <ScrollView
-          contentContainerStyle={movieCard.scrollContainer}
-          decelerationRate="fast"
-          showsVerticalScrollIndicator={false}
-        >
-          {map(displayMovies, (movie) => (
-            <View style={movieCard.container} key={movie._id}>
-              <TouchableOpacity
-                style={movieCard.button}
-                onPress={() => setSelectedMovie(movie)}
-              >
-                <Image
-                  source={{ uri: getMovieWithChangedResolution(movie).img }}
-                  style={movieCard.image}
-                />
-              </TouchableOpacity>
-            </View>
-          ))}
+        <ScrollView decelerationRate="fast" showsVerticalScrollIndicator={false}>
+          <View style={movieCard.scrollContainer}>
+            {map(displayMovies, (movie) => (
+              <View style={movieCard.container} key={movie._id}>
+                <TouchableOpacity
+                  style={movieCard.button}
+                  onPress={() => setSelectedMovie(movie)}
+                >
+                  <Image
+                    source={{ uri: getMovieWithChangedResolution(movie).img }}
+                    style={movieCard.image}
+                  />
+                </TouchableOpacity>
+              </View>
+            ))}
+            <BuyMeCoffeeButton />
+          </View>
         </ScrollView>
       ) : (
-        <View style={{ height: '80%', justifyContent: 'center' }}>
+        <View style={{ ...movieCard.scrollContainer, flex: 1 }}>
           <Text style={styles.noResults}>No results :(</Text>
+          <BuyMeCoffeeButton />
         </View>
       ))}
     </Screen>

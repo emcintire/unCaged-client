@@ -7,6 +7,7 @@ import { colors, changeResolution, spacing, borderRadius, fontSize, fontFamily, 
 import Screen from '@/components/Screen';
 import AppButton from '@/components/AppButton';
 import MovieModal from '@/components/movieModal/MovieModal';
+import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
 
 const styles = StyleSheet.create({
   quote: {
@@ -173,6 +174,7 @@ export default function HomeScreen() {
             </ScrollView>
           </View>
         ))}
+        <BuyMeCoffeeButton />
       </ScrollView>
     </Screen>
   );
