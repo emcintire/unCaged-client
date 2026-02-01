@@ -274,13 +274,14 @@ export const modal = StyleSheet.create({
   },
   container: {
     width: '90%',
-    height: '90%',
+    height: '100%',
     alignSelf: 'center',
     backgroundColor: colors.bg,
     borderColor: colors.orange,
     borderWidth: 4,
     borderRadius: borderRadius.md,
     padding: spacing.md,
+    marginVertical: 40,
   },
 });
 
