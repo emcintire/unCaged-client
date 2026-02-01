@@ -25,7 +25,7 @@ export default function SeenScreen() {
             movie={selectedMovie}
             onClose={() => setSelectedMovie(null)}
           />
-          <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
+          <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast" style={{ paddingTop: 20 }}>
             <View>
               <Text style={[typography.h2, { textAlign: 'center' }]}>
                 You've seen

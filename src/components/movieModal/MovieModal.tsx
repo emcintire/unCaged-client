@@ -37,16 +37,11 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
 
   const styles = StyleSheet.create({
     background: modal.background,
-    container: {
-      ...modal.container,
-      borderColor: colors.orange,
-      borderWidth: 1,
-      padding: spacing.md,
-    },
+    container: modal.container,
     btnContainer: {
       position: 'absolute',
-      right: 0,
-      top: 0,
+      right: -15,
+      top: -15,
       zIndex: 10,
     },
     image: {
@@ -126,7 +121,7 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
           >
             <View style={styles.btnContainer}>
               <TouchableOpacity onPress={onClose}>
-                <Icon name="close" size={30} backgroundColor={colors.black} iconColor={colors.red} />
+                <Icon name="close" size={50} backgroundColor="transparent" iconColor={colors.white} />
               </TouchableOpacity>
             </View>
             <Image source={{ uri: movie.img }} style={styles.image} />

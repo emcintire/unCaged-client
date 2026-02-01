@@ -7,15 +7,10 @@ import Constants from 'expo-constants';
 export const env = {
   /**
    * Base URL for API requests
-   * @throws {Error} if API_BASE_URL is not configured
+   * Defaults to production API if not configured
    */
   get apiBaseUrl(): string {
     const baseUrl = Constants.expoConfig?.extra?.apiBaseUrl;
-    
-    if (!baseUrl) {
-      throw new Error('API_BASE_URL is not configured in app.config.js');
-    }
-    
     return baseUrl;
   },
 

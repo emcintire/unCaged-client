@@ -19,16 +19,20 @@ import HomeStack from '@/navigation/stacks/Home/HomeStack';
 SplashScreen.preventAutoHideAsync();
 
 const loadFonts = async (): Promise<boolean> => {
-  await Font.loadAsync({
-    'Montserrat-ExtraLight': require('@/assets/fonts/Montserrat-ExtraLight.ttf'),
-    'Montserrat-Light': require('@/assets/fonts/Montserrat-Light.ttf'),
-    'Montserrat-Regular': require('@/assets/fonts/Montserrat-Regular.ttf'),
-    'Montserrat-Medium': require('@/assets/fonts/Montserrat-Medium.ttf'),
-    'Montserrat-Bold': require('@/assets/fonts/Montserrat-Bold.ttf'),
-    'Montserrat-ExtraBold': require('@/assets/fonts/Montserrat-ExtraBold.ttf'),
-    'Montserrat-Black': require('@/assets/fonts/Montserrat-Black.ttf'),
-  });
-  return true;
+  try {
+    await Font.loadAsync({
+      'Montserrat-ExtraLight': require('@/assets/fonts/Montserrat-ExtraLight.ttf'),
+      'Montserrat-Light': require('@/assets/fonts/Montserrat-Light.ttf'),
+      'Montserrat-Regular': require('@/assets/fonts/Montserrat-Regular.ttf'),
+      'Montserrat-Medium': require('@/assets/fonts/Montserrat-Medium.ttf'),
+      'Montserrat-Bold': require('@/assets/fonts/Montserrat-Bold.ttf'),
+      'Montserrat-ExtraBold': require('@/assets/fonts/Montserrat-ExtraBold.ttf'),
+      'Montserrat-Black': require('@/assets/fonts/Montserrat-Black.ttf'),
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
