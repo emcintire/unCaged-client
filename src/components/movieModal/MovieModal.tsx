@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { Image } from 'expo-image';
 import { ScrollView } from 'react-native-gesture-handler';
-import { reject } from 'lodash';
 import { type Movie, useCurrentUser, useAverageRating } from '@/services';
 import { changeResolution, colors, fontFamily, fontSize, modal, movieCard, spacing } from '@/config';
 import AdBanner from '../AdBanner';
 import Icon from '../Icon';
-import Loading from '../Loading';
 import MovieModalDetails from './MovieModalDetails';
 import MovieModalActions from './MovieModalActions';
+import MovieModalSkeleton from '@/components/movieModal/MovieModalSkeleton';
 
 type Props = {
   isOpen: boolean;
@@ -21,7 +21,7 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
 
   const { data: user } = useCurrentUser();
   const { data: ratingData, isLoading } = useAverageRating(propsMovie?._id || '');
-  
+
   const movieRating = ratingData ? Number(ratingData) : 0;
 
   useEffect(() => {
@@ -29,72 +29,11 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
 
     const parsedMovie = {
       ...(propsMovie.img.length === 32 ? changeResolution('h', propsMovie) : propsMovie),
-      genres: reject(propsMovie.genres, 'Popular'),
+      genres: propsMovie.genres.filter((g) => g !== 'Popular'),
     };
 
     setMovie(parsedMovie);
   }, [propsMovie, isOpen]);
-
-  const styles = StyleSheet.create({
-    background: modal.background,
-    container: modal.container,
-    btnContainer: {
-      position: 'absolute',
-      right: -15,
-      top: -15,
-      zIndex: 10,
-    },
-    image: {
-      ...movieCard.image,
-      alignSelf: 'center',
-      height: 320,
-      marginTop: spacing.lg,
-      width: 215,
-    },
-    titleContainer: {
-      width: '90%',
-      alignItems: 'center',
-      alignSelf: 'center',
-      marginTop: spacing.sm,
-    },
-    title: {
-      color: colors.white,
-      fontFamily: fontFamily.bold,
-      fontSize: fontSize.xxl + 4,
-      textAlign: 'center',
-    },
-    subtitle: {
-      flexDirection: 'row',
-      justifyContent: 'space-evenly',
-      marginTop: spacing.sm,
-      width: '100%',
-    },
-    date: {
-      color: colors.white,
-      fontFamily: fontFamily.medium,
-      fontSize: fontSize.lg,
-      textAlign: 'left',
-    },
-    director: {
-      color: colors.white,
-      fontFamily: fontFamily.medium,
-      fontSize: fontSize.lg,
-    },
-    adContainerTop: {
-      position: 'absolute',
-      width: '100%',
-      height: 'auto',
-      left: 0,
-      top: 0,
-    },
-    adContainerBottom: {
-      position: 'absolute',
-      width: '100%',
-      height: 'auto',
-      left: 0,
-      bottom: 0,
-    },
-  });
 
   if (!isOpen) { return null; }
 
@@ -111,7 +50,9 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
             <AdBanner />
           </View>
         )}
-        {(isLoading || movie == null) ? <Loading /> : (
+        {(isLoading || movie == null) ? (
+          <MovieModalSkeleton />
+        ) : (
           <ScrollView
             horizontal={false}
             showsVerticalScrollIndicator={false}
@@ -120,15 +61,15 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
             style={styles.container}
           >
             <View style={styles.btnContainer}>
-              <TouchableOpacity onPress={onClose}>
+              <TouchableOpacity onPress={onClose} accessibilityRole="button" accessibilityLabel="Close movie details">
                 <Icon name="close" size={50} backgroundColor="transparent" iconColor={colors.white} />
               </TouchableOpacity>
             </View>
-            <Image source={{ uri: movie.img }} style={styles.image} />
+            <Image source={movie.img} style={styles.image} accessibilityLabel={`${movie.title} poster`} />
             <View style={styles.titleContainer}>
               <Text style={styles.title}>{movie.title}</Text>
               <View style={styles.subtitle}>
-                <View style={{ flexDirection: 'row' }}>
+                <View style={styles.ratingRow}>
                   <Text style={styles.date}>{movieRating}</Text>
                   <Text style={styles.date}> / 5</Text>
                 </View>
@@ -143,3 +84,55 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  background: modal.background,
+  container: modal.container,
+  btnContainer: {
+    position: 'absolute',
+    right: -15,
+    top: -15,
+    zIndex: 10,
+  },
+  image: {
+    ...movieCard.image,
+    alignSelf: 'center',
+    height: 320,
+    marginTop: spacing.lg,
+    width: 215,
+  },
+  titleContainer: {
+    width: '90%',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: spacing.sm,
+  },
+  title: {
+    color: colors.white,
+    fontFamily: fontFamily.bold,
+    fontSize: fontSize.xxl + 4,
+    textAlign: 'center',
+  },
+  subtitle: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: spacing.sm,
+    width: '100%',
+  },
+  ratingRow: {
+    flexDirection: 'row',
+  },
+  date: {
+    color: colors.white,
+    fontFamily: fontFamily.medium,
+    fontSize: fontSize.lg,
+    textAlign: 'left',
+  },
+  adContainerTop: {
+    position: 'absolute',
+    width: '100%',
+    height: 'auto',
+    left: 0,
+    top: 0,
+  },
+});

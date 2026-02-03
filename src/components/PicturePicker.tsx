@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { map } from 'lodash';
 import { borderRadius, colors, showErrorToast, spacing } from '@/config';
 import Screen from './Screen';
 import AppButton from './AppButton';
@@ -13,37 +13,32 @@ type Props = {
   setModalVisible: (visible: boolean) => void;
 };
 
+const imgs = [
+  'https://i.imgur.com/9NYgErPm.png',
+  'https://i.imgur.com/Upkz8OFm.png',
+  'https://i.imgur.com/29gBEEPm.png',
+  'https://i.imgur.com/iigQEaqm.png',
+  'https://i.imgur.com/J2pJMGlm.png',
+  'https://i.imgur.com/EpKnEsOm.png',
+] as const;
+
 export default function PicturePicker({ modalVisible, setModalVisible }: Props) {
   const [selected, setSelected] = useState(0);
 
   const { data: user, refetch } = useCurrentUser();
   const updateUserImageMutation = useUpdateUserImage();
 
-  const imgs = [
-    'https://i.imgur.com/9NYgErPm.png',
-    'https://i.imgur.com/Upkz8OFm.png',
-    'https://i.imgur.com/29gBEEPm.png',
-    'https://i.imgur.com/iigQEaqm.png',
-    'https://i.imgur.com/J2pJMGlm.png',
-    'https://i.imgur.com/EpKnEsOm.png',
-  ];
-
-  const getPicture = () => {
-    imgs.forEach((link, index) => {
-      if (link === user?.img) {
-        setSelected(index);
-      }
-    });
-  };
-
   useEffect(() => {
-    getPicture();
+    const index = imgs.findIndex((link) => link === user?.img);
+    if (index !== -1) {
+      setSelected(index);
+    }
   }, [user?.img]);
 
   const handleSubmit = async () => {
     const selectedImg = imgs[selected];
     if (!selectedImg) return;
-    
+
     try {
       await updateUserImageMutation.mutateAsync({ img: selectedImg });
       setModalVisible(false);
@@ -60,32 +55,26 @@ export default function PicturePicker({ modalVisible, setModalVisible }: Props) 
     <Screen style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.closeButton}>
-          <TouchableOpacity onPress={() => setModalVisible(false)}>
+          <TouchableOpacity onPress={() => setModalVisible(false)} accessibilityRole="button" accessibilityLabel="Close picture picker">
             <Icon name="close" size={30} backgroundColor={colors.black} iconColor={colors.red} />
           </TouchableOpacity>
         </View>
         <View style={styles.imagesContainer}>
-          {map(imgs, (image, index) => (
-            <View style={styles.imgContainer} key={index}>
+          {imgs.map((image, index) => (
+            <View style={styles.imgContainer} key={image}>
               <View style={selected === index ? styles.selected : styles.notSelected}>
                 <MaterialCommunityIcons name="check" size={40} color="white" />
               </View>
-
-              <TouchableOpacity style={styles.imgBtn} onPress={() => setSelected(index)}>
-                <Image
-                  source={{
-                    uri: image,
-                  }}
-                  style={styles.img}
-                />
+              <TouchableOpacity style={styles.imgBtn} onPress={() => setSelected(index)} accessibilityRole="button" accessibilityLabel={`Profile picture ${index + 1}${selected === index ? ', selected' : ''}`}>
+                <Image source={image} style={styles.img} accessibilityLabel={`Profile picture option ${index + 1}`} />
               </TouchableOpacity>
             </View>
           ))}
         </View>
         <AppButton
           title="Save"
-          onPress={() => handleSubmit()}
-          style={{ width: '50%', alignSelf: 'center' }}
+          onPress={handleSubmit}
+          style={styles.saveButton}
         />
       </View>
     </Screen>
@@ -144,5 +133,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: borderRadius.circle * 2,
+  },
+  saveButton: {
+    width: '50%',
+    alignSelf: 'center',
   },
 });

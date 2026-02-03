@@ -1,35 +1,35 @@
 import { View, Text } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
-import * as Yup from 'yup';
-
-import type { RootStackParamList } from '@/types';
+import { z } from 'zod';
 import { useChangePassword } from '@/services';
+import { useAuth } from '@/hooks';
 import { PASSWORD_ERROR_MESSAGE, PASSWORD_REGEX } from '@/constants';
-import { form, screen, typography, utils, showErrorToast } from '@/config';
+import { form, screen, typography, utils, showErrorToast, showSuccessToast } from '@/config';
 import { AppForm, SubmitButton } from '@/components/forms';
 import PasswordInput from '@/components/forms/PasswordInput';
 import Screen from '@/components/Screen';
+import { toFormikValidator } from '@/utils/toFormikValidator';
 
-const validationSchema = Yup.object().shape({
-  password: Yup.string()
-    .required()
-    .matches(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE)
-    .label('Password'),
+const schema = z.object({
+  password: z.string().min(1, 'Password is required').regex(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
 });
+
+const validate = toFormikValidator(schema);
 
 type PasswordResetFormValues = {
   password: string;
 };
 
 export default function PasswordResetScreen() {
-  const { navigate } = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { signIn } = useAuth();
   const changePasswordMutation = useChangePassword();
 
   const handleSubmit = async (values: PasswordResetFormValues) => {
     try {
-      await changePasswordMutation.mutateAsync({ password: values.password });
-      navigate('Home');
+      const token = await changePasswordMutation.mutateAsync({ password: values.password });
+      if (typeof token === 'string') {
+        await signIn(token);
+      }
+      showSuccessToast('Password reset successful!');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to reset password';
       showErrorToast(message);
@@ -43,7 +43,7 @@ export default function PasswordResetScreen() {
         <AppForm<PasswordResetFormValues>
           initialValues={{ password: '' }}
           onSubmit={handleSubmit}
-          validationSchema={validationSchema}
+          validate={validate}
         >
           <PasswordInput<PasswordResetFormValues> name="password" placeholder="Password" />
           <SubmitButton<PasswordResetFormValues> title="Submit" style={form.submitButton} />

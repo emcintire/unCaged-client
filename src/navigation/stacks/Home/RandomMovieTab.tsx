@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { map } from 'lodash';
+
 import type { RandomTabParamList, Screen } from '@/types';
 import SmallLogo from '@/assets/imgs/small_logo.svg';
 import { screenOptions } from '@/navigation/stacks/screenOptions';
@@ -22,7 +22,7 @@ const screens: Array<Screen<RandomTabParamList>> = [
 export default function RandomMovieTab() {
   return (
     <Random_Movie_Tab.Navigator screenOptions={screenOptions}>
-      {map(screens, (screen) => (
+      {screens.map((screen) => (
         <Random_Movie_Tab.Screen
           key={screen.name}
           name={screen.name}

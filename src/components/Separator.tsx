@@ -1,18 +1,20 @@
-import { View } from 'react-native';
+import { memo } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { colors } from '@/config';
 
 type SeparatorProps = {
   modal?: boolean;
 };
 
-export default function Separator({ modal }: SeparatorProps) {
+export default memo(function Separator({ modal }: SeparatorProps) {
   return (
-    <View
-      style={{
-        width: '100%',
-        height: 1,
-        backgroundColor: modal ? colors.light : colors.bg,
-      }}
-    />
+    <View style={[styles.separator, { backgroundColor: modal ? colors.light : colors.bg }]} />
   );
-}
+});
+
+const styles = StyleSheet.create({
+  separator: {
+    width: '100%',
+    height: 1,
+  },
+});

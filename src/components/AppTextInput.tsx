@@ -24,6 +24,7 @@ export default function AppTextInput({ icon, width = '100%', style, ...otherProp
       <TextInput
         placeholderTextColor={colors.medium}
         style={[defaultStyles.text, styles.input]}
+        accessibilityLabel={otherProps.placeholder}
         {...otherProps}
       />
     </View>

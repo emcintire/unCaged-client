@@ -2,7 +2,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   MaterialCommunityIcons, type MaterialCommunityIcons as MaterialCommunityIconsType,
 } from '@expo/vector-icons';
-import { map } from 'lodash';
 import type { HomeStackParamList, Screen } from '@/types';
 import { colors } from '@/config';
 import HomeTab from './HomeTab';
@@ -29,29 +28,29 @@ const bottomTabOptions = {
 const screens: Array<Screen<HomeStackParamList> & { icon: keyof typeof MaterialCommunityIconsType.glyphMap }> = [{
   component: HomeTab,
   name: 'HomeTab',
-  icon:  'home',
+  icon: 'home',
 }, {
   component: WatchlistTab,
   name: 'WatchlistTab',
-  icon:  'bookmark',
+  icon: 'bookmark',
 }, {
   component: SearchTab,
   name: 'SearchTab',
-  icon:  'magnify',
+  icon: 'magnify',
 }, {
   component: RandomMovieTab,
   name: 'RandomTab',
-  icon:  'dice-3',
+  icon: 'dice-3',
 }, {
   component: SettingsTab,
   name: 'SettingsTab',
-  icon:  'cog',
+  icon: 'cog',
 }];
 
 export default function HomeStack() {
   return (
     <Home_Stack.Navigator screenOptions={bottomTabOptions} initialRouteName="HomeTab">
-      {map(screens, (screen) => (
+      {screens.map((screen) => (
         <Home_Stack.Screen
           key={screen.name}
           name={screen.name}

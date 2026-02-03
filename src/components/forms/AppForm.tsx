@@ -1,27 +1,26 @@
 import { Formik } from 'formik';
-import type { FormikValues, FormikHelpers } from 'formik';
+import type { FormikValues, FormikHelpers, FormikErrors } from 'formik';
 import type { ReactNode } from 'react';
-import type { AnySchema } from 'yup';
 
 type Props<Values extends FormikValues> = {
   initialValues: Values;
   onSubmit: (values: Values, formikHelpers: FormikHelpers<Values>) => void;
-  validationSchema?: AnySchema;
+  validate: (values: Values) => FormikErrors<Values>;
   children: ReactNode;
 };
-
+  
 export default function AppForm<Values extends FormikValues>({
   initialValues,
   onSubmit,
-  validationSchema,
+  validate,
   children,
 }: Props<Values>) {
   return (
     <Formik<Values>
+      enableReinitialize
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={validationSchema}
-      enableReinitialize
+      validate={validate}
     >
       {() => <>{children}</>}
     </Formik>

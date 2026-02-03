@@ -198,7 +198,6 @@ export const movieCard = StyleSheet.create({
     borderWidth: 1,
     height: '100%',
     overflow: 'hidden',
-    resizeMode: 'cover',
     width: '100%',
   },
   scrollContainer: {

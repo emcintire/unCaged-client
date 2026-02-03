@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Linking, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import AppButton from './AppButton';
 
@@ -20,7 +21,7 @@ const handlePress = () => {
   );
 };
 
-export default function BuyMeCoffeeButton({ style }: Props) {
+export default memo(function BuyMeCoffeeButton({ style }: Props) {
   return (
     <AppButton
       onPress={handlePress}
@@ -28,4 +29,4 @@ export default function BuyMeCoffeeButton({ style }: Props) {
       title="☕ Buy me a coffee"
     />
   );
-}
+});

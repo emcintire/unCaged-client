@@ -1,10 +1,10 @@
-import * as Yup from 'yup';
 import { useState } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Modal } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Modal } from 'react-native';
+import { Image } from 'expo-image';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { toLower, trim } from 'lodash';
+import { z } from 'zod';
 
 import type { HomeStackParamList } from '@/types';
 import { useCurrentUser, useUpdateUser } from '@/services';
@@ -12,21 +12,24 @@ import { showErrorToast, showSuccessToast, spacing } from '@/config';
 import { AppForm, AppFormField, SubmitButton } from '@/components/forms';
 import Screen from '@/components/Screen';
 import PicturePicker from '@/components/PicturePicker';
+import { toFormikValidator } from '@/utils/toFormikValidator';
 
 type FormValues = {
   name: string;
   email: string;
 };
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().label('Name').required(),
-  email: Yup.string().email().label('Email').required(),
+const schema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().min(1, 'Email is required').email('Email must be a valid email'),
 });
+
+const validate = toFormikValidator(schema);
 
 export default function AccountDetailsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const { navigate } = useNavigation<NativeStackNavigationProp<HomeStackParamList, 'SettingsTab'>>();
-  
+
   const { data: user, isLoading, refetch } = useCurrentUser();
   const updateUserMutation = useUpdateUser();
 
@@ -34,8 +37,8 @@ export default function AccountDetailsScreen() {
     if (user == null || (values.name === user.name && values.email === user.email)) { return; }
 
     try {
-      const email = toLower(trim(values.email));
-      const name = trim(values.name);
+      const email = values.email.toLowerCase().trim();
+      const name = values.name.trim();
       await updateUserMutation.mutateAsync({ name, email });
       navigate('SettingsTab');
       refetch();
@@ -51,7 +54,6 @@ export default function AccountDetailsScreen() {
       {user && (
         <>
           <Modal
-            style={{ width: '100%', height: '100%' }}
             animationType="slide"
             transparent={true}
             visible={modalVisible}
@@ -60,18 +62,18 @@ export default function AccountDetailsScreen() {
             <PicturePicker modalVisible={modalVisible} setModalVisible={setModalVisible} />
           </Modal>
           <View style={styles.imageContainer}>
-            <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+            <TouchableOpacity onPress={() => setModalVisible(!modalVisible)} accessibilityRole="button" accessibilityLabel="Change profile picture">
               <View style={styles.overlay}>
                 <MaterialCommunityIcons name="pencil" size={40} color="white" />
               </View>
-              <Image source={{ uri: user.img }} style={styles.image} />
+              <Image source={user.img} style={styles.image} accessibilityLabel="Profile picture" />
             </TouchableOpacity>
           </View>
           <View style={styles.formContainer}>
             <AppForm<FormValues>
               initialValues={{ name: user.name, email: user.email }}
               onSubmit={handleSubmit}
-              validationSchema={validationSchema}
+              validate={validate}
             >
               <AppFormField<FormValues> icon="account" name="name" textContentType="name" />
               <AppFormField<FormValues>

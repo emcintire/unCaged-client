@@ -1,16 +1,57 @@
-import { useCallback, useState, useMemo, useRef } from 'react';
+import { useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import {
-  StyleSheet, View, Image, Text, TouchableOpacity, TextInput, ScrollView,
+  StyleSheet, View, Text, TouchableOpacity, TextInput, ScrollView,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { map, filter, overEvery, orderBy, some, debounce, toLower, includes } from 'lodash';
 import { type Movie, useMovies } from '@/services';
 import { changeResolution, colors, spacing, borderRadius, fontSize, fontFamily, movieCard } from '@/config';
-import Loading from '@/components/Loading';
+import MovieGridSkeleton from '@/components/MovieGridSkeleton';
 import MovieModal from '@/components/movieModal/MovieModal';
 import Screen from '@/components/Screen';
 import SearchFilters from '@/components/SearchFilters';
 import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
+
+const styles = StyleSheet.create({
+  inputContainer: {
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.round,
+    flexDirection: 'row',
+    height: 45,
+    justifyContent: 'space-between',
+    margin: spacing.md,
+    marginBottom: 0,
+    paddingHorizontal: spacing.lg,
+    width: '92%',
+  },
+  inputContainerOpen: {
+    borderBottomEndRadius: 0,
+    borderBottomStartRadius: 0,
+  },
+  text: {
+    fontFamily: fontFamily.regular,
+    fontSize: fontSize.lg,
+    color: 'black',
+    height: 40,
+    width: '80%',
+  },
+  noResults: {
+    color: 'white',
+    fontFamily: fontFamily.bold,
+    fontSize: fontSize.xxxl,
+  },
+  noResultsContainer: {
+    ...movieCard.scrollContainer,
+    flex: 1,
+  },
+  filtersBtn: {
+    alignSelf: 'flex-end',
+  },
+  filtersTouchable: {
+    width: 50,
+  },
+});
 
 export default function SearchScreen() {
   const [open, setOpen] = useState(false);
@@ -21,70 +62,53 @@ export default function SearchScreen() {
   const [selected, setSelected] = useState('az');
   const [genre, setGenre] = useState('Genre');
   const [genresVisible, setGenresVisible] = useState(false);
-  
+
   const { data: movies = [], isLoading: loading } = useMovies();
 
-  // Debounce search input using lodash
-  const debouncedSetTitle = useRef(
-    debounce((value: string) => {
-      setDebouncedTitle(value);
-    }, 300)
-  ).current;
+  // Debounce search input using setTimeout
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
-    debouncedSetTitle(value);
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(() => {
+      setDebouncedTitle(value);
+    }, 300);
   };
 
   const displayMovies = useMemo(() => {
-    const predicates = overEvery<Movie>([
-      (movie) => !debouncedTitle || includes(toLower(movie.title), toLower(debouncedTitle)),
-      (movie) => genre === 'Genre' || some(movie.genres, (g: string) => toLower(g) === toLower(genre)),
-    ]) as (movie: Movie) => boolean;
-    
-    const filtered = filter(movies, predicates);
-    
+    const predicates = [
+      (movie: Movie) => !debouncedTitle || movie.title.toLowerCase().includes(debouncedTitle.toLowerCase()),
+      (movie: Movie) => genre === 'Genre' || movie.genres.some((g: string) => g.toLowerCase() === genre.toLowerCase()),
+    ];
+
+    const filtered = movies.filter((movie: Movie) => predicates.every(p => p(movie)));
+
     // Sort based on selected criteria
-    const sortKey: (movie: Movie) => string | number = selected === 'rating' 
+    const sortKey: (movie: Movie) => string | number = selected === 'rating'
       ? (movie: Movie) => movie.avgRating || 0
         : selected === 'year'
       ? (movie: Movie) => new Date(movie.date).getFullYear()
-        : (movie: Movie) => toLower(movie.title);
-    
-    return orderBy(filtered, sortKey, sortDirection);
-  }, [genre, movies, selected, sortDirection, debouncedTitle]);
+        : (movie: Movie) => movie.title.toLowerCase();
 
-  const styles = StyleSheet.create({
-    inputContainer: {
-      alignItems: 'center',
-      backgroundColor: colors.white,
-      borderBottomEndRadius: open ? 0 : borderRadius.round,
-      borderBottomStartRadius: open ? 0 : borderRadius.round,
-      borderRadius: borderRadius.round,
-      flexDirection: 'row',
-      height: 45,
-      justifyContent: 'space-between',
-      margin: spacing.md,
-      marginBottom: 0,
-      paddingHorizontal: spacing.lg,
-      width: '92%',
-    },
-    text: {
-      fontFamily: fontFamily.regular,
-      fontSize: fontSize.lg,
-      color: 'black',
-      height: 40,
-      width: '80%',
-    },
-    noResults: {
-      color: 'white',
-      fontFamily: fontFamily.bold,
-      fontSize: fontSize.xxxl,
-    },
-    filtersBtn: {
-      alignSelf: 'flex-end',
-    },
-  });
+    return [...filtered].sort((a, b) => {
+      const aVal = sortKey(a);
+      const bVal = sortKey(b);
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [genre, movies, selected, sortDirection, debouncedTitle]);
 
   const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
 
@@ -95,7 +119,7 @@ export default function SearchScreen() {
         movie={selectedMovie}
         onClose={() => setSelectedMovie(null)}
       />
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, open && styles.inputContainerOpen]}>
         <TextInput
           onChangeText={handleTitleChange}
           value={title}
@@ -103,7 +127,7 @@ export default function SearchScreen() {
           placeholderTextColor={colors.medium}
           style={styles.text}
         />
-        <TouchableOpacity style={{ width: 50 }} onPress={() => setOpen(!open)}>
+        <TouchableOpacity style={styles.filtersTouchable} onPress={() => setOpen(!open)}>
           <MaterialCommunityIcons
             color={colors.medium}
             name="tune"
@@ -124,17 +148,17 @@ export default function SearchScreen() {
           sortDirection={sortDirection}
         />
       )}
-      {loading ? <Loading /> : (displayMovies.length > 0 ? (
+      {loading ? <MovieGridSkeleton /> : (displayMovies.length > 0 ? (
         <ScrollView decelerationRate="fast" showsVerticalScrollIndicator={false}>
           <View style={movieCard.scrollContainer}>
-            {map(displayMovies, (movie) => (
+            {displayMovies.map((movie) => (
               <View style={movieCard.container} key={movie._id}>
                 <TouchableOpacity
                   style={movieCard.button}
                   onPress={() => setSelectedMovie(movie)}
                 >
                   <Image
-                    source={{ uri: getMovieWithChangedResolution(movie).img }}
+                    source={getMovieWithChangedResolution(movie).img}
                     style={movieCard.image}
                   />
                 </TouchableOpacity>
@@ -144,7 +168,7 @@ export default function SearchScreen() {
           </View>
         </ScrollView>
       ) : (
-        <View style={{ ...movieCard.scrollContainer, flex: 1 }}>
+        <View style={styles.noResultsContainer}>
           <Text style={styles.noResults}>No results :(</Text>
           <BuyMeCoffeeButton />
         </View>

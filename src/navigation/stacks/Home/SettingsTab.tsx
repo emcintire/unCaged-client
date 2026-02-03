@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { map } from 'lodash';
+
 
 import type { Screen, SettingsTabParamList } from '@/types';
 import { screenOptions } from '@/navigation/stacks/screenOptions';
@@ -50,7 +50,7 @@ const screens: Array<Screen<SettingsTabParamList>> = [{
 export default function SettingsTab() {
   return (
     <Settings_Tab.Navigator screenOptions={screenOptions}>
-      {map(screens, (screen) => (
+      {screens.map((screen) => (
         <Settings_Tab.Screen
           key={screen.name}
           name={screen.name}

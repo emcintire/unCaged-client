@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { showErrorToast } from '@/config';
 import { zodiosClient } from '../../zodiosClient';
 import { FilteredMoviesData } from '../../schemas';
 import { movieKeys } from './movieKeys';
-import { userKeys } from '../user';
+import { userKeys } from '../user/userKeys';
 
 // ============================================
 // Query Hooks
@@ -59,40 +60,44 @@ export const useSearchMovies = (searchQuery: string) => {
 
 export const useAddQuote = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (data: { quote: string; subquote: string }) => zodiosClient.addQuote(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: movieKeys.quote() });
     },
+    onError: () => showErrorToast('Failed to add quote'),
   });
 };
 
 export const useDeleteRating = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (data: { id: string }) => zodiosClient.deleteRating(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
       queryClient.invalidateQueries({ queryKey: userKeys.ratings() });
     },
+    onError: () => showErrorToast('Failed to delete rating'),
   });
 };
 
 export const useUpdateMovieRating = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (data: { id: string }) => zodiosClient.updateMovieRating(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
     },
+    onError: () => showErrorToast('Failed to update rating'),
   });
 };
 
 export const useUpdateMovieRatings = () => {
   return useMutation({
     mutationFn: () => zodiosClient.updateMovieRatings({}),
+    onError: () => showErrorToast('Failed to update ratings'),
   });
 };

@@ -4,6 +4,12 @@ import { env } from '@/config';
 import { STORAGE_KEYS } from '@/constants';
 import { movieApi, userApi } from './api';
 
+let onUnauthorizedCallback: (() => void) | null = null;
+
+export function setOnUnauthorized(callback: (() => void) | null) {
+  onUnauthorizedCallback = callback;
+}
+
 const apiContract = mergeApis({
   'users': userApi,
   'movies': movieApi,
@@ -22,22 +28,23 @@ baseClient.axios.interceptors.request.use(async (config) => {
 baseClient.axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Enhanced error logging in development
-    if (env.isDev) {
-      console.error('API Error:', {
-        url: error.config?.url,
-        method: error.config?.method,
-        status: error.response?.status,
-        data: error.response?.data,
-      });
+    if (error.response) {
+      if (env.isDev) {
+        console.error('API Error:', {
+          url: error.config?.url,
+          method: error.config?.method,
+          status: error.response.status,
+          data: error.response.data,
+        });
+      }
+
+      if (error.response.status === 401 && onUnauthorizedCallback) {
+        onUnauthorizedCallback();
+      }
+    } else if (env.isDev) {
+      console.warn('Network Error:', error.config?.url, error.message);
     }
-    
-    // Handle common error cases
-    if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
-      SecureStore.deleteItemAsync(STORAGE_KEYS.AUTH_TOKEN);
-    }
-    
+
     return Promise.reject(error);
   }
 );

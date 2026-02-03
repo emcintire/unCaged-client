@@ -1,26 +1,39 @@
 import { useCallback, useState } from 'react';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { map } from 'lodash';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { type Movie, useCurrentUser, useRatings } from '@/services';
 import { changeResolution, movieCard, screen, typography } from '@/config';
 import AdBanner from '@/components/AdBanner';
 import MovieModal from '@/components/movieModal/MovieModal';
+import MovieGridSkeleton from '@/components/MovieGridSkeleton';
 import Screen from '@/components/Screen';
+import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
+
+const NUM_COLUMNS = 2;
 
 export default function RatingsScreen() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  
+
   const { data: user, isLoading: isUserLoading } = useCurrentUser();
   const { data: movies = [], isLoading: isRatingsLoading } = useRatings();
-  
+
   const isLoading = isUserLoading || isRatingsLoading;
   const isAdmin = user?.isAdmin ?? false;
-  
+
   const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
 
+  const renderMovie = useCallback(({ item }: { item: Movie }) => (
+    <View style={[movieCard.container, styles.columnItem]}>
+      <TouchableOpacity style={movieCard.button} onPress={() => setSelectedMovie(item)}>
+        <Image source={getMovieWithChangedResolution(item).img} style={movieCard.image} />
+      </TouchableOpacity>
+    </View>
+  ), [getMovieWithChangedResolution]);
+
+  const keyExtractor = useCallback((item: Movie) => item._id, []);
+
   return (
-    <Screen isLoading={isLoading} style={movies.length === 0 ? screen.centered : screen.noPadding}>
+    <Screen isLoading={isLoading} skeleton={<MovieGridSkeleton />} style={movies.length === 0 ? screen.centered : screen.noPadding}>
       {!isAdmin && <AdBanner />}
       {movies.length === 0 ? (
         <Text style={typography.h1}>You will see your rated movies here</Text>
@@ -31,22 +44,27 @@ export default function RatingsScreen() {
             movie={selectedMovie}
             onClose={() => setSelectedMovie(null)}
           />
-          <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
-            <View style={movieCard.scrollContainer}>
-              {map(movies, (movie) => (
-                <View style={movieCard.container} key={movie._id}>
-                  <TouchableOpacity
-                    style={movieCard.button}
-                    onPress={() => setSelectedMovie(movie)}
-                  >
-                    <Image source={{ uri: getMovieWithChangedResolution(movie).img }} style={movieCard.image} />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-          </ScrollView>
+          <FlatList
+            data={movies}
+            renderItem={renderMovie}
+            keyExtractor={keyExtractor}
+            numColumns={NUM_COLUMNS}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+            ListFooterComponent={<BuyMeCoffeeButton />}
+          />
         </>
       )}
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  listContent: {
+    alignItems: 'center',
+    paddingTop: 15,
+  },
+  columnItem: {
+    width: '50%',
+  },
+});

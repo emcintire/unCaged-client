@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native'
 import Separator from './Separator'
 import { Picker } from '@react-native-picker/picker'
-import { map } from 'lodash'
+
 import { SetState } from '@/types'
 import { colors, genres, spacing, borderRadius, fontSize, fontFamily } from '@/config'
 
@@ -33,6 +33,8 @@ export default function RandomMovieFilters({
       <Pressable
         style={styles.transparentBg}
         onPress={() => setFiltersModalVisible(false)}
+        accessibilityRole="button"
+        accessibilityLabel="Close filters"
       />
       <View style={styles.filtersModal}>
         <View style={styles.headerContainer}>
@@ -47,6 +49,7 @@ export default function RandomMovieFilters({
             value={unseenFilter}
             trackColor={{ true: colors.orange }}
             thumbColor={colors.light}
+            accessibilityLabel="Filter unseen movies"
           />
         </View>
         <Separator modal />
@@ -59,6 +62,7 @@ export default function RandomMovieFilters({
             value={watchlistFilter}
             trackColor={{ true: colors.orange }}
             thumbColor={colors.light}
+            accessibilityLabel="Filter watchlist movies"
           />
         </View>
         <Separator modal />
@@ -71,6 +75,7 @@ export default function RandomMovieFilters({
             value={mandyFilter}
             trackColor={{ true: colors.orange }}
             thumbColor={colors.light}
+            accessibilityLabel="Filter masterpiece movies"
           />
         </View>
         <Separator modal />
@@ -82,8 +87,9 @@ export default function RandomMovieFilters({
             selectedValue={genreFilter}
             style={{ height: 50, width: 150 }}
             onValueChange={setGenreFilter}
+            accessibilityLabel="Select genre filter"
           >
-            {map(['All', ...genres], (genre) => (
+            {['All', ...genres].map((genre) => (
               <Picker.Item key={genre} style={styles.label} label={genre} value={genre} />
             ))}
           </Picker>

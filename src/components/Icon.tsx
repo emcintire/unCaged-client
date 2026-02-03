@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import {
   MaterialCommunityIcons, type MaterialCommunityIcons as MaterialCommunityIconsType,
@@ -6,6 +7,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import { colors } from '@/config';
 
 type Props = {
+  accessibilityLabel?: string;
   backgroundColor?: string;
   iconColor?: string;
   name: keyof typeof MaterialCommunityIconsType.glyphMap;
@@ -14,7 +16,8 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-export default function Icon({
+export default memo(function Icon({
+  accessibilityLabel,
   backgroundColor = colors.black,
   iconColor = colors.white,
   name,
@@ -41,8 +44,12 @@ export default function Icon({
   );
 
   if (onPress) {
-    return <TouchableOpacity onPress={onPress}>{content}</TouchableOpacity>;
+    return (
+      <TouchableOpacity onPress={onPress} accessibilityRole="button" accessibilityLabel={accessibilityLabel ?? name}>
+        {content}
+      </TouchableOpacity>
+    );
   }
 
   return content;
-}
+});

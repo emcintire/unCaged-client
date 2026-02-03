@@ -4,7 +4,7 @@ import type { ViewStyle, StyleProp } from 'react-native';
 import { useFormikContext } from 'formik';
 import type { FormikValues } from 'formik';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { ErrorMessage } from '.';
+import ErrorMessage from './ErrorMessage';
 import { borderRadius, colors, spacing, defaultStyles } from '@/config';
 
 type Props<Values> = {
@@ -36,8 +36,14 @@ export default function PasswordInput<Values extends FormikValues>({ name, ...ot
           onBlur={() => setFieldTouched(name)}
           onChangeText={handleChange(name)}
           secureTextEntry={!showPassword}
+          accessibilityLabel={otherProps.placeholder ?? 'Password'}
         />
-        <TouchableOpacity style={styles.button} onPress={() => setShowPassword(!showPassword)}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setShowPassword(!showPassword)}
+          accessibilityRole="button"
+          accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+        >
           <MaterialCommunityIcons
             name="eye"
             size={20}

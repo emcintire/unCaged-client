@@ -1,18 +1,18 @@
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import * as Yup from 'yup';
-import { toLower, trim } from 'lodash';
-import type { RootStackParamList } from '@/types';
+import { z } from 'zod';
 import { form, screen, showErrorToast, showSuccessToast } from '@/config';
 import { useLogin } from '@/services';
+import { useAuth } from '@/hooks';
 import { AppForm, AppFormField, PasswordInput, SubmitButton } from '@/components/forms';
 import Screen from '@/components/Screen';
- 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().label('Password'),
+import { toFormikValidator } from '@/utils/toFormikValidator';
+
+const schema = z.object({
+  email: z.string().min(1, 'Email is required').email('Email must be a valid email'),
+  password: z.string().min(1, 'Password is required'),
 });
+
+const validate = toFormikValidator(schema);
 
 type LoginFormValues = {
   email: string;
@@ -20,18 +20,18 @@ type LoginFormValues = {
 };
 
 export default function LoginScreen() {
-  const { navigate } = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { signIn } = useAuth();
   const loginMutation = useLogin();
 
   const handleSubmit = async (values: LoginFormValues): Promise<void> => {
-    const email = toLower(trim(values.email));
+    const email = values.email.toLowerCase().trim();
     loginMutation.mutate({
       email,
       password: values.password,
     }, {
-      onSuccess: () => {
+      onSuccess: async (token: string) => {
+        await signIn(token);
         showSuccessToast('Login successful!');
-        navigate('Home');
       },
       onError: () => {
         showErrorToast('Login failed');
@@ -45,7 +45,7 @@ export default function LoginScreen() {
         <AppForm<LoginFormValues>
           initialValues={{ email: '', password: '' }}
           onSubmit={handleSubmit}
-          validationSchema={validationSchema}
+          validate={validate}
         >
           <AppFormField<LoginFormValues>
             icon="email"

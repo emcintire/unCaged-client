@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { Image } from 'expo-image';
 import { ScrollView } from 'react-native-gesture-handler';
-import { filter, includes, map } from 'lodash';
 import { type Movie, useMovies, useQuote, useAddQuote, useCurrentUser } from '@/services';
 import { colors, changeResolution, spacing, borderRadius, fontSize, fontFamily, movieCard } from '@/config';
 import Screen from '@/components/Screen';
@@ -73,6 +73,12 @@ const styles = StyleSheet.create({
     width: '50%',
     alignSelf: 'center',
   },
+  scrollContent: {
+    marginLeft: 15,
+  },
+  listSpacer: {
+    width: 20,
+  },
 });
 
 const genres = [
@@ -119,7 +125,7 @@ export default function HomeScreen() {
   const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
 
   const getMoviesFromGenre = useCallback(
-    (genre: string) => filter(movies, (movie) => includes(movie.genres, genre)),
+    (genre: string) => movies.filter((movie) => movie.genres.includes(genre)),
     [movies],
   );
 
@@ -151,7 +157,7 @@ export default function HomeScreen() {
         <Text style={styles.quote}>{quote?.quote}</Text>
         <Text style={styles.subquote}>{quote?.subquote}</Text>
         <Text style={styles.subsubquote}>Verse of the Week</Text>
-        {map(genres, (genre) => (
+        {genres.map((genre) => (
           <View key={genre}>
             <Text style={styles.header}>{genre}</Text>
             <ScrollView
@@ -159,18 +165,18 @@ export default function HomeScreen() {
               showsHorizontalScrollIndicator={false}
               scrollEventThrottle={200}
               decelerationRate="fast"
-              contentContainerStyle={{ marginLeft: 15 }}
+              contentContainerStyle={styles.scrollContent}
             >
-              {map(getMoviesFromGenre(genre), (movie) => (
+              {getMoviesFromGenre(genre).map((movie) => (
                 <TouchableOpacity
                   style={styles.button}
                   key={`${genre}-${movie._id}`}
                   onPress={() => setSelectedMovie(movie)}
                 >
-                  <Image source={{ uri: getMovieWithChangedResolution(movie).img }} style={movieCard.image} />
+                  <Image source={getMovieWithChangedResolution(movie).img} style={movieCard.image} />
                 </TouchableOpacity>
               ))}
-              <View style={{ width: 20 }} />
+              <View style={styles.listSpacer} />
             </ScrollView>
           </View>
         ))}

@@ -1,17 +1,20 @@
 import { View } from 'react-native';
-import * as Yup from 'yup';
+import { z } from 'zod';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { toLower, trim } from 'lodash';
+
 import type { WelcomeStackParamList } from '@/types';
 import { useForgotPassword } from '@/services';
 import { showErrorToast, showSuccessToast, form, screen } from '@/config';
 import { AppForm, AppFormField, SubmitButton } from '@/components/forms';
 import Screen from '@/components/Screen';
+import { toFormikValidator } from '@/utils/toFormikValidator';
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required().email().label('Email'),
+const schema = z.object({
+  email: z.string().min(1, 'Email is required').email('Email must be a valid email'),
 });
+
+const validate = toFormikValidator(schema);
 
 type ForgotPasswordFormValues = {
   email: string;
@@ -23,7 +26,7 @@ export default function ForgotPasswordScreen() {
 
   const handleSubmit = async (values: ForgotPasswordFormValues) => {
     try {
-      const email = toLower(trim(values.email));
+      const email = values.email.trim().toLowerCase();
       await forgotPasswordMutation.mutateAsync({ email });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to send reset email';
@@ -40,7 +43,7 @@ export default function ForgotPasswordScreen() {
         <AppForm<ForgotPasswordFormValues>
           initialValues={{ email: '' }}
           onSubmit={handleSubmit}
-          validationSchema={validationSchema}
+          validate={validate}
         >
           <AppFormField<ForgotPasswordFormValues>
             autoCapitalize="none"

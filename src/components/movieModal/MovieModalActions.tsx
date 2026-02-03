@@ -1,6 +1,5 @@
-import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { find, includes, map } from 'lodash';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
 import { colors, fontFamily } from '@/config';
 import {
@@ -32,10 +31,10 @@ export default function MovieModalActions({ movie }: Props) {
 
   useEffect(() => {
     if (!user) { return; }
-    setFavorite(includes(user.favorites, movie._id));
-    setSeen(includes(user.seen, movie._id));
-    setWatchlist(includes(user.watchlist, movie._id));
-    setRating(find(user.ratings, ['movie', movie._id])?.rating || 0);
+    setFavorite(user.favorites.includes(movie._id));
+    setSeen(user.seen.includes(movie._id));
+    setWatchlist(user.watchlist.includes(movie._id));
+    setRating(user.ratings.find((r) => r.movie === movie._id)?.rating || 0);
   }, [user, movie]);
 
   const toggleSeen = () => {
@@ -74,57 +73,44 @@ export default function MovieModalActions({ movie }: Props) {
     }
   };
 
-  const styles = StyleSheet.create({
-    seenLabel: { color: seen ? colors.orange : colors.medium },
-    rateLabel: { color: rating > 0 ? colors.orange : colors.medium },
-    favLabel: { color: favorite ? colors.orange : colors.medium },
-    watchLabel: { color: watchlist ? colors.orange : colors.medium },
-    shared: {
-      position: 'absolute',
-      top: 45,
-      fontFamily: fontFamily.medium,
-      fontSize: 9,
-    },
-  });
-
   const actions: Array<{
     active: boolean;
     icon: keyof typeof MaterialCommunityIconsType.glyphMap;
     label: string;
     onPress: () => void;
-    style: StyleProp<TextStyle>,
+    labelColor: string;
   }> = useMemo(() => [{
     active: seen,
     icon: 'eye',
     label: 'Seen',
     onPress: toggleSeen,
-    style: styles.seenLabel,
+    labelColor: seen ? colors.orange : colors.medium,
   }, {
     active: rating > 0,
     icon: 'star',
     label: 'Rate',
     onPress: () => setShowStars(!showStars),
-    style: styles.rateLabel,
+    labelColor: rating > 0 ? colors.orange : colors.medium,
   }, {
     active: favorite,
     icon: 'heart',
     label: 'Favorite',
     onPress: toggleFavorite,
-    style: styles.favLabel,
+    labelColor: favorite ? colors.orange : colors.medium,
   }, {
     active: watchlist,
     icon: 'bookmark',
     label: 'Watchlist',
     onPress: toggleWatchlist,
-    style: styles.watchLabel,
+    labelColor: watchlist ? colors.orange : colors.medium,
   }], [favorite, rating, seen, showStars, watchlist]);
 
   return (
     <>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-        {map(actions, (action) => (
-          <View key={action.label} style={{ alignItems: 'center' }}>
-            <TouchableOpacity onPress={action.onPress}>
+      <View style={styles.actionsRow}>
+        {actions.map((action) => (
+          <View key={action.label} style={styles.actionItem}>
+            <TouchableOpacity onPress={action.onPress} accessibilityRole="button" accessibilityLabel={`${action.active ? 'Remove from' : 'Add to'} ${action.label}`}>
               <Icon
                 name={action.icon}
                 size={60}
@@ -132,7 +118,7 @@ export default function MovieModalActions({ movie }: Props) {
                 iconColor={action.active ? colors.orange : colors.medium}
               />
             </TouchableOpacity>
-            <Text style={[styles.shared, action.style]}>{action.label}</Text>
+            <Text style={[styles.label, { color: action.labelColor }]}>{action.label}</Text>
           </View>
         ))}
       </View>
@@ -140,3 +126,19 @@ export default function MovieModalActions({ movie }: Props) {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  actionItem: {
+    alignItems: 'center',
+  },
+  label: {
+    position: 'absolute',
+    top: 45,
+    fontFamily: fontFamily.medium,
+    fontSize: 9,
+  },
+});

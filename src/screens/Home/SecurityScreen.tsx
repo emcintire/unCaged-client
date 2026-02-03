@@ -1,7 +1,7 @@
-import * as Yup from 'yup';
 import { StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
+import { z } from 'zod';
 import type { HomeStackParamList } from '@/types';
 import { form, spacing, showErrorToast, showSuccessToast } from '@/config';
 import { useChangePassword } from '@/services';
@@ -9,6 +9,7 @@ import { AppForm, SubmitButton } from '@/components/forms';
 import Screen from '@/components/Screen';
 import PasswordInput from '@/components/forms/PasswordInput';
 import { PASSWORD_ERROR_MESSAGE, PASSWORD_REGEX } from '@/constants';
+import { toFormikValidator } from '@/utils/toFormikValidator';
 
 type SecurityFormValues = {
   currentPassword: string;
@@ -51,9 +52,9 @@ export default function SecurityScreen() {
             confirmPassword: '',
           }}
           onSubmit={handleSubmit}
-          validationSchema={validationSchema}
+          validate={validate}
         >
-          <View style={{ marginBottom: 20 }}>
+          <View style={styles.currentPasswordContainer}>
             <PasswordInput<SecurityFormValues>
               name="currentPassword"
               placeholder="Current Password"
@@ -82,16 +83,15 @@ const styles = StyleSheet.create({
   },
   formContainer: form.container,
   submitButton: form.submitButton,
+  currentPasswordContainer: {
+    marginBottom: 20,
+  },
 });
 
-const validationSchema = Yup.object().shape({
-  currentPassword: Yup.string().required().label('Password'),
-  newPassword: Yup.string()
-    .required()
-    .label('New Password')
-    .matches(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
-  confirmPassword: Yup.string()
-    .required()
-    .label('Confirm Password')
-    .matches(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
+const schema = z.object({
+  currentPassword: z.string().min(1, 'Password is required'),
+  newPassword: z.string().min(1, 'New Password is required').regex(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
+  confirmPassword: z.string().min(1, 'Confirm Password is required').regex(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
 });
+
+const validate = toFormikValidator(schema);

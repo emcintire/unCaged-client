@@ -1,9 +1,8 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as SecureStore from 'expo-secure-store';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -12,10 +11,10 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import type { RootStackParamList } from '@/types';
 import { queryClient } from '@/services';
 import { colors, toastConfig, layout } from '@/config';
+import { AuthProvider, useAuth } from '@/hooks';
 import WelcomeStack from '@/navigation/stacks/WelcomeStack';
 import HomeStack from '@/navigation/stacks/Home/HomeStack';
 
-// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 const loadFonts = async (): Promise<boolean> => {
@@ -37,50 +36,50 @@ const loadFonts = async (): Promise<boolean> => {
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 
+function RootNavigator() {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      {isAuthenticated ? (
+        <RootStack.Screen name="Home" component={HomeStack} />
+      ) : (
+        <RootStack.Screen name="Auth" component={WelcomeStack} />
+      )}
+    </RootStack.Navigator>
+  );
+}
+
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
-    async function prepare() {
-      try {
-        await loadFonts();
-        const token = await SecureStore.getItemAsync('token');
-        if (token != null) {
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
-        if (__DEV__) {
-          console.error('Failed to load fonts:', error);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    prepare();
+    loadFonts().then(() => setFontsLoaded(true));
   }, []);
 
   const onLayoutRootView = useCallback(async () => {
-    if (!isLoading) { await SplashScreen.hideAsync(); }
-  }, [isLoading]);
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
-  if (isLoading) { return null; }
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeAreaView style={styles.container} onLayout={onLayoutRootView} edges={['bottom', 'left', 'right']}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.black} translucent={false} />
-        <GestureHandlerRootView style={styles.container}>
-          <NavigationContainer>
-            <RootStack.Navigator screenOptions={{ headerShown: false }} initialRouteName={isAuthenticated ? 'Home' : 'Welcome'}>
-              <RootStack.Screen name="Welcome" component={WelcomeStack} />
-              <RootStack.Screen name="Home" component={HomeStack} />
-            </RootStack.Navigator>
-          </NavigationContainer>
-          <Toast config={toastConfig} />
-        </GestureHandlerRootView>
-      </SafeAreaView>
+      <AuthProvider>
+        <SafeAreaView style={styles.container} onLayout={onLayoutRootView} edges={['bottom', 'left', 'right']}>
+          <StatusBar barStyle="light-content" backgroundColor={colors.black} translucent={false} />
+          <GestureHandlerRootView style={styles.container}>
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
+            <Toast config={toastConfig} />
+          </GestureHandlerRootView>
+        </SafeAreaView>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { map } from 'lodash';
+
 import type { Screen, WatchlistTabParamList } from '@/types';
 import { screenOptions } from '@/navigation/stacks/screenOptions';
 import AccountButton from '@/components/AccountButton';
@@ -22,7 +22,7 @@ const screens: Array<Screen<WatchlistTabParamList>> = [
 export default function WatchlistTab() {
   return (
     <Watchlist_Tab.Navigator screenOptions={screenOptions}>
-      {map(screens, (screen) => (
+      {screens.map((screen) => (
         <Watchlist_Tab.Screen
           key={screen.name}
           name={screen.name}

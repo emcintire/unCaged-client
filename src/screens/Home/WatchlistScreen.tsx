@@ -1,25 +1,39 @@
-import { useState } from 'react';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { map } from 'lodash';
+import { useCallback, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { type Movie, useCurrentUser, useWatchlist } from '@/services';
 import { changeResolution, movieCard, screen, typography } from '@/config';
 import Screen from '@/components/Screen';
 import MovieModal from '@/components/movieModal/MovieModal';
+import MovieGridSkeleton from '@/components/MovieGridSkeleton';
 import AdBanner from '@/components/AdBanner';
 import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
 
+const NUM_COLUMNS = 2;
+
 export default function WatchlistScreen() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  
+
   const { data: user, isLoading: isUserLoading } = useCurrentUser();
   const { data: movies = [], isLoading: isMoviesLoading } = useWatchlist();
-  
+
   const isLoading = isUserLoading || isMoviesLoading;
   const isAdmin = user?.isAdmin ?? false;
 
+  const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
+
+  const renderMovie = useCallback(({ item }: { item: Movie }) => (
+    <View style={[movieCard.container, styles.columnItem]}>
+      <TouchableOpacity onPress={() => setSelectedMovie(item)} style={movieCard.button}>
+        <Image source={getMovieWithChangedResolution(item).img} style={movieCard.image} />
+      </TouchableOpacity>
+    </View>
+  ), [getMovieWithChangedResolution]);
+
+  const keyExtractor = useCallback((item: Movie) => item._id, []);
+
   return (
-    <Screen isLoading={isLoading} style={movies.length === 0 ? screen.centered : screen.noPadding}>
+    <Screen isLoading={isLoading} skeleton={<MovieGridSkeleton />} style={movies.length === 0 ? screen.centered : screen.noPadding}>
       {!isAdmin && <AdBanner />}
       {movies.length === 0 ? (
         <>
@@ -33,26 +47,26 @@ export default function WatchlistScreen() {
             movie={selectedMovie}
             onClose={() => setSelectedMovie(null)}
           />
-          <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
-            <View style={movieCard.scrollContainer}>
-              {map(movies, (movie) => (
-                <View style={movieCard.container} key={movie._id}>
-                  <TouchableOpacity
-                    onPress={() => setSelectedMovie(movie)}
-                    style={movieCard.button}
-                  >
-                    <Image
-                      source={{ uri: changeResolution('l', movie).img }}
-                      style={movieCard.image}
-                    />
-                  </TouchableOpacity>
-                </View>
-              ))}
-              <BuyMeCoffeeButton />
-            </View>
-          </ScrollView>
+          <FlatList
+            data={movies}
+            renderItem={renderMovie}
+            keyExtractor={keyExtractor}
+            numColumns={NUM_COLUMNS}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+            ListFooterComponent={<BuyMeCoffeeButton />}
+          />
         </>
       )}
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  listContent: {
+    alignItems: 'center',
+  },
+  columnItem: {
+    width: '50%',
+  },
+});

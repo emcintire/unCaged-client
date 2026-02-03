@@ -6,7 +6,6 @@ import ForgotPasswordScreen from '@/screens/Welcome/ForgotPasswordScreen';
 import EmailCodeScreen from '@/screens/Welcome/EmailCodeScreen';
 import PasswordResetScreen from '@/screens/Welcome/PasswordResetScreen';
 import type { Screen, WelcomeStackParamList } from '@/types';
-import { map } from 'lodash';
 import { screenOptions } from './screenOptions';
 
 const Welcome_Stack = createNativeStackNavigator<WelcomeStackParamList>();
@@ -34,7 +33,7 @@ const screens: ReadonlyArray<Screen<WelcomeStackParamList>> = [{
 export default function WelcomeStack() {
   return (
     <Welcome_Stack.Navigator screenOptions={screenOptions}>
-      {map(screens, (screen) => (
+      {screens.map((screen) => (
         <Welcome_Stack.Screen
           component={screen.component}
           key={screen.name}

@@ -1,18 +1,36 @@
 import { Fragment, ReactNode } from 'react';
 import { StyleSheet, View, ScrollView, Alert } from 'react-native';
-import { map } from 'lodash';
 import { useNavigation } from '@react-navigation/native';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { SettingsTabParamList, RootStackParamList } from '@/types';
+import type { SettingsTabParamList } from '@/types';
 import { colors, showErrorToast, showSuccessToast, spacing } from '@/config';
 import { useCurrentUser, useDeleteUser } from '@/services';
-import { useClearCache } from '@/hooks';
+import { useAuth } from '@/hooks';
 import Screen from '@/components/Screen';
 import ListItem from '@/components/ListItem';
 import Separator from '@/components/Separator';
 import Icon from '@/components/Icon';
 import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
+
+const styles = StyleSheet.create({
+  container: {
+    marginVertical: spacing.lg,
+    backgroundColor: colors.bg,
+    width: '100%',
+  },
+  coffeeButton: {
+    marginBottom: 0,
+  },
+  spacer: {
+    height: 20,
+    backgroundColor: colors.bg,
+  },
+  bottomSpacer: {
+    height: 40,
+    backgroundColor: colors.bg,
+  },
+});
 
 const accountItems: Array<{
   children?: ReactNode;
@@ -30,7 +48,7 @@ const accountItems: Array<{
   iconName: 'heart',
   iconColor: colors.orange,
 }, {
-  children: <View style={{ height: 20, backgroundColor: colors.bg }} />,
+  children: <View style={styles.spacer} />,
   title: 'Ratings',
   iconName: 'star',
   iconColor: colors.orange,
@@ -53,11 +71,10 @@ const accountItems: Array<{
 export default function SettingsScreen() {
   const { data: user, isLoading } = useCurrentUser();
   const deleteUserMutation = useDeleteUser();
-  const clearCache = useClearCache();
-  const { navigate: settingsNavigate } = useNavigation<NativeStackNavigationProp<SettingsTabParamList>>();
-  const { navigate: rootNavigate } = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { signOut } = useAuth();
+  const { navigate } = useNavigation<NativeStackNavigationProp<SettingsTabParamList>>();
 
-  const deleteAccount = async () => {
+  const deleteAccount = () => {
     Alert.alert('Are you sure?', 'Daddy would not be pleased', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -66,7 +83,7 @@ export default function SettingsScreen() {
           try {
             await deleteUserMutation.mutateAsync({ id: user!._id });
             showSuccessToast('Account deleted :(');
-            rootNavigate('Welcome');
+            await signOut();
           } catch (error) {
             const message = error instanceof Error ? error.message : 'Failed to delete account';
             showErrorToast(message);
@@ -78,16 +95,10 @@ export default function SettingsScreen() {
 
   const logOut = () => {
     Alert.alert('Are you sure you want to log out?', '', [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
+      { text: 'Cancel', style: 'cancel' },
       {
         text: 'Ok',
-        onPress: async () => {
-          clearCache();
-          rootNavigate('Welcome');
-        },
+        onPress: () => signOut(),
       },
     ]);
   };
@@ -95,10 +106,10 @@ export default function SettingsScreen() {
   return (
     <Screen isLoading={isLoading}>
       <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
-        <BuyMeCoffeeButton style={{ marginBottom: 0 }} />
+        <BuyMeCoffeeButton style={styles.coffeeButton} />
         <View style={styles.container}>
           <ListItem
-            onPress={() => settingsNavigate('My Account')}
+            onPress={() => navigate('My Account')}
             title={user!.name}
             subTitle={user!.email}
             image={{ uri: user!.img }}
@@ -106,10 +117,10 @@ export default function SettingsScreen() {
         </View>
         <Separator modal={false} />
         <View>
-          {map(accountItems, (item) => (
+          {accountItems.map((item) => (
             <Fragment key={item.title}>
               <ListItem
-                onPress={() => settingsNavigate(item.title)}
+                onPress={() => navigate(item.title)}
                 title={item.title}
                 IconComponent={(
                   <Icon name={item.iconName} iconColor={item.iconColor} backgroundColor={colors.bg} />
@@ -119,7 +130,7 @@ export default function SettingsScreen() {
             </Fragment>
           ))}
         </View>
-        <View style={{ height: 20, backgroundColor: colors.bg }} />
+        <View style={styles.spacer} />
         <ListItem
           onPress={logOut}
           title="Log Out"
@@ -131,16 +142,8 @@ export default function SettingsScreen() {
           title="Delete Account"
           IconComponent={<Icon name="delete" backgroundColor={colors.bg} iconColor={colors.red} />}
         />
-        <View style={{ height: 40, backgroundColor: colors.bg }} />
+        <View style={styles.bottomSpacer} />
       </ScrollView>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: spacing.lg,
-    backgroundColor: colors.bg,
-    width: '100%',
-  },
-});

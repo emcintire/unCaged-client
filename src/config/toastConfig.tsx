@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import Icon from '@/components/Icon';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from './colors';
 import { borderRadius, spacing, fontSize, fontFamily } from './theme';
 
@@ -42,28 +42,29 @@ const styles = StyleSheet.create({
     paddingLeft: spacing.sm,
     width: '88%',
   },
+  iconContainer: {
+    width: 35,
+    height: 35,
+    borderRadius: 17.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export const toastConfig = {
   success: ({ text1 }: ToastConfigProps) => (
     <View style={styles.successContainer}>
-      <Icon
-        name="check-bold"
-        backgroundColor={colors.green}
-        iconColor={colors.white}
-        size={35}
-      />
+      <View style={[styles.iconContainer, { backgroundColor: colors.green }]}>
+        <MaterialCommunityIcons name="check-bold" color={colors.white} size={17} />
+      </View>
       <Text style={[styles.notificationText, { color: colors.green }]}>{text1}</Text>
     </View>
   ),
   error: ({ text1 }: ToastConfigProps) => (
     <View style={styles.errorContainer}>
-      <Icon
-        name="exclamation-thick"
-        backgroundColor={colors.red}
-        iconColor={colors.white}
-        size={35}
-      />
+      <View style={[styles.iconContainer, { backgroundColor: colors.red }]}>
+        <MaterialCommunityIcons name="exclamation-thick" color={colors.white} size={17} />
+      </View>
       <Text style={[styles.notificationText, { color: colors.red }]}>{text1}</Text>
     </View>
   ),

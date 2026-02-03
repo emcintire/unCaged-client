@@ -59,5 +59,5 @@ export const genres = [
   'Sci-Fi',
   'Thriller',
   'War',
-];
+] as const;
 

@@ -1,28 +1,22 @@
 import { View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import * as Yup from 'yup';
-import { toLower, trim } from 'lodash';
-import type { RootStackParamList } from '@/types';
+import { z } from 'zod';
 import { useRegister } from '@/services';
+import { useAuth } from '@/hooks';
 import { PASSWORD_ERROR_MESSAGE, PASSWORD_REGEX } from '@/constants';
 import { form, screen, showErrorToast } from '@/config';
 import Screen from '@/components/Screen';
 import { AppForm, AppFormField, SubmitButton } from '@/components/forms';
 import PasswordInput from '@/components/forms/PasswordInput';
+import { toFormikValidator } from '@/utils/toFormikValidator';
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required().label('Name'),
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string()
-    .required()
-    .label('Password')
-    .matches(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
-  confirmPassword: Yup.string()
-    .required()
-    .label('Password')
-    .matches(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
+const schema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().min(1, 'Email is required').email('Email must be a valid email'),
+  password: z.string().min(1, 'Password is required').regex(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
+  confirmPassword: z.string().min(1, 'Password is required').regex(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
 });
+
+const validate = toFormikValidator(schema);
 
 type RegisterFormValues = {
   name: string;
@@ -32,7 +26,7 @@ type RegisterFormValues = {
 };
 
 export default function RegisterScreen() {
-  const { navigate } = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { signIn } = useAuth();
   const registerMutation = useRegister();
 
   const handleSubmit = async (values: RegisterFormValues) => {
@@ -42,13 +36,13 @@ export default function RegisterScreen() {
     }
 
     try {
-      const email = toLower(trim(values.email));
-      await registerMutation.mutateAsync({
+      const email = values.email.toLowerCase().trim();
+      const token = await registerMutation.mutateAsync({
         name: values.name,
         email,
         password: values.password,
       });
-      navigate('Home');
+      await signIn(token);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Registration failed';
       showErrorToast(message);
@@ -61,7 +55,7 @@ export default function RegisterScreen() {
         <AppForm<RegisterFormValues>
           initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
           onSubmit={handleSubmit}
-          validationSchema={validationSchema}
+          validate={validate}
         >
           <AppFormField<RegisterFormValues>
             autoCapitalize="none"

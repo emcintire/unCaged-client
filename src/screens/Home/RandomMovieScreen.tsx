@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Image, Modal, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, Modal, TouchableOpacity, Text } from 'react-native';
+import { Image } from 'expo-image';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { filter, overEvery, sample, reject, includes, toLower } from 'lodash';
 import { type Movie, useCurrentUser, useMovies } from '@/services';
 import { borderRadius, changeResolution, colors, fontFamily, fontSize, shadow, spacing } from '@/config';
 import AdBanner from '@/components/AdBanner';
@@ -17,7 +17,7 @@ export default function RandomMovieScreen() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [watchlistFilter, setWatchlistFilter] = useState(false);
   const [unseenFilter, setUnseenFilter] = useState(false);
-  
+
   const { data: user, isLoading: isUserLoading } = useCurrentUser();
   const { data: allMovies = [], isLoading: isMoviesLoading } = useMovies();
   const isAdmin = user?.isAdmin ?? false;
@@ -28,25 +28,26 @@ export default function RandomMovieScreen() {
       if (!allMovies.length) {
         return;
       }
-      
-      const predicates = overEvery<Movie>([
-        (m) => !genreFilter || genreFilter === 'All' || includes(m.genres, genreFilter),
-        (m) => !mandyFilter ||  includes(toLower(m.title), 'mandy'),
-        (m) => !unseenFilter || !user || !includes(user.seen, m._id),
-        (m) => !watchlistFilter || !user || includes(user.watchlist, m._id),
-      ]) as (movie: Movie) => boolean;
-      
-      const filtered = filter(allMovies, predicates);
+
+      const predicates = [
+        (m: Movie) => !genreFilter || genreFilter === 'All' || m.genres.includes(genreFilter),
+        (m: Movie) => !mandyFilter || m.title.toLowerCase().includes('mandy'),
+        (m: Movie) => !unseenFilter || !user || !user.seen.includes(m._id),
+        (m: Movie) => !watchlistFilter || !user || user.watchlist.includes(m._id),
+      ];
+      const matchesAll = (item: Movie) => predicates.every(p => p(item));
+
+      const filtered = allMovies.filter(matchesAll);
       if (filtered.length === 0) {
         setMovie(null);
         return;
       }
 
       const candidateMovies = (movie && filtered.length > 1 && !mandyFilter)
-        ? reject(filtered, (m) => m._id === movie._id)
+        ? filtered.filter((m) => m._id !== movie._id)
         : filtered;
 
-      const newMovie = sample(candidateMovies);
+      const newMovie = candidateMovies[Math.floor(Math.random() * candidateMovies.length)];
       if (newMovie) {
         if (!newMovie.img) {
           console.warn('getRandomMovie: Movie has no img property', newMovie._id);
@@ -55,7 +56,6 @@ export default function RandomMovieScreen() {
           const movieToSet = newMovie.img.length === 32 ? changeResolution('', newMovie) : newMovie;
           setMovie(movieToSet);
         }
-      } else {
       }
     } catch (error) {
       console.error('getRandomMovie error:', error);
@@ -103,20 +103,20 @@ export default function RandomMovieScreen() {
           </View>
         ) : (
           <View style={styles.movieContainer}>
-            <TouchableOpacity 
-              style={styles.movieButton} 
+            <TouchableOpacity
+              style={styles.movieButton}
               onPress={() => {
                 setModalVisible(true);
               }}
             >
-              <Image source={{ uri: movie.img }} style={styles.movieImage} />
+              <Image source={movie.img} style={styles.movieImage} contentFit="cover" />
             </TouchableOpacity>
           </View>
         )}
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={styles.refreshBtn} 
+        <TouchableOpacity
+          style={styles.refreshBtn}
           onPress={() => {
             getRandomMovie();
           }}
@@ -175,7 +175,6 @@ const styles = StyleSheet.create({
   movieImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   buttonContainer: {
     position: 'relative',

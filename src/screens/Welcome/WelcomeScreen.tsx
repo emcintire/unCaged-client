@@ -27,8 +27,10 @@ export default function WelcomeScreen() {
           onPress={() => navigate('Register')}
         />
         <TouchableOpacity
-          style={{ marginTop: spacing.sm }}
+          style={styles.forgotButton}
           onPress={() => navigate('Forgot Password')}
+          accessibilityRole="button"
+          accessibilityLabel="Forgot Password"
         >
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
@@ -55,5 +57,8 @@ const styles = StyleSheet.create({
   forgot: {
     fontFamily: fontFamily.regular,
     color: colors.white,
+  },
+  forgotButton: {
+    marginTop: spacing.sm,
   },
 });

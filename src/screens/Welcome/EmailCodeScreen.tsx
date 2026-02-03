@@ -1,16 +1,19 @@
 import { View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import * as Yup from 'yup';
+import { z } from 'zod';
 import type { WelcomeStackParamList } from '@/types';
 import { useCheckCode } from '@/services';
 import { form, typography, utils, showErrorToast, spacing } from '@/config';
 import { AppForm, AppFormField, SubmitButton } from '@/components/forms';
 import Screen from '@/components/Screen';
+import { toFormikValidator } from '@/utils/toFormikValidator';
 
-const validationSchema = Yup.object().shape({
-  code: Yup.string().required().label('Code'),
+const schema = z.object({
+  code: z.string().min(1, 'Code is required'),
 });
+
+const validate = toFormikValidator(schema);
 
 type EmailCodeFormValues = {
   code: string;
@@ -37,7 +40,7 @@ export default function EmailCodeScreen() {
         <AppForm<EmailCodeFormValues>
           initialValues={{ code: '' }}
           onSubmit={handleSubmit}
-          validationSchema={validationSchema}
+          validate={validate}
         >
           <AppFormField<EmailCodeFormValues>
             autoCapitalize="none"

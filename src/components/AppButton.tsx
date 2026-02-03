@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { StyleSheet, Text, TextStyle, TouchableOpacity, type StyleProp, type ViewStyle } from 'react-native';
 import type { ColorKey } from '@/types';
 import { borderRadius, colors, fontFamily, fontSize, spacing } from '@/config';
@@ -10,16 +11,18 @@ type Props = {
   title: string;
 };
 
-export default function AppButton({ style, textStyle, title, onPress, color = 'orange' }: Props) {
+export default memo(function AppButton({ style, textStyle, title, onPress, color = 'orange' }: Props) {
   return (
     <TouchableOpacity
       style={[styles.button, { backgroundColor: colors[color] }, style]}
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={title}
     >
       <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
-}
+});
 
 const styles = StyleSheet.create({
   button: {

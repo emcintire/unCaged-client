@@ -1,5 +1,8 @@
-import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import type { StyleProp, ViewStyle, ImageSourcePropType } from 'react-native';
+import { memo } from 'react';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
+import type { ImageSource } from 'expo-image';
+import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AppText from './AppText';
@@ -7,16 +10,16 @@ import { borderRadius, colors, fontFamily, fontSize, spacing } from '@/config';
 
 type Props = {
   IconComponent?: ReactNode;
-  image?: ImageSourcePropType;
+  image?: ImageSource;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
   subTitle?: string;
   title: string;
 };
 
-export default function ListItem({ title, subTitle, image, IconComponent, onPress, style }: Props) {
+export default memo(function ListItem({ title, subTitle, image, IconComponent, onPress, style }: Props) {
   return (
-    <TouchableOpacity onPress={onPress} style={style}>
+    <TouchableOpacity onPress={onPress} style={style} accessibilityRole="button" accessibilityLabel={title}>
       <View style={styles.container}>
         {IconComponent}
         {image && <Image style={styles.image} source={image} />}
@@ -34,7 +37,7 @@ export default function ListItem({ title, subTitle, image, IconComponent, onPres
       </View>
     </TouchableOpacity>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

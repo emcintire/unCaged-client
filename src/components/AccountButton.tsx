@@ -1,11 +1,10 @@
-import { Image, TouchableOpacity } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { useCurrentUser } from '@/services';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '@/types';
 import { borderRadius } from '@/config';
-
-const imageStyle = { width: 35, height: 35, borderRadius: borderRadius.circle / 2 };
 
 export default function AccountButton() {
   const { data: user, refetch } = useCurrentUser();
@@ -17,8 +16,16 @@ export default function AccountButton() {
   };
 
   return (
-    <TouchableOpacity onPress={handleNavigate}>
-      <Image source={{ uri: user?.img || '' }} style={imageStyle} />
+    <TouchableOpacity onPress={handleNavigate} accessibilityRole="button" accessibilityLabel="Account settings">
+      <Image source={user?.img || ''} style={styles.image} />
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  image: {
+    width: 35,
+    height: 35,
+    borderRadius: borderRadius.circle / 2,
+  },
+});

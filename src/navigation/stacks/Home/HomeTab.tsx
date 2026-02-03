@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { map } from 'lodash';
+
 import SmallLogo from '@/assets/imgs/small_logo.svg';
 import type { HomeTabParamList, Screen } from '@/types';
 import { screenOptions } from '@/navigation/stacks/screenOptions';
@@ -22,7 +22,7 @@ const screens: Array<Screen<HomeTabParamList>> = [
 export default function HomeStackScreen() {
   return (
     <Home_Tab.Navigator screenOptions={screenOptions}>
-      {map(screens, (screen) => (
+      {screens.map((screen) => (
         <Home_Tab.Screen
           key={screen.name}
           name={screen.name}

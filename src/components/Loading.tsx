@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { colors, fontSize, fontFamily, spacing } from '@/config';
 
@@ -5,7 +6,7 @@ type Props = {
   visible?: boolean;
 };
 
-export default function Loading({ visible = true }: Props) {
+export default memo(function Loading({ visible = true }: Props) {
   if (!visible) { return null; }
 
   return (
@@ -14,7 +15,7 @@ export default function Loading({ visible = true }: Props) {
       <Text style={styles.text}>Loading...</Text>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

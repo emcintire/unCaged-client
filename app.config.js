@@ -5,7 +5,7 @@ export default {
     name: "unCaged",
     slug: "unCaged",
     icon: "./src/assets/imgs/icon.png",
-    version: "9.0.0",
+    version: "9.2.0",
     orientation: "portrait",
     scheme: "uncaged",
     platforms: ["ios", "android", "web"],

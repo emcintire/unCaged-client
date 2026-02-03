@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
-import { includes, map } from 'lodash';
+
 import type { SetState } from '@/types';
 import { type Movie, useDeleteRating, useRateMovie, useAddToSeen, useCurrentUser } from '@/services';
 import { borderRadius, colors, showErrorToast, spacing } from '@/config';
@@ -35,7 +35,7 @@ export default function MovieModalRating({ movie, onSeenAdded, rating, setRating
 
   const handleRating = (newRating: number) => async () => {
     try {
-      const isMovieSeen = user && includes(user.seen, movie._id);
+      const isMovieSeen = user && user.seen.includes(movie._id);
       
       if (rating) {
         if (rating === newRating) {
@@ -63,8 +63,8 @@ export default function MovieModalRating({ movie, onSeenAdded, rating, setRating
 
   return (
     <View style={styles.stars}>
-      {map(stars, (star) => (
-        <TouchableOpacity key={star} onPress={handleRating(star)}>
+      {stars.map((star) => (
+        <TouchableOpacity key={star} onPress={handleRating(star)} accessibilityRole="button" accessibilityLabel={`Rate ${star} star${star > 1 ? 's' : ''}`}>
           <Icon
             name="star"
             size={60}
