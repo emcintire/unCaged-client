@@ -1,21 +1,17 @@
-# unCaged - Nicolas Cage Movie App
+# unCaged - Nicolas Cage Filmography App
 
-The best app to find, rate, and bookmark all of Nicolas Cage's cinematic masterpieces.
-
-With unCaged you can discover new Nicolas Cage films based on genre, mark them as seen, add them to your favorites, rate the movies, and also add them to your watchlist. If you're feeling frisky, there is also a random Nic Cage movie generator.
+unCaged lets you find, rate and bookmark the entirety of Nicolas Cage's prolific filmography. Genius? Madness? Both? Sexy cat? We provide the data—you reach the conclusion.
 
 ## Tech Stack
 
 - **Framework**: React Native with Expo
-- **Language**: TypeScript (strict mode)
+- **Language**: TypeScript
 - **Navigation**: React Navigation
 - **State Management**: TanStack Query (React Query)
-- **API Client**: Zodios with Axios
-- **Forms**: Formik with Yup validation
+- **API Client**: Zodios with Zod validation
+- **Forms**: Formik with Zod validation
 - **Styling**: StyleSheet with custom theme system
 - **Ads**: Google Mobile Ads
-
-## Code Standards
 
 ### TypeScript
 
@@ -23,30 +19,6 @@ With unCaged you can discover new Nicolas Cage films based on genre, mark them a
 - Explicit return types for functions
 - No implicit `any`
 - Comprehensive type definitions
-
-### Code Style
-
-- ESLint for code quality
-- Prettier for code formatting
-- Consistent naming conventions:
-  - PascalCase for components
-  - camelCase for functions and variables
-  - UPPER_SNAKE_CASE for constants
-
-## API Integration
-
-The app uses Zodios for type-safe API calls with automatic validation:
-
-```typescript
-// Example usage
-const { data, isLoading, error } = useMovies();
-```
-
-All API endpoints are defined in `app/api/controllers/` with:
-- Type-safe request/response schemas
-- Automatic validation with Zod
-- React Query integration
-- Error handling
 
 ## Architecture Decisions
 
@@ -57,14 +29,22 @@ All API endpoints are defined in `app/api/controllers/` with:
 - Built-in loading and error states
 - Powerful dev tools
 
-### Why Zodios?
+```typescript
+// Example usage
+const { data, isLoading, error } = useMovies();
+```
 
-- Type-safe API calls
-- Runtime validation
+### Why Zodios + Zod?
+
+- All API endpoints are defined in `app/api/controllers/`
+- Type-safe request/response schemas
+- Automatic validation with Zod
 - OpenAPI compatibility
 - Excellent TypeScript support
+- Tanstack Query integration
+- Built in error handling
 
-### Why Formik + Yup?
+### Why Formik + Zod?
 
 - Declarative form handling
 - Built-in validation
