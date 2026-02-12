@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { Screen, SettingsTabParamList } from '@/types';
 import { screenOptions } from '@/navigation/stacks/screenOptions';
 import AboutScreen from '@/screens/Home/AboutScreen';
+import AdminScreen from '@/screens/Home/AdminScreen';
 import AccountButton from '@/components/AccountButton';
 import AccountDetailsScreen from '@/screens/Home/AccountDetailsScreen';
 import FavoritesScreen from '@/screens/Home/FavoritesScreen';
@@ -42,6 +43,9 @@ const screens: Array<Screen<SettingsTabParamList>> = [{
 }, {
   name: 'About',
   component: AboutScreen,
+}, {
+  name: 'Admin',
+  component: AdminScreen,
 }, {
   name: 'Privacy Policy',
   component: PrivacyPolicyScreen,

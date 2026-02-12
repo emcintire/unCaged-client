@@ -35,6 +35,18 @@ export const userApi = makeApi([
     ],
     response: z.void(),
   }, {
+    method: 'post',
+    path: '/',
+    alias: 'register',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: RegisterDataSchema,
+      },
+    ],
+    response: TokenResponseSchema,
+  }, {
     method: 'delete',
     path: '/',
     alias: 'deleteUser',
@@ -75,18 +87,6 @@ export const userApi = makeApi([
         name: 'body',
         type: 'Body',
         schema: LoginCredentialsSchema,
-      },
-    ],
-    response: TokenResponseSchema,
-  }, {
-    method: 'post',
-    path: '/register',
-    alias: 'register',
-    parameters: [
-      {
-        name: 'body',
-        type: 'Body',
-        schema: RegisterDataSchema,
       },
     ],
     response: TokenResponseSchema,

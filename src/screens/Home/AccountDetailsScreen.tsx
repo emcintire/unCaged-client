@@ -57,12 +57,12 @@ export default function AccountDetailsScreen() {
             animationType="slide"
             transparent={true}
             visible={modalVisible}
-            onRequestClose={() => setModalVisible(!modalVisible)}
+            onRequestClose={() => setModalVisible(false)}
           >
             <PicturePicker modalVisible={modalVisible} setModalVisible={setModalVisible} />
           </Modal>
           <View style={styles.imageContainer}>
-            <TouchableOpacity onPress={() => setModalVisible(!modalVisible)} accessibilityRole="button" accessibilityLabel="Change profile picture">
+            <TouchableOpacity onPress={() => setModalVisible(true)} accessibilityRole="button" accessibilityLabel="Change profile picture">
               <View style={styles.overlay}>
                 <MaterialCommunityIcons name="pencil" size={40} color="white" />
               </View>

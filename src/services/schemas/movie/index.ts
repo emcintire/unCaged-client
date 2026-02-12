@@ -8,3 +8,4 @@ export * from './deleteRatingData';
 export * from './updateMovieRatingData';
 export * from './filteredMoviesData';
 export * from './searchMovieData';
+export * from './createMovieData';

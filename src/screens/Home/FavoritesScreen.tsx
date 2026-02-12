@@ -33,7 +33,7 @@ export default function FavoritesScreen() {
   const keyExtractor = useCallback((item: Movie) => item._id, []);
 
   return (
-    <Screen isLoading={isLoading} skeleton={<MovieGridSkeleton />} style={movies.length === 0 ? screen.centered : screen.noPadding}>
+    <Screen isLoading={isLoading} skeleton={<MovieGridSkeleton />} style={!isLoading && movies.length === 0 ? screen.centered : screen.noPadding}>
       {!isAdmin && <AdBanner />}
       {movies.length === 0 ? (
         <Text style={typography.h1}>You will see your favorite movies here</Text>

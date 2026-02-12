@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import type { PropsWithChildren, ReactNode } from 'react';
 import Loading from './Loading';
@@ -15,15 +15,23 @@ export default function Screen({ children, isLoading = false, skeleton, style }:
   const loadingContent = skeleton ?? <Loading />;
 
   return (
-    <View style={[styles.container, style]}>
-      <ErrorBoundary>
-        {isLoading ? loadingContent : children}
-      </ErrorBoundary>
-    </View>
+    <KeyboardAvoidingView
+      style={styles.flex}
+      behavior="padding"
+    >
+      <View style={[styles.container, style]}>
+        <ErrorBoundary>
+          {isLoading ? loadingContent : children}
+        </ErrorBoundary>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     backgroundColor: colors.bg,
     flex: 1,

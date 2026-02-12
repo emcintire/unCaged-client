@@ -1,11 +1,10 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { ScrollView } from 'react-native-gesture-handler';
-import { type Movie, useMovies, useQuote, useAddQuote, useCurrentUser } from '@/services';
-import { colors, changeResolution, spacing, borderRadius, fontSize, fontFamily, movieCard } from '@/config';
+import { type Movie, useMovies, useQuote } from '@/services';
+import { colors, changeResolution, spacing, fontSize, fontFamily, movieCard } from '@/config';
 import Screen from '@/components/Screen';
-import AppButton from '@/components/AppButton';
 import MovieModal from '@/components/movieModal/MovieModal';
 import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
 
@@ -59,20 +58,6 @@ const styles = StyleSheet.create({
     color: colors.white,
     alignSelf: 'flex-start',
   },
-  quoteInput: {
-    width: '90%',
-    borderRadius: borderRadius.round,
-    fontSize: fontSize.lg,
-    backgroundColor: colors.black,
-    color: colors.white,
-    alignSelf: 'center',
-    padding: spacing.sm,
-    margin: spacing.sm,
-  },
-  quoteSubmit: {
-    width: '50%',
-    alignSelf: 'center',
-  },
   scrollContent: {
     marginLeft: 15,
   },
@@ -99,28 +84,12 @@ const genres = [
 ];
 
 export default function HomeScreen() {
-  const [newQuote, setNewQuote] = useState('');
-  const [newSubQuote, setNewSubQuote] = useState('');
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const { data: user } = useCurrentUser();
   const { data: movies = [], isLoading: moviesLoading } = useMovies();
   const { data: quote, isLoading: quoteLoading } = useQuote();
-  const addQuoteMutation = useAddQuote();
 
   const isLoading = moviesLoading || quoteLoading;
-
-  const submitQuote = () => {
-    addQuoteMutation.mutate({
-      quote: newQuote.trim(),
-      subquote: newSubQuote.trim(),
-    }, {
-      onSuccess: () => {
-        setNewQuote('');
-        setNewSubQuote('');
-      },
-    });
-  };
 
   const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
 
@@ -137,23 +106,6 @@ export default function HomeScreen() {
         onClose={() => setSelectedMovie(null)}
       />
       <ScrollView showsVerticalScrollIndicator={false} decelerationRate="fast">
-        {user?.isAdmin && (
-          <View>
-            <TextInput
-              style={styles.quoteInput}
-              placeholder="Enter title"
-              placeholderTextColor={colors.medium}
-              onChangeText={(text) => setNewQuote(text)}
-            />
-            <TextInput
-              style={styles.quoteInput}
-              placeholder="Enter sub title"
-              placeholderTextColor={colors.medium}
-              onChangeText={(text) => setNewSubQuote(text)}
-            />
-            <AppButton onPress={submitQuote} style={styles.quoteSubmit} title="Submit" />
-          </View>
-        )}
         <Text style={styles.quote}>{quote?.quote}</Text>
         <Text style={styles.subquote}>{quote?.subquote}</Text>
         <Text style={styles.subsubquote}>Verse of the Week</Text>

@@ -3,7 +3,9 @@ import { z } from 'zod';
 import {
   AddQuoteDataSchema,
   AverageRatingSchema,
+  CreateMovieDataSchema,
   FilteredMoviesDataSchema,
+  MovieSchema,
   MoviesArraySchema,
   QuoteOrArraySchema,
   QuoteSchema,
@@ -106,5 +108,18 @@ export const movieApi = makeApi([
       },
     ],
     response: z.void(),
+  },
+  {
+    method: 'post',
+    path: '/',
+    alias: 'createMovie',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: CreateMovieDataSchema,
+      },
+    ],
+    response: MovieSchema,
   },
 ]);

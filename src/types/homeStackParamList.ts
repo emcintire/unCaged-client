@@ -30,6 +30,7 @@ export type SettingsTabParamList = {
   Ratings: undefined;
   Security: undefined;
   About: undefined;
+  Admin: undefined;
   'Privacy Policy': undefined;
 };
 

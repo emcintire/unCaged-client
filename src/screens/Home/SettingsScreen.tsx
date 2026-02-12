@@ -129,6 +129,16 @@ export default function SettingsScreen() {
               {item.children}
             </Fragment>
           ))}
+          {user?.isAdmin && (
+            <>
+              <Separator />
+              <ListItem
+                onPress={() => navigate('Admin')}
+                title="Admin"
+                IconComponent={<Icon name="shield-crown" iconColor={colors.orange} backgroundColor={colors.bg} />}
+              />
+            </>
+          )}
         </View>
         <View style={styles.spacer} />
         <ListItem

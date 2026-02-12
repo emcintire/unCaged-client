@@ -28,7 +28,7 @@ export default function SeenScreen() {
   const keyExtractor = useCallback((item: Movie) => item._id, []);
 
   return (
-    <Screen isLoading={isLoading} skeleton={<MovieGridSkeleton />} style={movies.length === 0 ? screen.centered : screen.noPadding}>
+    <Screen isLoading={isLoading} skeleton={<MovieGridSkeleton />} style={!isLoading && movies.length === 0 ? screen.centered : screen.noPadding}>
       {movies.length === 0 ? (
         <Text style={typography.h1}>What are you doing here... go watch a Nicolas Cage movie</Text>
       ) : (

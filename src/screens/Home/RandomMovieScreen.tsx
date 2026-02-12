@@ -165,8 +165,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   movieButton: {
-    width: '85%',
-    maxWidth: 400,
+    width: '75%',
+    maxHeight: '90%',
     aspectRatio: 2 / 3,
     ...shadow.lg,
     borderRadius: borderRadius.sm,

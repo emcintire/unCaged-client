@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { showErrorToast } from '@/config';
+import { showErrorToast, showSuccessToast } from '@/config';
 import { zodiosClient } from '../../zodiosClient';
-import { FilteredMoviesData } from '../../schemas';
+import { CreateMovieData, FilteredMoviesData } from '../../schemas';
 import { movieKeys } from './movieKeys';
 import { userKeys } from '../user/userKeys';
 
@@ -99,5 +99,18 @@ export const useUpdateMovieRatings = () => {
   return useMutation({
     mutationFn: () => zodiosClient.updateMovieRatings({}),
     onError: () => showErrorToast('Failed to update ratings'),
+  });
+};
+
+export const useCreateMovie = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateMovieData) => zodiosClient.createMovie(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: movieKeys.list() });
+      showSuccessToast('Movie created');
+    },
+    onError: () => showErrorToast('Failed to create movie'),
   });
 };
