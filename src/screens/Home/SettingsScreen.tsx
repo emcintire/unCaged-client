@@ -75,7 +75,7 @@ export default function SettingsScreen() {
   const { navigate } = useNavigation<NativeStackNavigationProp<SettingsTabParamList>>();
 
   const deleteAccount = () => {
-    Alert.alert('Are you sure?', 'Daddy would not be pleased', [
+    Alert.alert('Are you sure?', 'Nicolas would not be pleased', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Ok',

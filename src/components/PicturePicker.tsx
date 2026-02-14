@@ -52,7 +52,7 @@ export default function PicturePicker({ modalVisible, setModalVisible }: Props) 
   if (!modalVisible) { return null; }
 
   return (
-    <Screen style={styles.screen}>
+    <View style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.closeButton}>
           <TouchableOpacity onPress={() => setModalVisible(false)} accessibilityRole="button" accessibilityLabel="Close picture picker">
@@ -77,7 +77,7 @@ export default function PicturePicker({ modalVisible, setModalVisible }: Props) 
           style={styles.saveButton}
         />
       </View>
-    </Screen>
+    </View>
   );
 }
 
@@ -85,13 +85,16 @@ const styles = StyleSheet.create({
   screen: {
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#00000080',
   },
   container: {
     backgroundColor: colors.bg,
     width: '90%',
     padding: spacing.md,
     borderColor: colors.orange,
-    borderWidth: 1,
+    borderWidth: 4,
     borderRadius: borderRadius.md,
   },
   closeButton: {

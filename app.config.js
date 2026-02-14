@@ -22,17 +22,22 @@ export default {
       backgroundColor: "#000000",
     },
     updates: {
-      enabled: false,
+      url: "https://u.expo.dev/8b66d794-89ac-4204-8dcd-3d8e025423fd",
+    },
+    runtimeVersion: {
+      policy: "appVersion",
     },
     assetBundlePatterns: ["**/*"],
     ios: {
       supportsTablet: true,
       bundleIdentifier: "uncaged.app",
+      googleServicesFile: "./GoogleService-Info.plist",
       config: {},
     },
     android: {
       package: "uncaged.app",
       versionCode: 9,
+      googleServicesFile: "./google-services.json",
       adaptiveIcon: {
         foregroundImage: "./src/assets/imgs/icon.png",
         backgroundColor: "#000000",
@@ -42,6 +47,11 @@ export default {
     web: {
       favicon: "./src/assets/imgs/icon.png",
     },
-    plugins: ["expo-font", "expo-secure-store"],
+    plugins: [
+      "expo-font",
+      "expo-secure-store",
+      "@react-native-firebase/app",
+      "./plugins/withModularHeaders",
+    ],
   },
 };

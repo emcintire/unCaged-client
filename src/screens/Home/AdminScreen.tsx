@@ -121,7 +121,7 @@ export default function AdminScreen() {
           <AppFormField<MovieFormValues> name="runtime" placeholder="Runtime (e.g. 3h 34m)" icon="clock-outline" />
           <AppFormField<MovieFormValues> name="rating" placeholder="Rating (e.g. PG-13)" icon="star" />
           <AppFormField<MovieFormValues> name="date" placeholder="Release date (e.g. 2001-09-11)" icon="calendar" />
-          <AppFormField<MovieFormValues> name="img" placeholder="Image URL (optional)" icon="image" />
+          <AppFormField<MovieFormValues> name="img" placeholder="Image URL (https://i.imgur.com/eUjramKh.jpg)" icon="image" />
           <SubmitButton title="Create Movie" style={styles.submitButton} />
         </AppForm>
         <View style={styles.bottomSpacer} />
