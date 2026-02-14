@@ -25,9 +25,7 @@ export type RandomTabParamList = {
 export type SettingsTabParamList = {
   Settings: undefined;
   'My Account': undefined;
-  Favorites: undefined;
-  Seen: undefined;
-  Ratings: undefined;
+  'My Collection': undefined;
   Security: undefined;
   About: undefined;
   Admin: undefined;

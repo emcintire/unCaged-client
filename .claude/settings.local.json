@@ -6,7 +6,10 @@
       "Bash(npx tsc:*)",
       "Bash(npm uninstall:*)",
       "Bash(ipconfig:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(dir:*)",
+      "Bash(ls -la \"c:\\\\Users\\\\e_mci\\\\Documents\\\\csc\\\\unCaged-client\\\\src\\\\screens\"\" && echo \"---\" && ls -la \"c:Userse_mciDocumentscscunCaged-clientsrccomponents\"\")",
+      "Bash(npm run type-check:*)"
     ]
   }
 }

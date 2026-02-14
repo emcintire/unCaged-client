@@ -7,11 +7,9 @@ import AboutScreen from '@/screens/Home/AboutScreen';
 import AdminScreen from '@/screens/Home/AdminScreen';
 import AccountButton from '@/components/AccountButton';
 import AccountDetailsScreen from '@/screens/Home/AccountDetailsScreen';
-import FavoritesScreen from '@/screens/Home/FavoritesScreen';
+import CollectionScreen from '@/screens/Home/CollectionScreen';
 import PrivacyPolicyScreen from '@/screens/Home/PrivacyPolicy';
-import RatingsScreen from '@/screens/Home/RatingsScreen';
 import SecurityScreen from '@/screens/Home/SecurityScreen';
-import SeenScreen from '@/screens/Home/SeenScreen';
 import SettingsScreen from '@/screens/Home/SettingsScreen';
 import SmallLogo from '@/assets/imgs/small_logo.svg';
 
@@ -28,14 +26,8 @@ const screens: Array<Screen<SettingsTabParamList>> = [{
   name: 'My Account',
   component: AccountDetailsScreen,
 }, {
-  name: 'Favorites',
-  component: FavoritesScreen,
-}, {
-  name: 'Seen',
-  component: SeenScreen,
-}, {
-  name: 'Ratings',
-  component: RatingsScreen,
+  name: 'My Collection',
+  component: CollectionScreen,
 }, {
   name: 'Security',
   component: SecurityScreen,

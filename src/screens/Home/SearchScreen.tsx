@@ -2,10 +2,10 @@ import { useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import {
   StyleSheet, View, Text, TouchableOpacity, TextInput, ScrollView,
 } from 'react-native';
-import { Image } from 'expo-image';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { type Movie, useMovies } from '@/services';
-import { changeResolution, colors, spacing, borderRadius, fontSize, fontFamily, movieCard } from '@/config';
+import { type Movie, useCurrentUser, useMovies } from '@/services';
+import { colors, spacing, borderRadius, fontSize, fontFamily, movieCard } from '@/config';
+import MovieCard from '@/components/MovieCard';
 import MovieGridSkeleton from '@/components/MovieGridSkeleton';
 import MovieModal from '@/components/movieModal/MovieModal';
 import Screen from '@/components/Screen';
@@ -63,7 +63,11 @@ export default function SearchScreen() {
   const [genre, setGenre] = useState('Genre');
   const [genresVisible, setGenresVisible] = useState(false);
 
+  const { data: user } = useCurrentUser();
   const { data: movies = [], isLoading: loading } = useMovies();
+
+  const favoriteIds = useMemo(() => new Set(user?.favorites ?? []), [user?.favorites]);
+  const seenIds = useMemo(() => new Set(user?.seen ?? []), [user?.seen]);
 
   // Debounce search input using setTimeout
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -110,8 +114,6 @@ export default function SearchScreen() {
     });
   }, [genre, movies, selected, sortDirection, debouncedTitle]);
 
-  const getMovieWithChangedResolution = useCallback((movie: Movie) => changeResolution('l', movie), []);
-
   return (
     <Screen>
       <MovieModal
@@ -153,15 +155,12 @@ export default function SearchScreen() {
           <View style={movieCard.scrollContainer}>
             {displayMovies.map((movie) => (
               <View style={movieCard.container} key={movie._id}>
-                <TouchableOpacity
-                  style={movieCard.button}
+                <MovieCard
+                  movie={movie}
                   onPress={() => setSelectedMovie(movie)}
-                >
-                  <Image
-                    source={getMovieWithChangedResolution(movie).img}
-                    style={movieCard.image}
-                  />
-                </TouchableOpacity>
+                  isFavorite={favoriteIds.has(movie._id)}
+                  isSeen={seenIds.has(movie._id)}
+                />
               </View>
             ))}
             <BuyMeCoffeeButton />

@@ -38,19 +38,9 @@ const accountItems: Array<{
   iconName: keyof typeof MaterialCommunityIconsType.glyphMap;
   iconColor: string;
 }> = [{
-  children: <Separator />,
-  title: 'Seen',
-  iconName: 'eye',
-  iconColor: colors.orange,
-}, {
-  children: <Separator />,
-  title: 'Favorites',
-  iconName: 'heart',
-  iconColor: colors.orange,
-}, {
   children: <View style={styles.spacer} />,
-  title: 'Ratings',
-  iconName: 'star',
+  title: 'My Collection',
+  iconName: 'movie-open',
   iconColor: colors.orange,
 }, {
   children: <Separator />,

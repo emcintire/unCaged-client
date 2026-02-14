@@ -110,6 +110,16 @@ export default function RandomMovieScreen() {
               }}
             >
               <Image source={movie.img} style={styles.movieImage} contentFit="cover" />
+              {user?.favorites.includes(movie._id) && (
+                <View style={styles.badge}>
+                  <MaterialCommunityIcons name="heart" size={18} color={colors.orange} />
+                </View>
+              )}
+              {user?.seen.includes(movie._id) && (
+                <View style={[styles.badge, user?.favorites.includes(movie._id) ? styles.secondBadge : undefined]}>
+                  <MaterialCommunityIcons name="eye" size={18} color={colors.orange} />
+                </View>
+              )}
             </TouchableOpacity>
           </View>
         )}
@@ -207,5 +217,19 @@ const styles = StyleSheet.create({
     left: '50%',
     marginLeft: 75 + spacing.md,
     padding: spacing.sm,
+  },
+  badge: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: colors.black + 'CC',
+    borderRadius: 16,
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondBadge: {
+    right: 48,
   },
 });
