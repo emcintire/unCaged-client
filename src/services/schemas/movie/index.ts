@@ -1,5 +1,4 @@
 export * from './movie';
-export * from './movieRating';
 export * from './quote';
 export * from './addQuoteData';
 export * from './rateMovieData';

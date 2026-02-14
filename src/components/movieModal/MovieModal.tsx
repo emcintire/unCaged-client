@@ -29,7 +29,6 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
 
     const parsedMovie = {
       ...(propsMovie.img.length === 32 ? changeResolution('h', propsMovie) : propsMovie),
-      genres: propsMovie.genres.filter((g) => g !== 'Popular'),
     };
 
     setMovie(parsedMovie);

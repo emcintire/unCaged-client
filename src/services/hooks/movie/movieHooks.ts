@@ -53,6 +53,22 @@ export const useSearchMovies = (searchQuery: string) => {
   });
 };
 
+export const usePopularMovies = () => {
+  return useQuery({
+    queryKey: movieKeys.popular(),
+    queryFn: () => zodiosClient.getPopularMovies(),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+export const useStaffPicks = () => {
+  return useQuery({
+    queryKey: movieKeys.staffPicks(),
+    queryFn: () => zodiosClient.getStaffPicks(),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
 // ============================================
 // Mutation Hooks
 // ============================================

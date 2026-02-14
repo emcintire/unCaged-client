@@ -1,12 +1,13 @@
 import { useState, useCallback, useMemo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { type Movie, useCurrentUser, useMovies, useQuote } from '@/services';
+import { type Movie, useCurrentUser, useMovies, usePopularMovies, useStaffPicks, useQuote } from '@/services';
 import { colors, spacing, fontSize, fontFamily } from '@/config';
 import Screen from '@/components/Screen';
 import MovieCard from '@/components/MovieCard';
 import MovieModal from '@/components/movieModal/MovieModal';
 import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
+import HomeScreenSkeleton from './HomeScreenSkeleton';
 
 const styles = StyleSheet.create({
   quote: {
@@ -67,7 +68,6 @@ const styles = StyleSheet.create({
 });
 
 const genres = [
-  'Popular',
   'Thriller',
   'Drama',
   'Action',
@@ -88,9 +88,11 @@ export default function HomeScreen() {
 
   const { data: user } = useCurrentUser();
   const { data: movies = [], isLoading: moviesLoading } = useMovies();
+  const { data: popularMovies = [], isLoading: popularLoading } = usePopularMovies();
+  const { data: staffPicks = [], isLoading: staffPicksLoading } = useStaffPicks();
   const { data: quote, isLoading: quoteLoading } = useQuote();
 
-  const isLoading = moviesLoading || quoteLoading;
+  const isLoading = moviesLoading || popularLoading || staffPicksLoading || quoteLoading;
 
   const favoriteIds = useMemo(() => new Set(user?.favorites ?? []), [user?.favorites]);
   const seenIds = useMemo(() => new Set(user?.seen ?? []), [user?.seen]);
@@ -100,8 +102,13 @@ export default function HomeScreen() {
     [movies],
   );
 
+  const customRows = useMemo(
+    () => [{ label: 'Popular', data: popularMovies }, { label: 'Staff Picks', data: staffPicks }],
+    [popularMovies, staffPicks],
+  );
+
   return (
-    <Screen isLoading={isLoading}>
+    <Screen isLoading={isLoading} skeleton={<HomeScreenSkeleton />}>
       <MovieModal
         isOpen={selectedMovie != null}
         movie={selectedMovie}
@@ -111,6 +118,30 @@ export default function HomeScreen() {
         <Text style={styles.quote}>{quote?.quote}</Text>
         <Text style={styles.subquote}>{quote?.subquote}</Text>
         <Text style={styles.subsubquote}>Verse of the Week</Text>
+        {customRows.map(({ label, data }) => (
+          <View key={label}>
+            <Text style={styles.header}>{label}</Text>
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              scrollEventThrottle={200}
+              decelerationRate="fast"
+              contentContainerStyle={styles.scrollContent}
+            >
+              {data.map((movie) => (
+                <MovieCard
+                  key={`${label}-${movie._id}`}
+                  movie={movie}
+                  onPress={() => setSelectedMovie(movie)}
+                  isFavorite={favoriteIds.has(movie._id)}
+                  isSeen={seenIds.has(movie._id)}
+                  buttonStyle={styles.button}
+                />
+              ))}
+              <View style={styles.listSpacer} />
+            </ScrollView>
+          </View>
+        ))}
         {genres.map((genre) => (
           <View key={genre}>
             <Text style={styles.header}>{genre}</Text>

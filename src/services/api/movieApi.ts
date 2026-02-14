@@ -67,6 +67,16 @@ export const movieApi = makeApi([
     ],
     response: MoviesArraySchema,
   }, {
+    method: 'get',
+    path: '/popular',
+    alias: 'getPopularMovies',
+    response: MoviesArraySchema,
+  }, {
+    method: 'get',
+    path: '/staffpicks',
+    alias: 'getStaffPicks',
+    response: MoviesArraySchema,
+  }, {
     method: 'post',
     path: '/findByTitle',
     alias: 'searchMovies',

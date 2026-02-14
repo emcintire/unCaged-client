@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { MovieRatingSchema } from './movieRating';
 
 export const MovieSchema = z.object({
   _id: z.string(),
@@ -7,11 +6,14 @@ export const MovieSchema = z.object({
   date: z.string(),
   description: z.string().optional(),
   director: z.string(),
+  favoriteCount: z.number(),
   genres: z.array(z.string()),
   img: z.string(),
   rating: z.string(),
-  ratings: z.array(MovieRatingSchema),
+  ratingCount: z.number(),
+  ratingSum: z.number(),
   runtime: z.string(),
+  seenCount: z.number(),
   title: z.string(),
 });
 

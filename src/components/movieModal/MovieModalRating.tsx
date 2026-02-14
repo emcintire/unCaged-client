@@ -27,23 +27,28 @@ type Props = {
   setRating: SetState<number>;
 };
 
+function getStarIcon(star: number, rating: number): 'star' | 'star-half-full' | 'star-outline' {
+  if (rating >= star) return 'star';
+  if (rating >= star - 0.5) return 'star-half-full';
+  return 'star-outline';
+}
+
+function getStarColor(star: number, rating: number): string {
+  if (rating >= star - 0.5) return colors.orange;
+  return colors.medium;
+}
+
 export default function MovieModalRating({ movie, onSeenAdded, rating, setRating }: Props) {
   const rateMovieMutation = useRateMovie();
   const deleteRatingMutation = useDeleteRating();
   const addToSeenMutation = useAddToSeen();
   const { data: user } = useCurrentUser();
 
-  const handleRating = (newRating: number) => async () => {
+  const submitRating = async (newRating: number) => {
     try {
-      if (rating === newRating) {
-        await deleteRatingMutation.mutateAsync({ id: movie._id });
-        setRating(0);
-        return;
-      }
-
       await rateMovieMutation.mutateAsync({ id: movie._id, rating: newRating });
       setRating(newRating);
-      
+
       const isMovieSeen = user && user.seen.includes(movie._id);
       if (!isMovieSeen) {
         await addToSeenMutation.mutateAsync(movie._id);
@@ -55,15 +60,38 @@ export default function MovieModalRating({ movie, onSeenAdded, rating, setRating
     }
   };
 
+  const deleteRating = async () => {
+    try {
+      await deleteRatingMutation.mutateAsync({ id: movie._id });
+      setRating(0);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to update rating';
+      showErrorToast(message);
+    }
+  };
+
+  const handleRating = (star: number) => async () => {
+    if (rating === star) {
+      // Full star tapped again → half star
+      await submitRating(star - 0.5);
+    } else if (rating === star - 0.5) {
+      // Half star tapped again → remove rating
+      await deleteRating();
+    } else {
+      // New selection → full star
+      await submitRating(star);
+    }
+  };
+
   return (
     <View style={styles.stars}>
       {stars.map((star) => (
         <TouchableOpacity key={star} onPress={handleRating(star)} accessibilityRole="button" accessibilityLabel={`Rate ${star} star${star > 1 ? 's' : ''}`}>
           <Icon
-            name="star"
+            name={getStarIcon(star, rating)}
             size={60}
             backgroundColor="transparent"
-            iconColor={rating > star - 1 ? colors.orange : colors.medium}
+            iconColor={getStarColor(star, rating)}
           />
         </TouchableOpacity>
       ))}

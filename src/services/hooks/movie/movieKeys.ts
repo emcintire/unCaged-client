@@ -8,4 +8,6 @@ export const movieKeys = {
   quote: () => [...movieKeys.quotes(), 'current'] as const,
   avgRating: (id: string) => [...movieKeys.all, 'avgRating', id] as const,
   search: (query: string) => [...movieKeys.all, 'search', query] as const,
+  popular: () => [...movieKeys.all, 'popular'] as const,
+  staffPicks: () => [...movieKeys.all, 'staffPicks'] as const,
 };
