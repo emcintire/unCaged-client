@@ -5,12 +5,11 @@ import {
   AverageRatingSchema,
   CreateMovieDataSchema,
   FilteredMoviesDataSchema,
-  MovieSchema,
   MoviesArraySchema,
+  MovieSchema,
   QuoteOrArraySchema,
   QuoteSchema,
   SearchMovieDataSchema,
-  UpdateMovieRatingDataSchema,
 } from '../schemas';
 
 export const movieApi = makeApi([
@@ -26,14 +25,7 @@ export const movieApi = makeApi([
       },
     ],
     response: MoviesArraySchema,
-  },
-  {
-    method: 'get',
-    path: '/quote',
-    alias: 'getQuote',
-    response: QuoteOrArraySchema,
-  },
-  {
+  }, {
     method: 'get',
     path: '/avgRating/:id',
     alias: 'getAverageRating',
@@ -45,8 +37,12 @@ export const movieApi = makeApi([
       },
     ],
     response: AverageRatingSchema,
-  },
-  {
+  }, {
+    method: 'get',
+    path: '/quote',
+    alias: 'getQuote',
+    response: QuoteOrArraySchema,
+  }, {
     method: 'post',
     path: '/quote',
     alias: 'addQuote',
@@ -58,8 +54,7 @@ export const movieApi = makeApi([
       },
     ],
     response: QuoteSchema,
-  },
-  {
+  },   {
     method: 'post',
     path: '/filteredMovies',
     alias: 'getFilteredMovies',
@@ -71,8 +66,7 @@ export const movieApi = makeApi([
       },
     ],
     response: MoviesArraySchema,
-  },
-  {
+  }, {
     method: 'post',
     path: '/findByTitle',
     alias: 'searchMovies',
@@ -85,31 +79,6 @@ export const movieApi = makeApi([
     ],
     response: MoviesArraySchema,
   }, {
-    method: 'put',
-    path: '/updateRating',
-    alias: 'updateMovieRating',
-    parameters: [
-      {
-        name: 'body',
-        type: 'Body',
-        schema: UpdateMovieRatingDataSchema,
-      },
-    ],
-    response: z.void(),
-  }, {
-    method: 'put',
-    path: '/updateRatings',
-    alias: 'updateMovieRatings',
-    parameters: [
-      {
-        name: 'body',
-        type: 'Body',
-        schema: z.object({}),
-      },
-    ],
-    response: z.void(),
-  },
-  {
     method: 'post',
     path: '/',
     alias: 'createMovie',

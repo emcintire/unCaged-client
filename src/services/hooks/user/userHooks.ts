@@ -193,11 +193,25 @@ export const useRateMovie = () => {
   return useMutation({
     mutationFn: (data: { id: string; rating: number }) => zodiosClient.rateMovie(data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
       queryClient.invalidateQueries({ queryKey: userKeys.ratings() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
+      queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
     },
     onError: () => showErrorToast('Failed to save rating'),
+  });
+};
+
+export const useDeleteRating = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string }) => zodiosClient.deleteRating(data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.ratings() });
+      queryClient.invalidateQueries({ queryKey: userKeys.detail() });
+      queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
+    },
+    onError: () => showErrorToast('Failed to delete rating'),
   });
 };
 

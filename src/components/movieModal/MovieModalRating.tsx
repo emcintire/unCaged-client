@@ -35,25 +35,19 @@ export default function MovieModalRating({ movie, onSeenAdded, rating, setRating
 
   const handleRating = (newRating: number) => async () => {
     try {
-      const isMovieSeen = user && user.seen.includes(movie._id);
+      if (rating === newRating) {
+        await deleteRatingMutation.mutateAsync({ id: movie._id });
+        setRating(0);
+        return;
+      }
+
+      await rateMovieMutation.mutateAsync({ id: movie._id, rating: newRating });
+      setRating(newRating);
       
-      if (rating) {
-        if (rating === newRating) {
-          await deleteRatingMutation.mutateAsync({ id: movie._id });
-          setRating(0);
-        } else {
-          await deleteRatingMutation.mutateAsync({ id: movie._id });
-          await rateMovieMutation.mutateAsync({ id: movie._id, rating: newRating });
-          setRating(newRating);
-        }
-      } else {
-        await rateMovieMutation.mutateAsync({ id: movie._id, rating: newRating });
-        setRating(newRating);
-        
-        if (!isMovieSeen) {
-          await addToSeenMutation.mutateAsync(movie._id);
-          onSeenAdded();
-        }
+      const isMovieSeen = user && user.seen.includes(movie._id);
+      if (!isMovieSeen) {
+        await addToSeenMutation.mutateAsync(movie._id);
+        onSeenAdded();
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to update rating';
