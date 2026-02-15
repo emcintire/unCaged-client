@@ -1,16 +1,16 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { Screen, WelcomeAuthTabParamList } from '@/types';
+import { screenOptions } from '@/navigation/stacks/screenOptions';
 import WelcomeScreen from '@/screens/Welcome/WelcomeScreen';
 import LoginScreen from '@/screens/Welcome/LoginScreen';
 import RegisterScreen from '@/screens/Welcome/RegisterScreen';
 import ForgotPasswordScreen from '@/screens/Welcome/ForgotPasswordScreen';
 import EmailCodeScreen from '@/screens/Welcome/EmailCodeScreen';
 import PasswordResetScreen from '@/screens/Welcome/PasswordResetScreen';
-import type { Screen, WelcomeStackParamList } from '@/types';
-import { screenOptions } from './screenOptions';
 
-const Welcome_Stack = createNativeStackNavigator<WelcomeStackParamList>();
+const Auth_Tab = createNativeStackNavigator<WelcomeAuthTabParamList>();
 
-const screens: ReadonlyArray<Screen<WelcomeStackParamList>> = [{
+const screens: ReadonlyArray<Screen<WelcomeAuthTabParamList>> = [{
   component: WelcomeScreen,
   name: 'Welcome',
 }, {
@@ -30,16 +30,16 @@ const screens: ReadonlyArray<Screen<WelcomeStackParamList>> = [{
   name: 'Password Reset',
 }];
 
-export default function WelcomeStack() {
+export default function AuthTab() {
   return (
-    <Welcome_Stack.Navigator screenOptions={screenOptions}>
+    <Auth_Tab.Navigator screenOptions={screenOptions}>
       {screens.map((screen) => (
-        <Welcome_Stack.Screen
+        <Auth_Tab.Screen
           component={screen.component}
           key={screen.name}
           name={screen.name}
         />
       ))}
-    </Welcome_Stack.Navigator>
+    </Auth_Tab.Navigator>
   );
 }

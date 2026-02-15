@@ -1,4 +1,4 @@
-import { colors } from '@/config';
+import { colors, fontSize } from '@/config';
 
 export const screenOptions = {
   headerStyle: { backgroundColor: colors.black },
@@ -6,5 +6,5 @@ export const screenOptions = {
   headerBackTitleVisible: false,
   headerStatusBarHeight: 0,
   headerTitleAlign: 'center' as const,
-  headerTitleStyle: { fontFamily: 'Montserrat-Bold', fontSize: 22 },
+  headerTitleStyle: { fontFamily: 'Montserrat-Bold', fontSize: fontSize.xl },
 };

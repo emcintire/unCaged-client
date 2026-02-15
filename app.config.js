@@ -5,7 +5,7 @@ export default {
     name: "unCaged",
     slug: "unCaged",
     icon: "./src/assets/imgs/icon.png",
-    version: "9.2.0",
+    version: "10.0.0",
     orientation: "portrait",
     scheme: "uncaged",
     platforms: ["ios", "android", "web"],
@@ -36,7 +36,7 @@ export default {
     },
     android: {
       package: "uncaged.app",
-      versionCode: 9,
+      versionCode: 11,
       googleServicesFile: "./google-services.json",
       adaptiveIcon: {
         foregroundImage: "./src/assets/imgs/icon.png",

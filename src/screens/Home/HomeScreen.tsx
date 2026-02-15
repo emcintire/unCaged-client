@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   subquote: {
     marginTop: spacing.xs + 3,
     fontFamily: fontFamily.regular,
-    fontSize: fontSize.md,
+    fontSize: fontSize.base,
     color: 'white',
     textAlign: 'center',
   },
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     marginBottom: spacing.sm,
     fontFamily: fontFamily.extraLight,
-    fontSize: fontSize.xs,
+    fontSize: fontSize.sm,
     color: 'white',
     textAlign: 'center',
   },

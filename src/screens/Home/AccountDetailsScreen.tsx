@@ -20,8 +20,8 @@ type FormValues = {
 };
 
 const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().min(1, 'Email is required').email('Email must be a valid email'),
+  name: z.string().max(100).optional(),
+  email: z.string().min(1, 'Email is required').max(255).email('Email must be a valid email'),
 });
 
 const validate = toFormikValidator(schema);
@@ -38,8 +38,8 @@ export default function AccountDetailsScreen() {
 
     try {
       const email = values.email.toLowerCase().trim();
-      const name = values.name.trim();
-      await updateUserMutation.mutateAsync({ name, email });
+      const name = (values.name ?? '').trim();
+      await updateUserMutation.mutateAsync({ email, name });
       navigate('SettingsTab');
       refetch();
       showSuccessToast();
@@ -71,16 +71,17 @@ export default function AccountDetailsScreen() {
           </View>
           <View style={styles.formContainer}>
             <AppForm<FormValues>
-              initialValues={{ name: user.name, email: user.email }}
+              initialValues={{ name: user.name ?? '', email: user.email }}
               onSubmit={handleSubmit}
               validate={validate}
             >
-              <AppFormField<FormValues> icon="account" name="name" textContentType="name" />
+              <AppFormField<FormValues> icon="account" name="name" textContentType="name" placeholder="Name" />
               <AppFormField<FormValues>
                 icon="email"
                 keyboardType="email-address"
                 name="email"
                 textContentType="emailAddress"
+                placeholder="Email"
               />
               <SubmitButton<FormValues> title="Save" style={styles.saveButton} />
             </AppForm>

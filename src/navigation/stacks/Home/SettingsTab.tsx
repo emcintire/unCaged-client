@@ -6,12 +6,12 @@ import { screenOptions } from '@/navigation/stacks/screenOptions';
 import AboutScreen from '@/screens/Home/AboutScreen';
 import AdminScreen from '@/screens/Home/AdminScreen';
 import AccountButton from '@/components/AccountButton';
+import AppLogo from '@/components/AppLogo';
 import AccountDetailsScreen from '@/screens/Home/AccountDetailsScreen';
 import CollectionScreen from '@/screens/Home/CollectionScreen';
 import PrivacyPolicyScreen from '@/screens/Home/PrivacyPolicy';
 import SecurityScreen from '@/screens/Home/SecurityScreen';
 import SettingsScreen from '@/screens/Home/SettingsScreen';
-import SmallLogo from '@/assets/imgs/small_logo.svg';
 
 const Settings_Tab = createNativeStackNavigator<SettingsTabParamList>();
 
@@ -19,7 +19,7 @@ const screens: Array<Screen<SettingsTabParamList>> = [{
   name: 'Settings',
   component: SettingsScreen,
   options: ({
-    headerLeft: () => <SmallLogo width={80} height={20} />,
+    headerLeft: AppLogo,
     headerRight: AccountButton,
   }),
 }, {

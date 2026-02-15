@@ -1,20 +1,14 @@
-import { useCallback, useMemo, useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { type Movie, useCurrentUser, useFavorites, useMovies, useSeen } from '@/services';
-import { movieCard, screen, typography, spacing } from '@/config';
+import { useMemo } from 'react';
+import { Text, StyleSheet } from 'react-native';
+import { useCurrentUser, useFavorites, useMovies, useSeen } from '@/services';
+import { screen, typography, spacing, utils, colors } from '@/config';
 import AdBanner from '@/components/AdBanner';
 import CollectionStats from '@/components/CollectionStats';
-import MovieCard from '@/components/MovieCard';
-import MovieModal from '@/components/movieModal/MovieModal';
+import MovieGrid from '@/components/MovieGrid';
 import MovieGridSkeleton from '@/components/MovieGridSkeleton';
 import Screen from '@/components/Screen';
-import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
-
-const NUM_COLUMNS = 2;
 
 export default function CollectionScreen() {
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-
   const { data: user, isLoading: isUserLoading } = useCurrentUser();
   const { data: seenMovies = [], isLoading: isSeenLoading } = useSeen();
   const { data: favoriteMovies = [], isLoading: isFavoritesLoading } = useFavorites();
@@ -33,61 +27,36 @@ export default function CollectionScreen() {
     [seenMovies],
   );
 
-  const renderMovie = useCallback(({ item }: { item: Movie }) => (
-    <View style={[movieCard.container, styles.columnItem]}>
-      <MovieCard
-        movie={item}
-        onPress={() => setSelectedMovie(item)}
-        isFavorite={favoriteIds.has(item._id)}
-      />
-    </View>
-  ), [favoriteIds]);
-
-  const keyExtractor = useCallback((item: Movie) => item._id, []);
-
   return (
     <Screen isLoading={isLoading} skeleton={<MovieGridSkeleton />} style={!isLoading && seenMovies.length === 0 ? screen.centered : screen.noPadding}>
       {!isAdmin && <AdBanner />}
       {seenMovies.length === 0 ? (
-        <Text style={typography.h1}>What are you doing here... go watch a Nicolas Cage movie</Text>
+        <Text style={[typography.h2, utils.textCenter]}>
+          What are you doing here... you have&nbsp;
+          <Text style={{ color: colors.orange }}>
+            {allMovies.length}
+          </Text>
+          &nbsp;cinematic masterpieces to watch!
+        </Text>
       ) : (
-        <>
-          <MovieModal
-            isOpen={selectedMovie != null}
-            movie={selectedMovie}
-            onClose={() => setSelectedMovie(null)}
-          />
-          <FlatList
-            data={sortedMovies}
-            renderItem={renderMovie}
-            keyExtractor={keyExtractor}
-            numColumns={NUM_COLUMNS}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
-            ListHeaderComponentStyle={styles.headerContainer}
-            ListHeaderComponent={
-              <CollectionStats
-                seenMovies={seenMovies}
-                totalMovies={allMovies.length}
-                userRatings={user?.ratings ?? []}
-              />
-            }
-            ListFooterComponent={<BuyMeCoffeeButton />}
-          />
-        </>
+        <MovieGrid
+          movies={sortedMovies}
+          favoriteIds={favoriteIds}
+          ListHeaderComponent={
+            <CollectionStats
+              seenMovies={seenMovies}
+              totalMovies={allMovies.length}
+              userRatings={user?.ratings ?? []}
+            />
+          }
+          ListHeaderComponentStyle={styles.headerContainer}
+        />
       )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  listContent: {
-    alignItems: 'center',
-    paddingTop: spacing.lg,
-  },
-  columnItem: {
-    width: '50%',
-  },
   headerContainer: {
     width: '100%',
     paddingHorizontal: spacing.md,

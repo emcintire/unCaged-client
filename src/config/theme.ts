@@ -1,9 +1,6 @@
 import { StyleSheet, Platform } from 'react-native';
 import { colors } from './colors';
 
-/**
- * Spacing constants for consistent margins and paddings
- */
 export const spacing = {
   xs: 5,
   sm: 10,
@@ -13,9 +10,6 @@ export const spacing = {
   xxl: 30,
 } as const;
 
-/**
- * Border radius constants
- */
 export const borderRadius = {
   sm: 8,
   md: 10,
@@ -24,9 +18,6 @@ export const borderRadius = {
   circle: 35,
 } as const;
 
-/**
- * Font size constants
- */
 export const fontSize = {
   xs: 10,
   sm: 12,
@@ -38,9 +29,6 @@ export const fontSize = {
   xxxl: 30,
 } as const;
 
-/**
- * Font family constants
- */
 export const fontFamily = {
   extraLight: 'Montserrat-ExtraLight',
   light: 'Montserrat-Light',
@@ -51,9 +39,6 @@ export const fontFamily = {
   black: 'Montserrat-Black',
 } as const;
 
-/**
- * Shadow styles
- */
 export const shadow = {
   sm: {
     shadowColor: '#00000060',
@@ -78,9 +63,6 @@ export const shadow = {
   },
 } as const;
 
-/**
- * Common layout styles
- */
 export const layout = StyleSheet.create({
   container: {
     flex: 1,
@@ -111,9 +93,6 @@ export const layout = StyleSheet.create({
   },
 });
 
-/**
- * Typography styles
- */
 export const typography = StyleSheet.create({
   h1: {
     fontFamily: fontFamily.extraBold,
@@ -128,6 +107,11 @@ export const typography = StyleSheet.create({
   h3: {
     fontFamily: fontFamily.bold,
     fontSize: fontSize.xl,
+    color: colors.white,
+  },
+  h4: {
+    fontFamily: fontFamily.bold,
+    fontSize: fontSize.lg,
     color: colors.white,
   },
   body: {
@@ -157,9 +141,6 @@ export const typography = StyleSheet.create({
   },
 });
 
-/**
- * Common form styles
- */
 export const form = StyleSheet.create({
   container: {
     width: '100%',
@@ -178,9 +159,6 @@ export const form = StyleSheet.create({
   },
 });
 
-/**
- * Common image/movie card styles
- */
 export const movieCard = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -210,9 +188,6 @@ export const movieCard = StyleSheet.create({
   },
 });
 
-/**
- * Common screen styles
- */
 export const screen = StyleSheet.create({
   withPadding: {
     paddingHorizontal: spacing.md,
@@ -222,7 +197,7 @@ export const screen = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.bg,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
   },
   noPadding: {
     paddingTop: 0,
@@ -230,9 +205,6 @@ export const screen = StyleSheet.create({
   },
 });
 
-/**
- * Common text alignment and spacing utilities
- */
 export const utils = StyleSheet.create({
   textCenter: {
     textAlign: 'center',
@@ -251,20 +223,14 @@ export const utils = StyleSheet.create({
   p15: { padding: spacing.md },
 });
 
-/**
- * Default styles for text and common components
- */
 export const defaultStyles = StyleSheet.create({
   text: {
     color: colors.dark,
-    fontSize: 18,
+    fontSize: fontSize.lg,
     fontFamily: Platform.OS === 'android' ? 'Roboto' : 'Avenir',
   },
 });
 
-/**
- * Modal/Overlay styles
- */
 export const modal = StyleSheet.create({
   background: {
     backgroundColor: '#00000090',

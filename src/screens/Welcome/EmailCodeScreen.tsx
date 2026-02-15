@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { z } from 'zod';
-import type { WelcomeStackParamList } from '@/types';
+import type { WelcomeAuthTabParamList } from '@/types';
 import { useCheckCode } from '@/services';
 import { form, typography, utils, showErrorToast, spacing } from '@/config';
 import { AppForm, AppFormField, SubmitButton } from '@/components/forms';
@@ -21,7 +21,7 @@ type EmailCodeFormValues = {
 
 export default function EmailCodeScreen() {
   const checkCodeMutation = useCheckCode();
-  const { navigate } = useNavigation<NativeStackNavigationProp<WelcomeStackParamList>>();
+  const { navigate } = useNavigation<NativeStackNavigationProp<WelcomeAuthTabParamList>>();
 
   const handleSubmit = async (values: EmailCodeFormValues) => {
     try {

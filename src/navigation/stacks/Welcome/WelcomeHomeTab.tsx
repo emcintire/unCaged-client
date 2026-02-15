@@ -1,10 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import type { HomeTabParamList, Screen } from '@/types';
 import { screenOptions } from '@/navigation/stacks/screenOptions';
-import AccountButton from '@/components/AccountButton';
-import HomeScreen from '@/screens/Home/HomeScreen';
 import AppLogo from '@/components/AppLogo';
+import HomeScreen from '@/screens/Home/HomeScreen';
 
 const Home_Tab = createNativeStackNavigator<HomeTabParamList>();
 
@@ -12,14 +10,13 @@ const screens: Array<Screen<HomeTabParamList>> = [
   {
     name: 'Home',
     component: HomeScreen,
-    options: ({
+    options: {
       headerLeft: AppLogo,
-      headerRight: AccountButton,
-    }),
+    },
   },
 ];
 
-export default function HomeStackScreen() {
+export default function WelcomeHomeTab() {
   return (
     <Home_Tab.Navigator screenOptions={screenOptions}>
       {screens.map((screen) => (

@@ -10,7 +10,7 @@ import PasswordInput from '@/components/forms/PasswordInput';
 import { toFormikValidator } from '@/utils/toFormikValidator';
 
 const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  name: z.string().optional(),
   email: z.string().min(1, 'Email is required').email('Email must be a valid email'),
   password: z.string().min(1, 'Password is required').regex(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
   confirmPassword: z.string().min(1, 'Password is required').regex(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
@@ -19,7 +19,7 @@ const schema = z.object({
 const validate = toFormikValidator(schema);
 
 type RegisterFormValues = {
-  name: string;
+  name?: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -37,8 +37,9 @@ export default function RegisterScreen() {
 
     try {
       const email = values.email.toLowerCase().trim();
+      const name = values.name?.trim();
       const token = await registerMutation.mutateAsync({
-        name: values.name,
+        ...(name ? { name } : {}),
         email,
         password: values.password,
       });

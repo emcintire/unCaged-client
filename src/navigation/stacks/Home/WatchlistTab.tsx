@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { Screen, WatchlistTabParamList } from '@/types';
 import { screenOptions } from '@/navigation/stacks/screenOptions';
 import AccountButton from '@/components/AccountButton';
-import SmallLogo from '@/assets/imgs/small_logo.svg';
+import AppLogo from '@/components/AppLogo';
 import WatchlistScreen from '@/screens/Home/WatchlistScreen';
 
 const Watchlist_Tab = createNativeStackNavigator<WatchlistTabParamList>();
@@ -13,7 +13,7 @@ const screens: Array<Screen<WatchlistTabParamList>> = [
     name: 'Watchlist',
     component: WatchlistScreen,
     options: ({
-      headerLeft: () => <SmallLogo width={80} height={20} />,
+      headerLeft: AppLogo,
       headerRight: AccountButton,
     }),
   },

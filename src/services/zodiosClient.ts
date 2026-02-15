@@ -38,6 +38,12 @@ baseClient.axios.interceptors.response.use(
         });
       }
 
+      const data = error.response.data;
+      const apiMessage = typeof data === 'string' ? data : data?.message;
+      if (apiMessage) {
+        error.message = apiMessage;
+      }
+
       if (error.response.status === 401 && onUnauthorizedCallback) {
         onUnauthorizedCallback();
       }

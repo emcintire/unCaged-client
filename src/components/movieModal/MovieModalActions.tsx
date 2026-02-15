@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useEffect, useMemo, useState } from 'react';
 import type { MaterialCommunityIcons as MaterialCommunityIconsType } from '@expo/vector-icons';
-import { colors, fontFamily } from '@/config';
+import { colors, fontFamily, fontSize } from '@/config';
 import {
   useAddToSeen, useRemoveFromSeen, useAddToFavorites, useRemoveFromFavorites, useAddToWatchlist,
   useRemoveFromWatchlist, useCurrentUser, type Movie,
@@ -37,18 +37,6 @@ export default function MovieModalActions({ movie }: Props) {
     setRating(user.ratings.find((r) => r.movie === movie._id)?.rating || 0);
   }, [user, movie]);
 
-  const toggleSeen = () => {
-    if (seen) {
-      removeFromSeenMutation.mutate(movie._id, {
-        onSuccess: () => setSeen(false),
-      });
-    } else {
-      addToSeenMutation.mutate(movie._id, {
-        onSuccess: () => setSeen(true),
-      });
-    }
-  };
-
   const toggleFavorite = () => {
     if (favorite) {
       removeFromFavoritesMutation.mutate(movie._id, {
@@ -69,6 +57,23 @@ export default function MovieModalActions({ movie }: Props) {
     } else {
       addToWatchlistMutation.mutate(movie._id, {
         onSuccess: () => setWatchlist(true),
+      });
+    }
+  };
+
+  const toggleSeen = () => {
+    if (seen) {
+      removeFromSeenMutation.mutate(movie._id, {
+        onSuccess: () => setSeen(false),
+      });
+    } else {
+      addToSeenMutation.mutate(movie._id, {
+        onSuccess: () => {
+          setSeen(true);
+          if (watchlist) {
+            toggleWatchlist();
+          }
+        },
       });
     }
   };
@@ -139,6 +144,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 45,
     fontFamily: fontFamily.medium,
-    fontSize: 9,
+    fontSize: fontSize.xs,
   },
 });

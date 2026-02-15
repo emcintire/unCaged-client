@@ -1,9 +1,9 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import type { RandomTabParamList, Screen } from '@/types';
-import SmallLogo from '@/assets/imgs/small_logo.svg';
 import { screenOptions } from '@/navigation/stacks/screenOptions';
 import AccountButton from '@/components/AccountButton';
+import AppLogo from '@/components/AppLogo';
 import RandomMovieScreen from '@/screens/Home/RandomMovieScreen';
 
 const Random_Movie_Tab = createNativeStackNavigator<RandomTabParamList>();
@@ -13,7 +13,7 @@ const screens: Array<Screen<RandomTabParamList>> = [
     name: 'Random',
     component: RandomMovieScreen,
     options: ({
-      headerLeft: () => <SmallLogo width={80} height={20} />,
+      headerLeft: AppLogo,
       headerRight: AccountButton,
     }),
   },

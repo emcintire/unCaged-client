@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'black',
-    fontSize: fontSize.md,
+    fontSize: fontSize.base,
     fontFamily: fontFamily.bold,
   },
 });

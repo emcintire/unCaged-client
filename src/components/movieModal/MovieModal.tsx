@@ -3,11 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { Image } from 'expo-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import { type Movie, useCurrentUser, useAverageRating } from '@/services';
+import { useAuth } from '@/hooks';
 import { changeResolution, colors, fontFamily, fontSize, modal, movieCard, spacing } from '@/config';
 import AdBanner from '../AdBanner';
 import Icon from '../Icon';
 import MovieModalDetails from './MovieModalDetails';
 import MovieModalActions from './MovieModalActions';
+import MovieModalSignIn from './MovieModalSignIn';
 import MovieModalSkeleton from '@/components/movieModal/MovieModalSkeleton';
 
 type Props = {
@@ -19,6 +21,7 @@ type Props = {
 export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props) {
   const [movie, setMovie] = useState<Movie | null>(propsMovie);
 
+  const { isAuthenticated } = useAuth();
   const { data: user } = useCurrentUser();
   const { data: ratingData, isLoading } = useAverageRating(propsMovie?._id || '');
 
@@ -75,7 +78,7 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
                 <Text style={styles.date}>{movie.date?.substring(0, 4)}</Text>
               </View>
             </View>
-            <MovieModalActions movie={movie} />
+            {isAuthenticated ? <MovieModalActions movie={movie} /> : <MovieModalSignIn onClose={onClose} />}
             <MovieModalDetails movie={movie} />
           </ScrollView>
         )}

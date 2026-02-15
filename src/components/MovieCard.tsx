@@ -13,7 +13,7 @@ type Props = {
   buttonStyle?: ViewStyle;
 };
 
-export default function MovieCard({ movie, onPress, isFavorite, isSeen, buttonStyle }: Props) {
+export default function MovieCard({ movie, onPress, isFavorite = false, isSeen, buttonStyle }: Props) {
   const getImg = useCallback(() => changeResolution('l', movie).img, [movie]);
 
   return (

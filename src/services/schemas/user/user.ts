@@ -9,7 +9,7 @@ export const UserSchema = z.object({
   favorites: z.array(z.string()),
   img: z.string(),
   isAdmin: z.boolean(),
-  name: z.string(),
+  name: z.string().optional(),
   password: z.string(),
   ratings: z.array(UserRatingSchema),
   resetCode: z.string(),

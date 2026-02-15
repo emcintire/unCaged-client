@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontFamily: fontFamily.bold,
-    fontSize: fontSize.lg,
+    fontSize: fontSize.base,
     color: colors.orange,
   },
   statLabel: {

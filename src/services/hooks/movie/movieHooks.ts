@@ -81,7 +81,7 @@ export const useAddQuote = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: movieKeys.quote() });
     },
-    onError: () => showErrorToast('Failed to add quote'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -94,6 +94,6 @@ export const useCreateMovie = () => {
       queryClient.invalidateQueries({ queryKey: movieKeys.list() });
       showSuccessToast('Movie created');
     },
-    onError: () => showErrorToast('Failed to create movie'),
+    onError: (error) => showErrorToast(error.message),
   });
 };

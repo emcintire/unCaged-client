@@ -2,13 +2,13 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Logo from '@/assets/imgs/logo.svg';
-import type { WelcomeStackParamList } from '@/types';
+import type { WelcomeAuthTabParamList } from '@/types';
 import { colors, fontFamily, spacing } from '@/config';
 import AppButton from '@/components/AppButton';
 import Screen from '@/components/Screen';
 
 export default function WelcomeScreen() {
-  const { navigate } = useNavigation<NativeStackNavigationProp<WelcomeStackParamList>>();
+  const { navigate } = useNavigation<NativeStackNavigationProp<WelcomeAuthTabParamList>>();
 
   return (
     <Screen style={styles.container}>

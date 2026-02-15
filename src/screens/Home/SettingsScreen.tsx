@@ -100,7 +100,7 @@ export default function SettingsScreen() {
         <View style={styles.container}>
           <ListItem
             onPress={() => navigate('My Account')}
-            title={user!.name}
+            title={user!.name ?? user!.email}
             subTitle={user!.email}
             image={{ uri: user!.img }}
           />

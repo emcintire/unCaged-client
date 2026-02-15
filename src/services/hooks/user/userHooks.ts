@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { logger } from '@/utils/logger';
 import { showErrorToast } from '@/config';
+import { useAuth } from '@/hooks';
 import { zodiosClient } from '../../zodiosClient';
 import { userKeys } from './userKeys';
 import { movieKeys } from '../movie/movieKeys';
@@ -10,9 +11,12 @@ import { movieKeys } from '../movie/movieKeys';
 // ============================================
 
 export const useCurrentUser = () => {
+  const { isAuthenticated } = useAuth();
+
   return useQuery({
     queryKey: userKeys.detail(),
     queryFn: zodiosClient.getCurrentUser,
+    enabled: isAuthenticated,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -55,12 +59,14 @@ export const useRatings = () => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: (credentials: { email: string; password: string }) => zodiosClient.login(credentials),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
 export const useRegister = () => {
   return useMutation({
-    mutationFn: (data: { name: string; email: string; password: string }) => zodiosClient.register(data),
+    mutationFn: (data: { name?: string; email: string; password: string }) => zodiosClient.register(data),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -80,12 +86,14 @@ export const useForgotPassword = () => {
 export const useCheckCode = () => {
   return useMutation({
     mutationFn: (data: { code: string }) => zodiosClient.checkCode(data),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
 export const useChangePassword = () => {
   return useMutation({
     mutationFn: (data: { password: string }) => zodiosClient.changePassword(data),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -98,14 +106,14 @@ export const useUpdateUser = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
       queryClient.invalidateQueries({ queryKey: userKeys.all });
     },
-    onError: () => showErrorToast('Failed to update profile'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
 export const useUpdateUserImage = () => {
   return useMutation({
     mutationFn: (data: { img: string }) => zodiosClient.updateUser(data),
-    onError: () => showErrorToast('Failed to update profile picture'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -118,7 +126,7 @@ export const useAddToWatchlist = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.watchlist() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
     },
-    onError: () => showErrorToast('Failed to add to watchlist'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -131,7 +139,7 @@ export const useRemoveFromWatchlist = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.watchlist() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
     },
-    onError: () => showErrorToast('Failed to remove from watchlist'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -144,7 +152,7 @@ export const useAddToFavorites = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.favorites() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
     },
-    onError: () => showErrorToast('Failed to add to favorites'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -157,7 +165,7 @@ export const useRemoveFromFavorites = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.favorites() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
     },
-    onError: () => showErrorToast('Failed to remove from favorites'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -170,7 +178,7 @@ export const useAddToSeen = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.seen() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
     },
-    onError: () => showErrorToast('Failed to mark as seen'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -183,7 +191,7 @@ export const useRemoveFromSeen = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.seen() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
     },
-    onError: () => showErrorToast('Failed to remove from seen'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -197,7 +205,7 @@ export const useRateMovie = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
     },
-    onError: () => showErrorToast('Failed to save rating'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
@@ -211,12 +219,13 @@ export const useDeleteRating = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.detail() });
       queryClient.invalidateQueries({ queryKey: movieKeys.avgRating(variables.id) });
     },
-    onError: () => showErrorToast('Failed to delete rating'),
+    onError: (error) => showErrorToast(error.message),
   });
 };
 
 export const useDeleteUser = () => {
   return useMutation({
     mutationFn: (data: { id: string }) => zodiosClient.deleteUser(data),
+    onError: (error) => showErrorToast(error.message),
   });
 };

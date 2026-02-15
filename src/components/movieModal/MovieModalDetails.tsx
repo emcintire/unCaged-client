@@ -44,20 +44,20 @@ const styles = StyleSheet.create({
   label: {
     color: colors.white,
     fontFamily: fontFamily.medium,
-    fontSize: fontSize.md,
+    fontSize: fontSize.base,
     marginBottom: spacing.sm,
     width: '50%',
   },
   details: {
     color: colors.white,
     fontFamily: fontFamily.light,
-    fontSize: fontSize.md,
+    fontSize: fontSize.base,
     width: '50%',
   },
   description: {
     color: colors.white,
     fontFamily: fontFamily.light,
-    fontSize: fontSize.md,
+    fontSize: fontSize.base,
     width: '95%',
   },
   textContainer: {

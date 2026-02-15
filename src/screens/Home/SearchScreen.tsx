@@ -1,13 +1,12 @@
-import { useCallback, useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import {
-  StyleSheet, View, Text, TouchableOpacity, TextInput, ScrollView,
+  StyleSheet, View, Text, TouchableOpacity, TextInput,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { type Movie, useCurrentUser, useMovies } from '@/services';
 import { colors, spacing, borderRadius, fontSize, fontFamily, movieCard } from '@/config';
-import MovieCard from '@/components/MovieCard';
+import MovieGrid from '@/components/MovieGrid';
 import MovieGridSkeleton from '@/components/MovieGridSkeleton';
-import MovieModal from '@/components/movieModal/MovieModal';
 import Screen from '@/components/Screen';
 import SearchFilters from '@/components/SearchFilters';
 import BuyMeCoffeeButton from '@/components/BuyMeCoffeeButton';
@@ -55,7 +54,6 @@ const styles = StyleSheet.create({
 
 export default function SearchScreen() {
   const [open, setOpen] = useState(false);
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [title, setTitle] = useState('');
   const [debouncedTitle, setDebouncedTitle] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -116,11 +114,6 @@ export default function SearchScreen() {
 
   return (
     <Screen>
-      <MovieModal
-        isOpen={selectedMovie != null}
-        movie={selectedMovie}
-        onClose={() => setSelectedMovie(null)}
-      />
       <View style={[styles.inputContainer, open && styles.inputContainerOpen]}>
         <TextInput
           onChangeText={handleTitleChange}
@@ -151,21 +144,11 @@ export default function SearchScreen() {
         />
       )}
       {loading ? <MovieGridSkeleton /> : (displayMovies.length > 0 ? (
-        <ScrollView decelerationRate="fast" showsVerticalScrollIndicator={false}>
-          <View style={movieCard.scrollContainer}>
-            {displayMovies.map((movie) => (
-              <View style={movieCard.container} key={movie._id}>
-                <MovieCard
-                  movie={movie}
-                  onPress={() => setSelectedMovie(movie)}
-                  isFavorite={favoriteIds.has(movie._id)}
-                  isSeen={seenIds.has(movie._id)}
-                />
-              </View>
-            ))}
-            <BuyMeCoffeeButton />
-          </View>
-        </ScrollView>
+        <MovieGrid
+          movies={displayMovies}
+          favoriteIds={favoriteIds}
+          seenIds={seenIds}
+        />
       ) : (
         <View style={styles.noResultsContainer}>
           <Text style={styles.noResults}>No results :(</Text>

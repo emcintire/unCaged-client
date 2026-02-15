@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import type { WelcomeStackParamList } from '@/types';
+import type { WelcomeAuthTabParamList } from '@/types';
 import { useForgotPassword } from '@/services';
 import { showErrorToast, showSuccessToast, form, screen } from '@/config';
 import { AppForm, AppFormField, SubmitButton } from '@/components/forms';
@@ -22,7 +22,7 @@ type ForgotPasswordFormValues = {
 
 export default function ForgotPasswordScreen() {
   const forgotPasswordMutation = useForgotPassword();
-  const { navigate } = useNavigation<NativeStackNavigationProp<WelcomeStackParamList>>();
+  const { navigate } = useNavigation<NativeStackNavigationProp<WelcomeAuthTabParamList>>();
 
   const handleSubmit = async (values: ForgotPasswordFormValues) => {
     try {

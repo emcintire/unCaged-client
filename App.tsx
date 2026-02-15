@@ -12,7 +12,7 @@ import type { RootStackParamList } from '@/types';
 import { queryClient } from '@/services';
 import { colors, toastConfig, layout } from '@/config';
 import { AuthProvider, useAuth } from '@/hooks';
-import WelcomeStack from '@/navigation/stacks/WelcomeStack';
+import WelcomeStack from '@/navigation/stacks/Welcome/WelcomeStack';
 import HomeStack from '@/navigation/stacks/Home/HomeStack';
 
 SplashScreen.preventAutoHideAsync();

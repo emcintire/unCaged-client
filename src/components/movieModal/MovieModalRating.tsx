@@ -60,23 +60,15 @@ export default function MovieModalRating({ movie, onSeenAdded, rating, setRating
     }
   };
 
-  const deleteRating = async () => {
-    try {
-      await deleteRatingMutation.mutateAsync({ id: movie._id });
-      setRating(0);
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to update rating';
-      showErrorToast(message);
-    }
-  };
-
   const handleRating = (star: number) => async () => {
     if (rating === star) {
       // Full star tapped again → half star
       await submitRating(star - 0.5);
     } else if (rating === star - 0.5) {
       // Half star tapped again → remove rating
-      await deleteRating();
+      deleteRatingMutation.mutate({ id: movie._id }, {
+        onSuccess: () => setRating(0),
+      });
     } else {
       // New selection → full star
       await submitRating(star);
