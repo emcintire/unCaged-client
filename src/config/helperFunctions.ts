@@ -50,6 +50,7 @@ export const genres = [
   'Animation',
   'Comedy',
   'Crime',
+  'Documentary',
   'Drama',
   'Family',
   'Fantasy',

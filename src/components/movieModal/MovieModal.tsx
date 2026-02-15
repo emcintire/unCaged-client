@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import { type Movie, useCurrentUser, useAverageRating } from '@/services';
 import { useAuth } from '@/hooks';
-import { changeResolution, colors, fontFamily, fontSize, modal, movieCard, spacing } from '@/config';
+import { changeResolution, colors, fontFamily, fontSize, modal, movieCard, shadow, spacing } from '@/config';
 import AdBanner from '../AdBanner';
 import Icon from '../Icon';
 import MovieModalDetails from './MovieModalDetails';
@@ -20,6 +20,7 @@ type Props = {
 
 export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props) {
   const [movie, setMovie] = useState<Movie | null>(propsMovie);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const { isAuthenticated } = useAuth();
   const { data: user } = useCurrentUser();
@@ -30,6 +31,7 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
   useEffect(() => {
     if (!isOpen || propsMovie == null) { return; }
 
+    setImageLoaded(false);
     const parsedMovie = {
       ...(propsMovie.img.length === 32 ? changeResolution('h', propsMovie) : propsMovie),
     };
@@ -41,7 +43,7 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={isOpen}
       onRequestClose={onClose}
@@ -55,32 +57,40 @@ export default function MovieModal({ isOpen, movie: propsMovie, onClose }: Props
         {(isLoading || movie == null) ? (
           <MovieModalSkeleton />
         ) : (
-          <ScrollView
-            horizontal={false}
-            showsVerticalScrollIndicator={false}
-            scrollEventThrottle={200}
-            decelerationRate="fast"
-            style={styles.container}
-          >
-            <View style={styles.btnContainer}>
-              <TouchableOpacity onPress={onClose} accessibilityRole="button" accessibilityLabel="Close movie details">
-                <Icon name="close" size={50} backgroundColor="transparent" iconColor={colors.white} />
-              </TouchableOpacity>
-            </View>
-            <Image source={movie.img} style={styles.image} accessibilityLabel={`${movie.title} poster`} />
-            <View style={styles.titleContainer}>
-              <Text style={styles.title}>{movie.title}</Text>
-              <View style={styles.subtitle}>
-                <View style={styles.ratingRow}>
-                  <Text style={styles.date}>{movieRating}</Text>
-                  <Text style={styles.date}> / 5</Text>
-                </View>
-                <Text style={styles.date}>{movie.date?.substring(0, 4)}</Text>
+          <>
+            <ScrollView
+              horizontal={false}
+              showsVerticalScrollIndicator={false}
+              scrollEventThrottle={200}
+              decelerationRate="fast"
+              style={styles.container}
+              pointerEvents={imageLoaded ? 'auto' : 'none'}
+            >
+              <View style={styles.btnContainer}>
+                <TouchableOpacity onPress={onClose} accessibilityRole="button" accessibilityLabel="Close movie details">
+                  <Icon name="close" size={50} backgroundColor="transparent" iconColor={colors.white} />
+                </TouchableOpacity>
               </View>
-            </View>
-            {isAuthenticated ? <MovieModalActions movie={movie} /> : <MovieModalSignIn onClose={onClose} />}
-            <MovieModalDetails movie={movie} />
-          </ScrollView>
+              <Image source={movie.img} style={styles.image} accessibilityLabel={`${movie.title} poster`} onLoadEnd={() => setImageLoaded(true)} />
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>{movie.title}</Text>
+                <View style={styles.subtitle}>
+                  <View style={styles.ratingRow}>
+                    <Text style={styles.date}>{movieRating}</Text>
+                    <Text style={styles.date}> / 5</Text>
+                  </View>
+                  <Text style={styles.date}>{movie.date?.substring(0, 4)}</Text>
+                </View>
+              </View>
+              {isAuthenticated ? <MovieModalActions movie={movie} /> : <MovieModalSignIn onClose={onClose} />}
+              <MovieModalDetails movie={movie} />
+            </ScrollView>
+            {!imageLoaded && (
+              <View style={styles.skeletonOverlay}>
+                <MovieModalSkeleton />
+              </View>
+            )}
+          </>
         )}
       </View>
     </Modal>
@@ -98,6 +108,7 @@ const styles = StyleSheet.create({
   },
   image: {
     ...movieCard.image,
+    ...shadow.md,
     alignSelf: 'center',
     height: 320,
     marginTop: spacing.lg,
@@ -136,5 +147,8 @@ const styles = StyleSheet.create({
     height: 'auto',
     left: 0,
     top: 0,
+  },
+  skeletonOverlay: {
+    ...StyleSheet.absoluteFillObject,
   },
 });

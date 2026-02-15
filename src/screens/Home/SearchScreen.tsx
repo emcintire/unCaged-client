@@ -59,7 +59,6 @@ export default function SearchScreen() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selected, setSelected] = useState('az');
   const [genre, setGenre] = useState('Genre');
-  const [genresVisible, setGenresVisible] = useState(false);
 
   const { data: user } = useCurrentUser();
   const { data: movies = [], isLoading: loading } = useMovies();
@@ -134,10 +133,8 @@ export default function SearchScreen() {
       {open && (
         <SearchFilters
           genre={genre}
-          genresVisible={genresVisible}
           selected={selected}
           setGenre={setGenre}
-          setGenresVisible={setGenresVisible}
           setSelected={setSelected}
           setSortDirection={setSortDirection}
           sortDirection={sortDirection}

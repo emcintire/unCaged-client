@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native'
 import Separator from './Separator'
-import { Picker } from '@react-native-picker/picker'
+import AppDropdown from './AppDropdown'
 
 import { SetState } from '@/types'
 import { colors, genres, spacing, borderRadius, fontSize, fontFamily } from '@/config'
@@ -16,6 +16,8 @@ type Props = {
   unseenFilter: boolean;
   watchlistFilter: boolean;
 };
+
+const genreOptions = ['All', ...genres] as const
 
 export default function RandomMovieFilters({
   genreFilter,
@@ -40,6 +42,7 @@ export default function RandomMovieFilters({
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>Filters</Text>
         </View>
+        <Separator modal />
         <View style={{ width: '75%' }}>
           <Text style={styles.label}>Unseen</Text>
         </View>
@@ -79,20 +82,17 @@ export default function RandomMovieFilters({
           />
         </View>
         <Separator modal />
-        <View style={{ width: '60%' }}>
+        <View style={{ width: '50%' }}>
           <Text style={styles.label}>Genre</Text>
         </View>
-        <View style={{ width: '40%' }}>
-          <Picker
+        <View style={{ width: '50%' }}>
+          <AppDropdown
+            items={genreOptions}
             selectedValue={genreFilter}
-            style={{ height: 50, width: 150 }}
-            onValueChange={setGenreFilter}
+            onSelect={setGenreFilter}
+            listStyle={styles.dropdownList}
             accessibilityLabel="Select genre filter"
-          >
-            {['All', ...genres].map((genre) => (
-              <Picker.Item key={genre} style={styles.label} label={genre} value={genre} />
-            ))}
-          </Picker>
+          />
         </View>
       </View>
     </View>
@@ -125,10 +125,11 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderBottomWidth: 0,
     backgroundColor: colors.white,
-    height: 'auto',
+    height: '50%',
     padding: spacing.lg,
     paddingTop: borderRadius.circle + 15,
     alignItems: 'center',
+    alignContent: 'space-evenly',
     justifyContent: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -138,4 +139,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     fontFamily: fontFamily.bold,
   },
-});
+  dropdownList: {
+    position: 'absolute',
+    bottom: '100%',
+    left: 0,
+    right: 0,
+    elevation: 5,
+  },
+})

@@ -9,7 +9,8 @@
       "Bash(findstr:*)",
       "Bash(dir:*)",
       "Bash(ls -la \"c:\\\\Users\\\\e_mci\\\\Documents\\\\csc\\\\unCaged-client\\\\src\\\\screens\"\" && echo \"---\" && ls -la \"c:Userse_mciDocumentscscunCaged-clientsrccomponents\"\")",
-      "Bash(npm run type-check:*)"
+      "Bash(npm run type-check:*)",
+      "Bash(npx expo uninstall @react-native-picker/picker react-native-paper)"
     ]
   }
 }

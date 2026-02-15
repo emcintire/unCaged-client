@@ -68,18 +68,17 @@ const styles = StyleSheet.create({
 });
 
 const genres = [
-  'Thriller',
-  'Drama',
   'Action',
+  'Drama',
+  'Thriller',
   'Comedy',
   'Family',
-  'Romance',
   'Horror',
+  'Romance',
+  'Sci-Fi',
   'Crime',
   'War',
   'Mystery',
-  'Documentary',
-  'Sci-Fi',
   'Fantasy',
 ];
 
@@ -97,14 +96,19 @@ export default function HomeScreen() {
   const favoriteIds = useMemo(() => new Set(user?.favorites ?? []), [user?.favorites]);
   const seenIds = useMemo(() => new Set(user?.seen ?? []), [user?.seen]);
 
+  const seededShuffle = useCallback(<T,>(arr: T[], seed: string): T[] => {
+    let s = Array.from(seed).reduce((acc, c) => acc + c.charCodeAt(0), 0)
+    return [...arr].sort(() => { s = (s * 1664525 + 1013904223) & 0xffffffff; return s / 0x100000000 - 0.5 })
+  }, [])
+
   const getMoviesFromGenre = useCallback(
-    (genre: string) => movies.filter((movie) => movie.genres.includes(genre)),
-    [movies],
+    (genre: string) => seededShuffle(movies.filter((movie) => movie.genres.includes(genre)), genre),
+    [movies, seededShuffle],
   );
 
   const customRows = useMemo(
-    () => [{ label: 'Popular', data: popularMovies }, { label: 'Staff Picks', data: staffPicks }],
-    [popularMovies, staffPicks],
+    () => [{ label: 'Popular', data: seededShuffle(popularMovies, 'Popular') }, { label: 'Staff Picks', data: seededShuffle(staffPicks, 'Staff Picks') }],
+    [popularMovies, staffPicks, seededShuffle],
   );
 
   return (
